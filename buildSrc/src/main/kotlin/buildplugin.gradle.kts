@@ -1,12 +1,16 @@
 plugins {
-    id("java")
+    id("java-library")
     id("checkstyle")
     id("maven-publish")
+    id("signing")
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+
+    withSourcesJar()
+    withJavadocJar()
 }
 
 checkstyle {
@@ -14,7 +18,7 @@ checkstyle {
     toolVersion = "9.3"
 }
 
-group = "com.github.almighty-satan"
+group = "io.github.almighty-satan.language"
 version = "1.0.0"
 
 repositories {
@@ -24,8 +28,8 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains:annotations:24.0.1")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
 }
 
 tasks.getByName<Test>("test") {
@@ -34,23 +38,51 @@ tasks.getByName<Test>("test") {
 
 publishing {
     publications {
-        create<MavenPublication>("mavenJava") {
+        create<MavenPublication>("release") {
             from(components["java"])
             pom {
-                name.set("Language")
+                name.set("TODO")
                 description.set("TODO")
-                url.set("TODO")
+                url.set("https://github.com/Almighty-Satan/Language")
+                licenses {
+                    license {
+                        name.set("TODO")
+                        url.set("TODO")
+                    }
+                }
+                developers {
+                    developer {
+                        name.set("Almighty-Satan")
+                        url.set("https://github.com/Almighty-Satan")
+                    }
+                    developer {
+                        name.set("UeberallGebannt")
+                        url.set("https://github.com/UeberallGebannt")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/Almighty-Satan/Language.git")
+                    developerConnection.set("scm:git:ssh://github.com:Almighty-Satan/Language.git")
+                    url.set("https://github.com/Almighty-Satan/Language")
+                }
             }
             artifactId = "language-${project.name}"
         }
         repositories {
             maven {
-                setUrl("https://repo.varoplugin.de/repository/maven-releases/")
+                setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
                 credentials {
-                    username = project.findProperty("repouser") as? String
-                    password = project.findProperty("repopassword") as? String
+                    username = System.getenv("OSSRH_USER")
+                    password = System.getenv("OSSRH_PASSWORD")
                 }
             }
         }
     }
+}
+
+signing {
+    val signingKey = System.getenv("SIGNING_KEY")
+    val signingPassword = System.getenv("SIGNING_PASSWORD")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign(publishing.publications.getByName("release"))
 }
