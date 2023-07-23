@@ -21,8 +21,8 @@ public class LanguageManagerImpl implements LanguageManager {
     }
 
     @Override
-    public @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser fallbackParser, @Nullable LanguageParser parser) throws IOException {
-        Language language = new LanguageImpl(this, identifier, fallbackParser, parser);
+    public @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException {
+        Language language = new LanguageImpl(this, identifier, parsers);
         this.languages.put(identifier, language);
         return language;
     }

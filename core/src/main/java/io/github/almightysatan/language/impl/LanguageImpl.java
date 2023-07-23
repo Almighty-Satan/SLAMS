@@ -14,24 +14,22 @@ public class LanguageImpl implements Language {
 
     private final LanguageManagerImpl languageManager;
     private final String identifier;
-    private final LanguageParser fallbackParser;
-    private final LanguageParser parser;
+    private final LanguageParser[] parsers;
     private Map<String, Object> entries;
 
-    public LanguageImpl(@NotNull LanguageManagerImpl languageManager, @NotNull String identifier, @NotNull LanguageParser fallbackParser, @Nullable LanguageParser parser) throws IOException {
+    public LanguageImpl(@NotNull LanguageManagerImpl languageManager, @NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException {
         this.languageManager = languageManager;
         this.identifier = identifier;
-        this.fallbackParser = fallbackParser;
-        this.parser = parser;
+        this.parsers = parsers;
 
         this.load();
     }
 
     protected void load() throws IOException {
         Set<String> paths = this.languageManager.paths();
-        Map<String, Object> entries = new HashMap<>(this.fallbackParser.load(paths));
-        if (this.parser != null)
-            entries.putAll(this.parser.load(paths));
+        Map<String, Object> entries = new HashMap<>();
+        for (LanguageParser parser : this.parsers)
+            entries.putAll(parser.load(paths));
         this.entries = entries;
     }
 
@@ -45,12 +43,8 @@ public class LanguageImpl implements Language {
         return this.identifier;
     }
 
-    public @NotNull LanguageParser fallbackParser() {
-        return this.fallbackParser;
-    }
-
-    public @Nullable LanguageParser parser() {
-        return this.parser;
+    public @Nullable LanguageParser[] parsers() {
+        return this.parsers;
     }
 
     public @Nullable Object value(@NotNull String path) {

@@ -9,7 +9,7 @@ import java.util.Collection;
 
 public interface LanguageManager { // TODO rename me
 
-    @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser fallbackParser, @Nullable LanguageParser parser) throws IOException;
+    @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException;
 
     void reload() throws IOException;
 
