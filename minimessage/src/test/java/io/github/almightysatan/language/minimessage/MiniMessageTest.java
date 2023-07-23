@@ -22,7 +22,7 @@ public class MiniMessageTest {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "1234");
             return map;
-        }, null);
+        });
 
         MMStringEntry entry = MMStringEntry.of("test", langManager, null);
         TextComponent component = (TextComponent) entry.value(null);
@@ -36,12 +36,12 @@ public class MiniMessageTest {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "123");
             return map;
-        }, null);
+        });
         Language defaultLang = langManager.load("1", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "456");
             return map;
-        }, null);
+        });
 
         MMStringEntry entry = MMStringEntry.of("test", langManager, null);
         TextComponent component = (TextComponent) entry.value(null);
@@ -55,12 +55,12 @@ public class MiniMessageTest {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "123");
             return map;
-        }, null);
+        });
         Language contextLang = langManager.load("1", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "456");
             return map;
-        }, null);
+        });
 
         MMStringEntry entry = MMStringEntry.of("test", langManager, null);
         TextComponent component = (TextComponent) entry.value(new TestContext(contextLang, "YXZ"));
@@ -74,7 +74,7 @@ public class MiniMessageTest {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "Hello <xxx>");
             return map;
-        }, null);
+        });
 
         MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.empty());
         TextComponent component = (TextComponent) entry.value(null, Placeholder.unparsed("xxx", "World"));
@@ -88,7 +88,7 @@ public class MiniMessageTest {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "Hello <test>");
             return map;
-        }, null);
+        });
 
         MMStringEntry entry = MMStringEntry.of("test", langManager, ctx -> Placeholder.unparsed("test", "World"));
         TextComponent component = (TextComponent) entry.value(null);
@@ -102,7 +102,7 @@ public class MiniMessageTest {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "Hello <test>");
             return map;
-        }, null);
+        });
 
         TestContext context = new TestContext(null, "World");
 
@@ -118,7 +118,7 @@ public class MiniMessageTest {
             Map<String, Object> map = new HashMap<>();
             map.put("test", new String[] {"Hello", "<test>"});
             return map;
-        }, null);
+        });
 
         MMStringArrayEntry entry = MMStringArrayEntry.of("test", langManager, ctx -> Placeholder.unparsed("test", "World"));
         Component[] components = entry.value(null);
