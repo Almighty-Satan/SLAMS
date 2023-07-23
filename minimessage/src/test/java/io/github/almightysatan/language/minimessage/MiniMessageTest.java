@@ -1,7 +1,7 @@
 package io.github.almightysatan.language.minimessage;
 
-import com.github.almightysatan.language.Language;
-import com.github.almightysatan.language.LanguageManager;
+import io.github.almightysatan.language.Language;
+import io.github.almightysatan.language.LanguageManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;

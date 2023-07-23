@@ -1,8 +1,8 @@
 package io.github.almightysatan.language.minimessage;
 
-import com.github.almightysatan.language.Context;
-import com.github.almightysatan.language.InvalidTypeException;
-import com.github.almightysatan.language.LanguageManager;
+import io.github.almightysatan.language.Context;
+import io.github.almightysatan.language.InvalidTypeException;
+import io.github.almightysatan.language.LanguageManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;

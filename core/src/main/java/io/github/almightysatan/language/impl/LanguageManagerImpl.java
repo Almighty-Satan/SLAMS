@@ -1,8 +1,8 @@
-package com.github.almightysatan.language.impl;
+package io.github.almightysatan.language.impl;
 
-import com.github.almightysatan.language.Language;
-import com.github.almightysatan.language.LanguageManager;
-import com.github.almightysatan.language.LanguageParser;
+import io.github.almightysatan.language.Language;
+import io.github.almightysatan.language.LanguageManager;
+import io.github.almightysatan.language.LanguageParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

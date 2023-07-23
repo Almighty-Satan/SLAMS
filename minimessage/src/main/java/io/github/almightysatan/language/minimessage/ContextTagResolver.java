@@ -1,9 +1,8 @@
 package io.github.almightysatan.language.minimessage;
 
-import com.github.almightysatan.language.Context;
+import io.github.almightysatan.language.Context;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import org.intellij.lang.annotations.Subst;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
