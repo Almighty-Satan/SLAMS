@@ -1,4 +1,4 @@
 rootProject.name = "Language"
 include("core")
-include("parser")
+include("parser-jackson")
 include("minimessage")

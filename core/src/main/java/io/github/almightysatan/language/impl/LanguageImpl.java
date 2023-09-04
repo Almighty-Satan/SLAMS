@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class LanguageImpl implements Language {
 
@@ -26,10 +26,10 @@ public class LanguageImpl implements Language {
     }
 
     protected void load() throws IOException {
-        Set<String> paths = this.languageManager.paths();
         Map<String, Object> entries = new HashMap<>();
+        this.languageManager.paths().forEach(path -> entries.put(path, null));
         for (LanguageParser parser : this.parsers)
-            entries.putAll(parser.load(paths));
+            entries.putAll(parser.load(Collections.unmodifiableMap(entries)));
         this.entries = entries;
     }
 
