@@ -1,4 +1,4 @@
-rootProject.name = "Language"
+rootProject.name = "SLAMS"
 include("core")
 include("parser-jackson")
 include("minimessage")

@@ -1,8 +1,7 @@
-package io.github.almightysatan.language;
+package io.github.almightysatan.slams;
 
-import io.github.almightysatan.language.impl.LanguageManagerImpl;
+import io.github.almightysatan.slams.impl.LanguageManagerImpl;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Collection;

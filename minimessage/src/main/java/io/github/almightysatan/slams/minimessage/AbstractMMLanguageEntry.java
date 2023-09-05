@@ -1,8 +1,8 @@
-package io.github.almightysatan.language.minimessage;
+package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.language.Context;
-import io.github.almightysatan.language.LanguageManager;
-import io.github.almightysatan.language.impl.LanguageEntryImpl;
+import io.github.almightysatan.slams.Context;
+import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.impl.LanguageEntryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

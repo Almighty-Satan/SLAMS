@@ -1,4 +1,4 @@
-package io.github.almightysatan.language;
+package io.github.almightysatan.slams;
 
 import org.jetbrains.annotations.Nullable;
 

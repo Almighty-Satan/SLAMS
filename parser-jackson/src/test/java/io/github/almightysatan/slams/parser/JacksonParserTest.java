@@ -1,6 +1,6 @@
-package io.github.almightysatan.language.parser;
+package io.github.almightysatan.slams.parser;
 
-import io.github.almightysatan.language.LanguageParser;
+import io.github.almightysatan.slams.LanguageParser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

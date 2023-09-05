@@ -18,7 +18,7 @@ checkstyle {
     toolVersion = "9.3"
 }
 
-group = "io.github.almighty-satan.language"
+group = "io.github.almighty-satan.slams"
 version = "1.0.0"
 
 repositories {
@@ -41,13 +41,13 @@ publishing {
         create<MavenPublication>("release") {
             from(components["java"])
             pom {
-                name.set("TODO")
-                description.set("TODO")
-                url.set("https://github.com/Almighty-Satan/Language")
+                name.set("SLAMS")
+                description.set("Simple Language And Message System")
+                url.set("https://github.com/Almighty-Satan/SLAMS")
                 licenses {
                     license {
-                        name.set("TODO")
-                        url.set("TODO")
+                        name.set("GNU Lesser General Public License v2.1")
+                        url.set("https://opensource.org/license/lgpl-2-1/")
                     }
                 }
                 developers {
@@ -61,12 +61,12 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/Almighty-Satan/Language.git")
-                    developerConnection.set("scm:git:ssh://github.com:Almighty-Satan/Language.git")
-                    url.set("https://github.com/Almighty-Satan/Language")
+                    connection.set("scm:git:git://github.com/Almighty-Satan/SLAMS.git")
+                    developerConnection.set("scm:git:ssh://github.com:Almighty-Satan/SLAMS.git")
+                    url.set("https://github.com/Almighty-Satan/SLAMS")
                 }
             }
-            artifactId = "language-${project.name}"
+            artifactId = "slams-${project.name}"
         }
         repositories {
             maven {

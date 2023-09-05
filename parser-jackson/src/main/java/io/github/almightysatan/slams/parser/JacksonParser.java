@@ -1,9 +1,9 @@
-package io.github.almightysatan.language.parser;
+package io.github.almightysatan.slams.parser;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import io.github.almightysatan.language.LanguageParser;
+import io.github.almightysatan.slams.LanguageParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

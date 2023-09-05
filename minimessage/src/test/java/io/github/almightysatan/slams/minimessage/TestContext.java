@@ -1,7 +1,7 @@
-package io.github.almightysatan.language.minimessage;
+package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.language.Context;
-import io.github.almightysatan.language.Language;
+import io.github.almightysatan.slams.Context;
+import io.github.almightysatan.slams.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

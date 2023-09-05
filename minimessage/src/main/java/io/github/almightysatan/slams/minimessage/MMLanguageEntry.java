@@ -1,7 +1,7 @@
-package io.github.almightysatan.language.minimessage;
+package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.language.Context;
-import io.github.almightysatan.language.LanguageEntry;
+import io.github.almightysatan.slams.Context;
+import io.github.almightysatan.slams.LanguageEntry;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
