@@ -24,5 +24,5 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Context {
 
-    @Nullable Language getLanguage();
+    @Nullable Language language();
 }

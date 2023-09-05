@@ -36,7 +36,7 @@ public class TestContext implements Context {
     }
 
     @Override
-    public @Nullable Language getLanguage() {
+    public @Nullable Language language() {
         return this.language;
     }
 

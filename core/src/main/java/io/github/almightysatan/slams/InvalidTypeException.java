@@ -20,5 +20,5 @@
 
 package io.github.almightysatan.slams;
 
-public class InvalidTypeException extends RuntimeException{
+public class InvalidTypeException extends RuntimeException {
 }

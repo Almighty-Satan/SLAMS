@@ -47,7 +47,7 @@ public interface MMStringEntry extends MMLanguageEntry<Component> {
 
             @Override
             public @NotNull Component value(@Nullable Context context, @NotNull ContextTagResolver<Context> tagResolver) {
-                String value = this.getRawValue(context);
+                String value = this.rawValue(context);
 
                 TagResolver localTagResolver = tagResolver.resolve(context);
                 if (this.tagResolver == null)

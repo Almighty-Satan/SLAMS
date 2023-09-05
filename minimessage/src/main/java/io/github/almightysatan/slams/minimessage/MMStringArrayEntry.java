@@ -57,7 +57,7 @@ public interface MMStringArrayEntry extends MMLanguageEntry<Component[]> {
 
             @Override
             public @NotNull Component @NotNull [] value(@Nullable Context context, @NotNull ContextTagResolver<Context> tagResolver) {
-                Object value = this.getRawValue(context);
+                Object value = this.rawValue(context);
 
                 TagResolver localTagResolver = tagResolver.resolve(context);
                 return Arrays.stream((String[]) value).map(s -> {

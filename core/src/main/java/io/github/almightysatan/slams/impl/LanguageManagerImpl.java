@@ -53,12 +53,12 @@ public class LanguageManagerImpl implements LanguageManager {
     }
 
     @Override
-    public @NotNull Collection<Language> getLanguages() {
+    public @NotNull Collection<Language> languages() {
         return Collections.unmodifiableCollection(this.languages.values());
     }
 
     @Override
-    public @NotNull Language getDefaultLanguage() {
+    public @NotNull Language defaultLanguage() {
         Language defaultLanguage = this.defaultLanguage;
 
         if (defaultLanguage == null) {

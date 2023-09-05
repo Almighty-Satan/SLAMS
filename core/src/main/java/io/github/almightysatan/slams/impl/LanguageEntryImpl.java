@@ -43,20 +43,20 @@ public abstract class LanguageEntryImpl<T> implements LanguageEntry {
 
     protected abstract T checkType(@Nullable Object value) throws InvalidTypeException;
 
-    protected T getRawValue(Context context) {
-        return this.checkType(this.getLanguage(context).value(this.path));
+    protected T rawValue(Context context) {
+        return this.checkType(this.resolveLanguage(context).value(this.path));
     }
 
     protected @NotNull LanguageManagerImpl languageManager() {
         return this.languageManager;
     }
 
-    protected @NotNull LanguageImpl getLanguage(@Nullable Context context) {
+    protected @NotNull LanguageImpl resolveLanguage(@Nullable Context context) {
         if (context != null) {
-            Language language = context.getLanguage();
+            Language language = context.language();
             if (language != null)
                 return (LanguageImpl) language;
         }
-        return (LanguageImpl) this.languageManager().getDefaultLanguage();
+        return (LanguageImpl) this.languageManager().defaultLanguage();
     }
 }

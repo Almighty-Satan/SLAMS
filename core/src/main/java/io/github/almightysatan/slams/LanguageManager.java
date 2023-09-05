@@ -32,9 +32,9 @@ public interface LanguageManager { // TODO rename me
 
     void reload() throws IOException;
 
-    @NotNull Collection<Language> getLanguages();
+    @NotNull Collection<Language> languages();
 
-    @NotNull Language getDefaultLanguage();
+    @NotNull Language defaultLanguage();
 
     static LanguageManager create(@NotNull String defaultLanguageIdentifier) {
         return new LanguageManagerImpl(defaultLanguageIdentifier);
