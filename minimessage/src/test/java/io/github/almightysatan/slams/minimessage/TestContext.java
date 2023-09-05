@@ -27,8 +27,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class TestContext implements Context {
 
-    private Language language;
-    private String name;
+    private final Language language;
+    private final String name;
 
     public TestContext(@Nullable Language language, @NotNull String name) {
         this.language = language;
