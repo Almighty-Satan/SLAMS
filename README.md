@@ -4,7 +4,12 @@
 ![Last Commit](https://img.shields.io/github/last-commit/Almighty-Satan/SLAMS?style=flat-square)
 
 # SLAMS - Simple Language And Message System
+
 ___
+
+SLAMS is an easy to use message/language system allowing projects to easily support multiple languages with placeholders and messages formats saved in different file formats like JSON.
+
+SLAMS has been created with support for minecraft servers in mind and therefore also supports formats like MiniMessages.
 
 ### Standalone Example
 // TODO
