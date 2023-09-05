@@ -1,4 +1,10 @@
+![Maven Central](https://img.shields.io/maven-central/v/io.github.almighty-satan.slams/slams-parser-jackson?style=flat-square)
+![GitHub](https://img.shields.io/github/license/Almighty-Satan/SLAMS?style=flat-square)
+![CI](https://img.shields.io/github/actions/workflow/status/Almighty-Satan/SLAMS/gradle-build.yml?branch=master&style=flat-square)
+![Last Commit](https://img.shields.io/github/last-commit/Almighty-Satan/SLAMS?style=flat-square)
+
 # SLAMS - Simple Language And Message System
+___
 
 ### Standalone Example
 // TODO
