@@ -36,6 +36,10 @@ public interface MMLanguageEntry<T> extends LanguageEntry {
         return this.value(context, ContextTagResolver.empty());
     }
 
+    default @NotNull T value() {
+        return this.value(null);
+    }
+
     default @NotNull T value(@Nullable Context context, @NotNull TagResolver... tagResolvers) {
         Objects.requireNonNull(tagResolvers);
         return this.value(context, ContextTagResolver.of(TagResolver.resolver(tagResolvers)));
