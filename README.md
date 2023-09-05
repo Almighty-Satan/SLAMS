@@ -21,6 +21,8 @@ player.sendMessage(test0.value(null)); // Send the message to a player. No conte
 player.sendMessage(test1.value(null, Placeholder.unparsed("123", "456"))); // Send another message but add an additional placeholder
 ```
 
+[MiniMessages](https://docs.advntr.dev/minimessage/index.html) is a user friendly json message format for bukkit based servers integrated into [adventure](https://github.com/KyoriPowered/adventure). Every server core [implementing adventure](https://docs.advntr.dev/platform/native.html) (e.g. paper) should work out of the box while some others (e.g. [craftbukkit or spigot](https://docs.advntr.dev/platform/bukkit.html)) might require additional adapters.
+
 ### Building
 To build the project, open the terminal and type `./gradlew build`. All jars will be located at `<module>/build/libs/<module>-<version>.jar`.
 
