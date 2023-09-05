@@ -33,8 +33,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * {@link MMStringArrayEntry}s represent a {@link String} array in a language file parsed in MiniMessage format.
+ * They can be used to get a {@link Component} array.
+ */
 public interface AdventureMessageArray extends AdventureGenericMessage<Component[]> {
 
+    /**
+     * Creates a new {@link MMStringArrayEntry} with the given path, {@link LanguageManager} and {@link ContextTagResolver}.
+     *
+     * @param path            the path of the entry
+     * @param languageManager the language manager
+     * @param tagResolver     the tag resolver
+     * @return the created entry
+     */
     static @NotNull AdventureMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
         class AdventureMessageArrayImpl extends MessageImpl<Component[], String[], TagResolver> implements AdventureMessageArray {
 
@@ -56,6 +68,12 @@ public interface AdventureMessageArray extends AdventureGenericMessage<Component
                 throw new InvalidTypeException();
             }
 
+            /**
+             * Returns the value of this entry as a {@link Component} array.
+             * @param context       the context
+             * @param tagResolver   the tag resolver
+             * @return the value of this entry as a {@link Component} array
+             */
             @Override
             public @NotNull Component @NotNull [] value(@Nullable Context context, @NotNull TagResolver tagResolver) {
                 Object value = this.rawValue(context);

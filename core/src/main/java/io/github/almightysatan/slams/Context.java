@@ -22,6 +22,9 @@ package io.github.almightysatan.slams;
 
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Provides additional context for language entries.
+ */
 public interface Context {
 
     @Nullable String language();

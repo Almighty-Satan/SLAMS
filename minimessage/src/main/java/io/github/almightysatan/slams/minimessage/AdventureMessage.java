@@ -30,8 +30,21 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * {@link MMStringEntry}s represent a {@link String} in a language file parsed in MiniMessage format.
+ * They can be used to get a {@link Component}.
+ */
 public interface AdventureMessage extends AdventureGenericMessage<Component> {
 
+    /**
+     * Creates a new {@link MMStringEntry} with the given path, {@link LanguageManager} and {@link ContextTagResolver}.
+     * If
+     *
+     * @param path            the path of the entry
+     * @param languageManager the language manager
+     * @param tagResolver     the tag resolver
+     * @return the created entry
+     */
     static @NotNull AdventureMessage of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
         class AdventureMessageImpl extends MessageImpl<Component, String, TagResolver> implements AdventureMessage {
 
@@ -46,6 +59,12 @@ public interface AdventureMessage extends AdventureGenericMessage<Component> {
                 return (String) value;
             }
 
+            /**
+             * Returns the value of this entry as a {@link Component}.
+             * @param context       the context
+             * @param tagResolver   the tag resolver
+             * @return the value of this entry as a {@link Component}
+             */
             @Override
             public @NotNull Component value(@Nullable Context context, @NotNull TagResolver tagResolver) {
                 String value = this.rawValue(context);
