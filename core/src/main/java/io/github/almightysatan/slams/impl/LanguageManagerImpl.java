@@ -40,7 +40,12 @@ public class LanguageManagerImpl implements LanguageManager {
     }
 
     @Override
-    public @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException {
+    public @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser @NotNull... parsers) throws IOException {
+        if (identifier.isEmpty())
+            throw new IllegalArgumentException("Empty language identifier");
+        if (this.languages.containsKey(identifier))
+            throw new IllegalArgumentException("Duplicate language identifier");
+
         Language language = new LanguageImpl(this, identifier, parsers);
         this.languages.put(identifier, language);
         return language;
