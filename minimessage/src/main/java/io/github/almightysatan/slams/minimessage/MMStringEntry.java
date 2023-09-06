@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public interface MMStringEntry extends MMLanguageEntry<Component> {
 
     static @NotNull MMStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable ContextTagResolver<Context> tagResolver) {
-        class MMStringEntryImpl extends AbstractMMLanguageEntry<String> implements MMStringEntry {
+        class MMStringEntryImpl extends AbstractMMLanguageEntry<Component, String> implements MMStringEntry {
 
             protected MMStringEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable ContextTagResolver<Context> tagResolver) {
                 super(path, languageManager, tagResolver);

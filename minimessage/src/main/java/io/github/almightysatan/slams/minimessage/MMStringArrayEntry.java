@@ -35,7 +35,7 @@ import java.util.List;
 public interface MMStringArrayEntry extends MMLanguageEntry<Component[]> {
 
     static @NotNull MMStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable ContextTagResolver<Context> tagResolver) {
-        class MMStringArrayEntryImpl extends AbstractMMLanguageEntry<String[]> implements MMStringArrayEntry {
+        class MMStringArrayEntryImpl extends AbstractMMLanguageEntry<Component[], String[]> implements MMStringArrayEntry {
 
             protected MMStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable ContextTagResolver<Context> tagResolver) {
                 super(path, languageManager, tagResolver);

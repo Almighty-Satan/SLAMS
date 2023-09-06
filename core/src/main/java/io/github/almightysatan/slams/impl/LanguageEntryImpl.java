@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public abstract class LanguageEntryImpl<T> implements LanguageEntry {
+public abstract class LanguageEntryImpl<T, R> implements LanguageEntry<T> {
 
     private final String path;
     private final LanguageManagerImpl languageManager;
@@ -41,9 +41,9 @@ public abstract class LanguageEntryImpl<T> implements LanguageEntry {
         return this.path;
     }
 
-    protected abstract T checkType(@Nullable Object value) throws InvalidTypeException;
+    protected abstract R checkType(@Nullable Object value) throws InvalidTypeException;
 
-    protected T rawValue(Context context) {
+    protected R rawValue(Context context) {
         return this.checkType(this.resolveLanguage(context).value(this.path));
     }
 

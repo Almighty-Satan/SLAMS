@@ -28,16 +28,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public interface MMLanguageEntry<T> extends LanguageEntry {
+public interface MMLanguageEntry<T> extends LanguageEntry<T> {
 
     @NotNull T value(@Nullable Context context, @NotNull ContextTagResolver<Context> tagResolver);
 
     default @NotNull T value(@Nullable Context context) {
         return this.value(context, ContextTagResolver.empty());
-    }
-
-    default @NotNull T value() {
-        return this.value(null);
     }
 
     default @NotNull T value(@Nullable Context context, @NotNull TagResolver... tagResolvers) {

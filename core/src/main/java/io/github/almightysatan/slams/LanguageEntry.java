@@ -21,8 +21,15 @@
 package io.github.almightysatan.slams;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public interface LanguageEntry {
+public interface LanguageEntry<T> {
 
     @NotNull String path();
+
+    @NotNull T value(@Nullable Context context);
+
+    default @NotNull T value() {
+        return this.value(null);
+    }
 }

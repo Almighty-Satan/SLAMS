@@ -26,7 +26,7 @@ import io.github.almightysatan.slams.impl.LanguageEntryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-abstract class AbstractMMLanguageEntry<T> extends LanguageEntryImpl<T> {
+abstract class AbstractMMLanguageEntry<T, R> extends LanguageEntryImpl<T, R> {
 
     protected final ContextTagResolver<Context> tagResolver;
 
