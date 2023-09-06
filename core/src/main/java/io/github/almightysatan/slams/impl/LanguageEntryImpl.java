@@ -41,9 +41,9 @@ public abstract class LanguageEntryImpl<T, R> implements LanguageEntry<T> {
         return this.path;
     }
 
-    protected abstract R checkType(@Nullable Object value) throws InvalidTypeException;
+    protected abstract @NotNull R checkType(@Nullable Object value) throws InvalidTypeException;
 
-    protected R rawValue(Context context) {
+    protected @NotNull R rawValue(@Nullable Context context) {
         return this.checkType(this.resolveLanguage(context).value(this.path));
     }
 

@@ -39,7 +39,7 @@ public interface MMStringEntry extends MMLanguageEntry<Component> {
             }
 
             @Override
-            protected String checkType(@Nullable Object value) throws InvalidTypeException {
+            protected @NotNull String checkType(@Nullable Object value) throws InvalidTypeException {
                 if (!(value instanceof String))
                     throw new InvalidTypeException();
                 return (String) value;

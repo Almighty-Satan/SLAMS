@@ -42,7 +42,7 @@ public interface MMStringArrayEntry extends MMLanguageEntry<Component[]> {
             }
 
             @Override
-            protected String[] checkType(@Nullable Object value) throws InvalidTypeException {
+            protected String @NotNull [] checkType(@Nullable Object value) throws InvalidTypeException {
                 if (value instanceof String[])
                     return (String[]) value;
                 if (value instanceof List) {
