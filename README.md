@@ -7,7 +7,7 @@
 
 ___
 
-SLAMS is an easy to use message/language system allowing projects to easily support multiple languages with placeholders and messages formats saved in different file formats like JSON.
+SLAMS is an easy to use message/language system allowing projects to easily support multiple languages with placeholders and message formatting. Messages can be automatically loaded from formats like JSON or supplied by the user via a custom implementation of the `LanguageParser` interface.
 
 SLAMS has been created with support for Minecraft servers in mind and therefore also supports formats like [MiniMessages](https://docs.advntr.dev/minimessage/index.html).
 
