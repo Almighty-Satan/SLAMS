@@ -23,7 +23,7 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Provides additional context for language entries.
+ * Determines which language should be used and provides additional context for placeholders.
  */
 public interface Context {
 
