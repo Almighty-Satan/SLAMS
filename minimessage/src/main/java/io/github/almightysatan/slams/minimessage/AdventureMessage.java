@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * {@link MMStringEntry}s represent a {@link String} in a language file parsed in MiniMessage format.
+ * Represents a message parsed in MiniMessage format.
  * They can be used to get a {@link Component}.
  */
 public interface AdventureMessage extends AdventureGenericMessage<Component> {
