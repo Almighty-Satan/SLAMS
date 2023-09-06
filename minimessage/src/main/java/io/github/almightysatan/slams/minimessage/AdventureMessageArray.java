@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * {@link MMStringArrayEntry}s represent a {@link String} array in a language file parsed in MiniMessage format.
+ * Represents an array of messages parsed in MiniMessage format.
  * They can be used to get a {@link Component} array.
  */
 public interface AdventureMessageArray extends AdventureGenericMessage<Component[]> {
