@@ -1,0 +1,52 @@
+/*
+ * SLAMS - Simple Language And Message System
+ * Copyright (C) 2023 Almighty-Satan, UeberallGebannt
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
+ */
+
+package io.github.almightysatan.slams.papi;
+
+import io.github.almightysatan.slams.Placeholder;
+import io.github.almightysatan.slams.PlaceholderResolver;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Locale;
+
+public final class PapiPlaceholderResolver implements PlaceholderResolver {
+
+    @Override
+    public @Nullable Placeholder resolve(@NotNull String key) {
+        if (!"papi".equals(key))
+            return null;
+        return Placeholder.of("papi", (context, arguments) -> {
+            if (arguments.size() != 2)
+                return "INVALID_PAPI_FORMAT";
+            String identifier = arguments.get(0).toLowerCase(Locale.ROOT);
+            PlaceholderExpansion expansion = PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().getExpansion(identifier);
+            if (expansion == null)
+                return "UNKNOWN_PAPI_EXPANSION";
+
+            String value = expansion.onRequest(context instanceof OfflinePlayerContext ? ((OfflinePlayerContext) context).offlinePlayer() : null, arguments.get(1));
+            if (value == null)
+                return "UNKNOWN_PAPI_PLACEHOLDER";
+            return value;
+        });
+    }
+}
