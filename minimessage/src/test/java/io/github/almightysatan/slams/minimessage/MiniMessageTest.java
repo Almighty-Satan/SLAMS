@@ -22,9 +22,9 @@ package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Language;
 import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.Placeholder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -97,7 +97,7 @@ public class MiniMessageTest {
         });
 
         MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.empty());
-        TextComponent component = (TextComponent) entry.value(null, Placeholder.unparsed("xxx", "World"));
+        TextComponent component = (TextComponent) entry.value(null, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("xxx", "World"));
         assertEquals("Hello World", component.content());
     }
 
@@ -110,7 +110,7 @@ public class MiniMessageTest {
             return map;
         });
 
-        MMStringEntry entry = MMStringEntry.of("test", langManager, ctx -> Placeholder.unparsed("test", "World"));
+        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.of("test", "World")));
         TextComponent component = (TextComponent) entry.value(null);
         assertEquals("Hello World", component.content());
     }
@@ -126,8 +126,22 @@ public class MiniMessageTest {
 
         TestContext context = new TestContext(null, "World");
 
-        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(TestContext.class, ctx-> Placeholder.unparsed("test", ctx.getName())));
+        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(TestContext.class, ctx-> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", ctx.getName())));
         TextComponent component = (TextComponent) entry.value(context);
+        assertEquals("Hello World", component.content());
+    }
+
+    @Test
+    public void testPlaceholderArgument() throws IOException {
+        LanguageManager langManager = LanguageManager.create("0");
+        Language lang = langManager.load("0", paths -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("test", "Hello <test:some other argument:World>");
+            return map;
+        });
+
+        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.of("test", (Placeholder.ContextIndependentValueFunction) (arguments) -> arguments.get(1))));
+        TextComponent component = (TextComponent) entry.value(null);
         assertEquals("Hello World", component.content());
     }
 
@@ -140,7 +154,7 @@ public class MiniMessageTest {
             return map;
         });
 
-        MMStringArrayEntry entry = MMStringArrayEntry.of("test", langManager, ctx -> Placeholder.unparsed("test", "World"));
+        MMStringArrayEntry entry = MMStringArrayEntry.of("test", langManager, ctx -> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
         Component[] components = entry.value(null);
         assertEquals("Hello", ((TextComponent) components[0]).content());
         assertEquals("World", ((TextComponent) components[1]).content());

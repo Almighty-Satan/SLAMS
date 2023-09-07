@@ -21,13 +21,18 @@
 package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import io.github.almightysatan.slams.Placeholder;
+import io.github.almightysatan.slams.PlaceholderResolver;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.ParsingException;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.TagPattern;
+import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.*;
 
 @FunctionalInterface
 public interface ContextTagResolver<T extends Context> {
@@ -38,16 +43,16 @@ public interface ContextTagResolver<T extends Context> {
         return context -> TagResolver.empty();
     }
 
-    static @NotNull ContextTagResolver<Context> parsed(@NotNull String key, @NotNull String value) {
+    static @NotNull ContextTagResolver<Context> parsed(@TagPattern @NotNull String key, @NotNull String value) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
-        return context -> Placeholder.parsed(key, value);
+        return context -> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.parsed(key, value);
     }
 
-    static @NotNull ContextTagResolver<Context> unparsed(@NotNull String key, @NotNull String value) {
+    static @NotNull ContextTagResolver<Context> unparsed(@TagPattern @NotNull String key, @NotNull String value) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
-        return context -> Placeholder.unparsed(key, value);
+        return context -> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed(key, value);
     }
 
     static @NotNull ContextTagResolver<Context> of(@NotNull TagResolver tagResolver) {
@@ -75,5 +80,32 @@ public interface ContextTagResolver<T extends Context> {
         if (contextTagResolvers.length == 0)
             return empty();
         return context -> TagResolver.resolver(Arrays.stream(contextTagResolvers).map(resolver -> resolver.resolve(context)).toArray(TagResolver[]::new));
+    }
+
+    static @NotNull ContextTagResolver<Context> of(@NotNull PlaceholderResolver placeholderResolver) {
+        Objects.requireNonNull(placeholderResolver);
+        return context -> new TagResolver() {
+
+            @Override
+            public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx) throws ParsingException {
+                Placeholder placeholder = placeholderResolver.resolve(name);
+                return placeholder == null ? null : Tag.selfClosingInserting(Component.text(placeholder.value(context, this.argumentQueueToList(arguments))));
+            }
+
+            @Override
+            public boolean has(@NotNull String name) {
+                return placeholderResolver.resolve(name) != null;
+            }
+
+            private List<String> argumentQueueToList(ArgumentQueue argumentQueue) {
+                if (!argumentQueue.hasNext())
+                    return Collections.emptyList();
+
+                List<String> argumentList = new ArrayList<>();
+                while (argumentQueue.hasNext())
+                    argumentList.add(argumentQueue.pop().value());
+                return Collections.unmodifiableList(argumentList);
+            }
+        };
     }
 }
