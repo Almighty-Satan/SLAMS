@@ -31,10 +31,10 @@ import org.jetbrains.annotations.Nullable;
 
 public interface MMStringEntry extends MMLanguageEntry<Component> {
 
-    static @NotNull MMStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable ContextTagResolver<Context> tagResolver) {
+    static @NotNull MMStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
         class MMStringEntryImpl extends AbstractMMLanguageEntry<Component, String> implements MMStringEntry {
 
-            protected MMStringEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable ContextTagResolver<Context> tagResolver) {
+            protected MMStringEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
                 super(path, languageManager, tagResolver);
             }
 
@@ -46,17 +46,16 @@ public interface MMStringEntry extends MMLanguageEntry<Component> {
             }
 
             @Override
-            public @NotNull Component value(@Nullable Context context, @NotNull ContextTagResolver<Context> tagResolver) {
+            public @NotNull Component value(@Nullable Context context, @NotNull TagResolver tagResolver) {
                 String value = this.rawValue(context);
-
-                TagResolver localTagResolver = tagResolver.resolve(context);
-                if (this.tagResolver == null)
-                    return MiniMessage.miniMessage().deserialize(value, localTagResolver);
-                else
-                    return MiniMessage.miniMessage().deserialize(value, localTagResolver, this.tagResolver.resolve(context));
+                return MiniMessage.miniMessage().deserialize(value, new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, this.tagResolver)));
             }
         }
 
         return new MMStringEntryImpl(path, languageManager, tagResolver);
+    }
+
+    static @NotNull MMStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager) {
+        return of(path, languageManager, TagResolver.empty());
     }
 }

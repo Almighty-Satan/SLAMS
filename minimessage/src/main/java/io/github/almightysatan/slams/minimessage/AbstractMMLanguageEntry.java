@@ -20,18 +20,19 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.impl.LanguageEntryImpl;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 abstract class AbstractMMLanguageEntry<T, R> extends LanguageEntryImpl<T, R> {
 
-    protected final ContextTagResolver<Context> tagResolver;
+    protected final TagResolver tagResolver;
 
-    protected AbstractMMLanguageEntry(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable ContextTagResolver<Context> tagResolver) {
+    protected AbstractMMLanguageEntry(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
         super(path, languageManager);
-        this.tagResolver = tagResolver;
+        this.tagResolver = Objects.requireNonNull(tagResolver);
     }
 }

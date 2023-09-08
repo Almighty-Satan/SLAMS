@@ -34,60 +34,99 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-@FunctionalInterface
-public interface ContextTagResolver<T extends Context> {
+public interface ContextTagResolver extends TagResolver {
 
-    @NotNull TagResolver resolve(@Nullable T context);
+    @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException;
 
-    static @NotNull ContextTagResolver<Context> empty() {
-        return context -> TagResolver.empty();
+    @Override
+    default @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx) throws ParsingException {
+        return this.resolve(name, arguments, ctx, null);
     }
 
-    static @NotNull ContextTagResolver<Context> parsed(@TagPattern @NotNull String key, @NotNull String value) {
-        Objects.requireNonNull(key);
-        Objects.requireNonNull(value);
-        return context -> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.parsed(key, value);
+    @Override
+    boolean has(@NotNull String name);
+
+    // TODO this should return a singleton
+    static @NotNull ContextTagResolver empty() {
+        return new ContextTagResolver() {
+            @Override
+            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+                return null;
+            }
+
+            @Override
+            public boolean has(@NotNull String name) {
+                return false;
+            }
+        };
     }
 
-    static @NotNull ContextTagResolver<Context> unparsed(@TagPattern @NotNull String key, @NotNull String value) {
-        Objects.requireNonNull(key);
-        Objects.requireNonNull(value);
-        return context -> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed(key, value);
-    }
-
-    static @NotNull ContextTagResolver<Context> of(@NotNull TagResolver tagResolver) {
-        Objects.requireNonNull(tagResolver);
-        return context -> tagResolver;
-    }
-
-    static @NotNull ContextTagResolver<Context> of(@NotNull TagResolver... tagResolvers) {
+    static @NotNull ContextTagResolver of(@NotNull TagResolver @NotNull ... tagResolvers) {
         Objects.requireNonNull(tagResolvers);
         if (tagResolvers.length == 0)
             return empty();
-        return context -> TagResolver.resolver(tagResolvers);
-    }
+        return new ContextTagResolver() {
+            @Override
+            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+                for (TagResolver tagResolver : tagResolvers) {
+                    Tag tag;
+                    if (tagResolver instanceof ContextTagResolver)
+                        tag = ((ContextTagResolver) tagResolver).resolve(name, arguments, ctx, context);
+                    else
+                        tag = tagResolver.resolve(name, arguments, ctx);
 
-    @SuppressWarnings("unchecked")
-    static <T extends Context> @NotNull ContextTagResolver<Context> of(@NotNull Class<T> type, @NotNull ContextTagResolver<T> contextTagResolver) {
-        Objects.requireNonNull(type);
-        Objects.requireNonNull(contextTagResolver);
-        return context -> context != null && type.isAssignableFrom(context.getClass()) ? contextTagResolver.resolve((T) context) : TagResolver.empty();
-    }
-
-    @SafeVarargs
-    static @NotNull ContextTagResolver<Context> of(@NotNull ContextTagResolver<Context>... contextTagResolvers) {
-        Objects.requireNonNull(contextTagResolvers);
-        if (contextTagResolvers.length == 0)
-            return empty();
-        return context -> TagResolver.resolver(Arrays.stream(contextTagResolvers).map(resolver -> resolver.resolve(context)).toArray(TagResolver[]::new));
-    }
-
-    static @NotNull ContextTagResolver<Context> of(@NotNull PlaceholderResolver placeholderResolver) {
-        Objects.requireNonNull(placeholderResolver);
-        return context -> new TagResolver() {
+                    if (tag != null)
+                        return tag;
+                }
+                return null;
+            }
 
             @Override
-            public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx) throws ParsingException {
+            public boolean has(@NotNull String name) {
+                for (TagResolver tagResolver : tagResolvers)
+                    if (tagResolver.has(name))
+                        return true;
+                return false;
+            }
+        };
+    }
+
+    static @NotNull ContextTagResolver of(@NotNull ContextTagResolver @NotNull ... tagResolvers) {
+        Objects.requireNonNull(tagResolvers);
+        if (tagResolvers.length == 0)
+            return empty();
+        return new ContextTagResolver() {
+            @Override
+            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+                for (ContextTagResolver tagResolver : tagResolvers) {
+                    Tag tag = tagResolver.resolve(name, arguments, ctx, context);
+
+                    if (tag != null)
+                        return tag;
+                }
+                return null;
+            }
+
+            @Override
+            public boolean has(@NotNull String name) {
+                for (ContextTagResolver tagResolver : tagResolvers)
+                    if (tagResolver.has(name))
+                        return true;
+                return false;
+            }
+        };
+    }
+
+    static @NotNull ContextTagResolver of(@NotNull List<@NotNull TagResolver> tagResolvers) {
+        return of(tagResolvers.toArray(new TagResolver[0]));
+    }
+
+    static @NotNull ContextTagResolver of(@NotNull PlaceholderResolver placeholderResolver) {
+        Objects.requireNonNull(placeholderResolver);
+        return new ContextTagResolver() {
+
+            @Override
+            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
                 Placeholder placeholder = placeholderResolver.resolve(name);
                 return placeholder == null ? null : Tag.selfClosingInserting(Component.text(placeholder.value(context, this.argumentQueueToList(arguments))));
             }
@@ -108,4 +147,6 @@ public interface ContextTagResolver<T extends Context> {
             }
         };
     }
+
+    // TODO add builder
 }

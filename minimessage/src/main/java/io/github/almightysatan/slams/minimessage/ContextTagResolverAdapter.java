@@ -21,23 +21,36 @@
 package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.LanguageEntry;
+import net.kyori.adventure.text.minimessage.ParsingException;
+import net.kyori.adventure.text.minimessage.tag.Tag;
+import net.kyori.adventure.text.minimessage.tag.TagPattern;
+import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public interface MMLanguageEntry<T> extends LanguageEntry<T> {
+class ContextTagResolverAdapter implements TagResolver {
 
-    @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver);
+    private final Context context;
+    private final TagResolver tagResolver;
 
-    default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) {
-        Objects.requireNonNull(tagResolvers);
-        return this.value(context, ContextTagResolver.of(tagResolvers));
+    ContextTagResolverAdapter(@Nullable Context context, @NotNull TagResolver tagResolver) {
+        this.context = context;
+        this.tagResolver = Objects.requireNonNull(tagResolver);
     }
 
-    default @NotNull T value(@Nullable Context context) {
-        return this.value(context, TagResolver.empty());
+    @Override
+    public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx) throws ParsingException {
+        if (tagResolver instanceof ContextTagResolver)
+            return ((ContextTagResolver) tagResolver).resolve(name, arguments, ctx, this.context);
+        else
+            return tagResolver.resolve(name, arguments, ctx);
+    }
+
+    @Override
+    public boolean has(@NotNull String name) {
+        return this.tagResolver.has(name);
     }
 }

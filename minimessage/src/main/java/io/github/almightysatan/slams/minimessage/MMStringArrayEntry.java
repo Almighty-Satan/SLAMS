@@ -34,10 +34,10 @@ import java.util.List;
 
 public interface MMStringArrayEntry extends MMLanguageEntry<Component[]> {
 
-    static @NotNull MMStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable ContextTagResolver<Context> tagResolver) {
+    static @NotNull MMStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
         class MMStringArrayEntryImpl extends AbstractMMLanguageEntry<Component[], String[]> implements MMStringArrayEntry {
 
-            protected MMStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable ContextTagResolver<Context> tagResolver) {
+            protected MMStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
                 super(path, languageManager, tagResolver);
             }
 
@@ -56,19 +56,17 @@ public interface MMStringArrayEntry extends MMLanguageEntry<Component[]> {
             }
 
             @Override
-            public @NotNull Component @NotNull [] value(@Nullable Context context, @NotNull ContextTagResolver<Context> tagResolver) {
+            public @NotNull Component @NotNull [] value(@Nullable Context context, @NotNull TagResolver tagResolver) {
                 Object value = this.rawValue(context);
-
-                TagResolver localTagResolver = tagResolver.resolve(context);
-                return Arrays.stream((String[]) value).map(s -> {
-                    if (this.tagResolver == null)
-                        return MiniMessage.miniMessage().deserialize(s, localTagResolver);
-                    else
-                        return MiniMessage.miniMessage().deserialize(s, localTagResolver, this.tagResolver.resolve(context));
-                }).toArray(Component[]::new);
+                TagResolver adapter = new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, this.tagResolver));
+                return Arrays.stream((String[]) value).map(s -> MiniMessage.miniMessage().deserialize(s, adapter)).toArray(Component[]::new);
             }
         }
 
         return new MMStringArrayEntryImpl(path, languageManager, tagResolver);
+    }
+
+    static @NotNull MMStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager) {
+        return of(path, languageManager, TagResolver.empty());
     }
 }

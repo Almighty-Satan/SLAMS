@@ -68,4 +68,6 @@ public interface PlaceholderResolver {
     static @NotNull PlaceholderResolver of(@NotNull List<@NotNull PlaceholderResolver> placeholderResolvers) {
         return of(placeholderResolvers.toArray(new PlaceholderResolver[0]));
     }
+
+    // TODO add builder
 }

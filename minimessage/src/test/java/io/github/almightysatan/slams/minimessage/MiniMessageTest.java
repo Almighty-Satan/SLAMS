@@ -44,7 +44,7 @@ public class MiniMessageTest {
             return map;
         });
 
-        MMStringEntry entry = MMStringEntry.of("test", langManager, null);
+        MMStringEntry entry = MMStringEntry.of("test", langManager);
         TextComponent component = (TextComponent) entry.value(null);
         assertEquals("1234", component.content());
     }
@@ -63,7 +63,7 @@ public class MiniMessageTest {
             return map;
         });
 
-        MMStringEntry entry = MMStringEntry.of("test", langManager, null);
+        MMStringEntry entry = MMStringEntry.of("test", langManager);
         TextComponent component = (TextComponent) entry.value(null);
         assertEquals("456", component.content());
     }
@@ -82,7 +82,7 @@ public class MiniMessageTest {
             return map;
         });
 
-        MMStringEntry entry = MMStringEntry.of("test", langManager, null);
+        MMStringEntry entry = MMStringEntry.of("test", langManager);
         TextComponent component = (TextComponent) entry.value(new TestContext(contextLang, "YXZ"));
         assertEquals("456", component.content());
     }
@@ -126,7 +126,7 @@ public class MiniMessageTest {
 
         TestContext context = new TestContext(null, "World");
 
-        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(TestContext.class, ctx-> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", ctx.getName())));
+        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.contextual("test", TestContext.class, TestContext::getName)));
         TextComponent component = (TextComponent) entry.value(context);
         assertEquals("Hello World", component.content());
     }
@@ -154,7 +154,7 @@ public class MiniMessageTest {
             return map;
         });
 
-        MMStringArrayEntry entry = MMStringArrayEntry.of("test", langManager, ctx -> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
+        MMStringArrayEntry entry = MMStringArrayEntry.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
         Component[] components = entry.value(null);
         assertEquals("Hello", ((TextComponent) components[0]).content());
         assertEquals("World", ((TextComponent) components[1]).content());
