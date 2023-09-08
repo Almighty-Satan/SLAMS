@@ -25,17 +25,13 @@ import io.github.almightysatan.slams.PlaceholderResolver;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
-public final class PapiPlaceholderResolver implements PlaceholderResolver {
+public interface PapiPlaceholderResolver {
 
-    @Override
-    public @Nullable Placeholder resolve(@NotNull String key) {
-        if (!"papi".equals(key))
-            return null;
-        return Placeholder.of("papi", (context, arguments) -> {
+    static @NotNull PlaceholderResolver create() {
+        return PlaceholderResolver.of(Placeholder.of("papi", (context, arguments) -> {
             if (arguments.size() != 2)
                 return "INVALID_PAPI_FORMAT";
             String identifier = arguments.get(0).toLowerCase(Locale.ROOT);
@@ -47,6 +43,6 @@ public final class PapiPlaceholderResolver implements PlaceholderResolver {
             if (value == null)
                 return "UNKNOWN_PAPI_PLACEHOLDER";
             return value;
-        });
+        }));
     }
 }
