@@ -22,6 +22,9 @@ package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.Language;
 import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.Placeholder;
+import io.github.almightysatan.slams.PlaceholderResolver;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -41,7 +44,7 @@ public class StandaloneTest {
             return map;
         });
 
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, null);
+        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
         String value = entry.value();
         assertEquals("1234", value);
     }
@@ -60,7 +63,7 @@ public class StandaloneTest {
             return map;
         });
 
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, null);
+        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
         String value = entry.value();
         assertEquals("456", value);
     }
@@ -79,7 +82,7 @@ public class StandaloneTest {
             return map;
         });
 
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, null);
+        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
         String value = entry.value(new TestContext(contextLang, "YXZ"));
         assertEquals("456", value);
     }
@@ -93,8 +96,8 @@ public class StandaloneTest {
             return map;
         });
 
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, PlaceholderResolver.empty());
-        String value = entry.value(null, PlaceholderResolver.of("xxx", "World"));
+        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
+        String value = entry.value(null, Placeholder.constant("xxx", "World"));
         assertEquals("Hello World", value);
     }
 
@@ -107,7 +110,7 @@ public class StandaloneTest {
             return map;
         });
 
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, PlaceholderResolver.of("test", "World"));
+        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, PlaceholderResolver.of(Placeholder.constant("test", "World")));
         String value = entry.value();
         assertEquals("Hello World", value);
     }
@@ -123,8 +126,23 @@ public class StandaloneTest {
 
         TestContext context = new TestContext(null, "World");
 
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, PlaceholderResolver.of("test", TestContext.class, ctx-> ctx.getName()));
+        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, Placeholder.contextual("test", TestContext.class, TestContext::getName));
         String value = entry.value(context);
+        assertEquals("Hello World", value);
+    }
+
+    @Disabled
+    @Test
+    public void testPlaceholderArgument() throws IOException {
+        LanguageManager langManager = LanguageManager.create("0");
+        Language lang = langManager.load("0", paths -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("test", "Hello %test:some other argument:World%");
+            return map;
+        });
+
+        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, PlaceholderResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
+        String value = entry.value();
         assertEquals("Hello World", value);
     }
 
@@ -137,7 +155,7 @@ public class StandaloneTest {
             return map;
         });
 
-        StandaloneStringArrayEntry entry = StandaloneStringArrayEntry.of("test", langManager, PlaceholderResolver.of("test", "World"));
+        StandaloneStringArrayEntry entry = StandaloneStringArrayEntry.of("test", langManager, Placeholder.constant("test", "World"));
         String[] components = entry.value();
         assertEquals("Hello", components[0]);
         assertEquals("World", components[1]);

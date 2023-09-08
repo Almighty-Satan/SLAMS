@@ -21,15 +21,15 @@
 package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.PlaceholderResolver;
 import io.github.almightysatan.slams.impl.LanguageEntryImpl;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 abstract class AbstractStandaloneLanguageEntry<T, R> extends LanguageEntryImpl<T, R> {
 
     protected final PlaceholderResolver placeholderResolver;
 
-    protected AbstractStandaloneLanguageEntry(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable PlaceholderResolver placeholderResolver) {
+    protected AbstractStandaloneLanguageEntry(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
         super(path, languageManager);
         this.placeholderResolver = placeholderResolver;
     }

@@ -21,9 +21,12 @@
 package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.Context;
+import io.github.almightysatan.slams.Placeholder;
+import io.github.almightysatan.slams.PlaceholderResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.Objects;
 
 interface Component {
@@ -38,11 +41,11 @@ interface Component {
     static @NotNull Component placeholder(@NotNull String key) {
         Objects.requireNonNull(key);
         return (context, placeholderResolver) -> {
-            Placeholder placeholder = placeholderResolver.resolve(context, key);
+            Placeholder placeholder = placeholderResolver.resolve(key);
             if (placeholder == null)
                 return "%" + key + "%";
             else
-                return placeholder.value(context);
+                return placeholder.value(context, Collections.emptyList());
         };
     }
 }

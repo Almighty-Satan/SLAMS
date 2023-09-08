@@ -23,6 +23,7 @@ package io.github.almightysatan.slams.standalone;
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
 import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.PlaceholderResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,10 +32,10 @@ import java.util.List;
 
 public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<String[]> {
 
-    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable PlaceholderResolver placeholderResolver) {
+    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
         class StandaloneStringArrayEntryImpl extends AbstractStandaloneLanguageEntry<String[], Component[]> implements StandaloneStringArrayEntry {
 
-            protected StandaloneStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @Nullable PlaceholderResolver placeholderResolver) {
+            protected StandaloneStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
                 super(path, languageManager, placeholderResolver);
             }
 
@@ -65,5 +66,9 @@ public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<Stri
         }
 
         return new StandaloneStringArrayEntryImpl(path, languageManager, placeholderResolver);
+    }
+
+    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager) {
+        return of(path, languageManager, PlaceholderResolver.empty());
     }
 }

@@ -22,6 +22,7 @@ package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.LanguageEntry;
+import io.github.almightysatan.slams.PlaceholderResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
