@@ -110,7 +110,7 @@ public class MiniMessageTest {
             return map;
         });
 
-        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.of("test", "World")));
+        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.constant("test", "World")));
         TextComponent component = (TextComponent) entry.value(null);
         assertEquals("Hello World", component.content());
     }
@@ -140,7 +140,7 @@ public class MiniMessageTest {
             return map;
         });
 
-        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.of("test", (Placeholder.ContextIndependentValueFunction) (arguments) -> arguments.get(1))));
+        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
         TextComponent component = (TextComponent) entry.value(null);
         assertEquals("Hello World", component.content());
     }

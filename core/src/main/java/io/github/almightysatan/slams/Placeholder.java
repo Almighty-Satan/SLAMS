@@ -53,45 +53,45 @@ public interface Placeholder extends PlaceholderResolver {
         };
     }
 
-    static @NotNull Placeholder of(@NotNull String key, @NotNull ContextIndependentValueFunction valueFunction) {
-        return of(key, (ValueFunction) valueFunction);
+    static @NotNull Placeholder withArgs(@NotNull String key, @NotNull ContextIndependentValueFunction valueFunction) {
+        return of(key, valueFunction);
     }
 
-    static @NotNull Placeholder of(@NotNull String key, @NotNull ArgumentIndependentValueFunction valueFunction) {
-        return of(key, (ValueFunction) valueFunction);
+    static @NotNull Placeholder withContext(@NotNull String key, @NotNull ArgumentIndependentValueFunction valueFunction) {
+        return of(key, valueFunction);
     }
 
-    static @NotNull Placeholder of(@NotNull String key, @NotNull String value) {
+    static @NotNull Placeholder constant(@NotNull String key, @NotNull String value) {
         Objects.requireNonNull(value);
         return of(key, (context, arguments) -> value);
     }
 
     @SuppressWarnings("unchecked")
-    static <T extends Context> @NotNull Placeholder of(@NotNull String key, @NotNull Class<T> type, @NotNull ContextSensitiveValueFunction<T> contextValueFunction, ValueFunction fallbackValueFunction) {
+    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction, ValueFunction fallbackValueFunction) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(contextValueFunction);
         Objects.requireNonNull(fallbackValueFunction);
         return of(key, (context, arguments) -> context != null && type.isAssignableFrom(context.getClass()) ? contextValueFunction.value((T) context, arguments) : fallbackValueFunction.value(context, arguments));
     }
 
-    static <T extends Context> @NotNull Placeholder of(@NotNull String key, @NotNull Class<T> type, @NotNull ContextSensitiveValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
-        return of(key, type, contextValueFunction, (context, arguments) -> fallbackValue);
+    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+        return contextual(key, type, contextValueFunction, (context, arguments) -> fallbackValue);
     }
 
-    static <T extends Context> @NotNull Placeholder of(@NotNull String key, @NotNull Class<T> type, @NotNull ContextSensitiveValueFunction<T> contextValueFunction) {
-        return of(key, type, contextValueFunction, "INVALID_CONTEXT");
+    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction) {
+        return contextual(key, type, contextValueFunction, "INVALID_CONTEXT");
     }
 
-    static <T extends Context> @NotNull Placeholder of(@NotNull String key, @NotNull Class<T> type, @NotNull ContextSensitiveArgumentIndependentValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
-        return of(key, type, (ContextSensitiveValueFunction<T>) contextValueFunction, fallbackValueFunction);
+    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
+        return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction, fallbackValueFunction);
     }
 
-    static <T extends Context> @NotNull Placeholder of(@NotNull String key, @NotNull Class<T> type, @NotNull ContextSensitiveArgumentIndependentValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
-        return of(key, type, (ContextSensitiveValueFunction<T>) contextValueFunction, fallbackValue);
+    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+        return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction, fallbackValue);
     }
 
-    static <T extends Context> @NotNull Placeholder of(@NotNull String key, @NotNull Class<T> type, @NotNull ContextSensitiveArgumentIndependentValueFunction<T> contextValueFunction) {
-        return of(key, type, (ContextSensitiveValueFunction<T>) contextValueFunction);
+    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction) {
+        return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction);
     }
 
     @FunctionalInterface
@@ -120,12 +120,12 @@ public interface Placeholder extends PlaceholderResolver {
     }
 
     @FunctionalInterface
-    interface ContextSensitiveValueFunction<T extends Context> {
+    interface ContextualValueFunction<T extends Context> {
         @NotNull String value(@NotNull T context, @NotNull List<@NotNull String> arguments);
     }
 
     @FunctionalInterface
-    interface ContextSensitiveArgumentIndependentValueFunction<T extends Context> extends ContextSensitiveValueFunction<T> {
+    interface ArgumentIndependentContextualValueFunction<T extends Context> extends ContextualValueFunction<T> {
         @NotNull String value(@NotNull T context);
 
         @Override
