@@ -26,7 +26,7 @@ import io.github.almightysatan.slams.PlaceholderResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 interface Component {
@@ -38,14 +38,17 @@ interface Component {
         return (context, placeholderResolver) -> value;
     }
 
-    static @NotNull Component placeholder(@NotNull String key) {
-        Objects.requireNonNull(key);
+    static @NotNull Component placeholder(@NotNull String raw, @NotNull List<@NotNull String> arguments) {
+        String key = arguments.remove(0);
+
+        if (key.isEmpty())
+            return simple(raw);
         return (context, placeholderResolver) -> {
-            Placeholder placeholder = placeholderResolver.resolve(key);
+            Placeholder placeholder = placeholderResolver.resolve(key); // TODO cache this
             if (placeholder == null)
-                return "%" + key + "%";
+                return raw;
             else
-                return placeholder.value(context, Collections.emptyList());
+                return placeholder.value(context, arguments);
         };
     }
 }

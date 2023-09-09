@@ -29,10 +29,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<String[]> {
 
-    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
+        Objects.requireNonNull(style);
         class StandaloneStringArrayEntryImpl extends AbstractStandaloneLanguageEntry<String[], Component[]> implements StandaloneStringArrayEntry {
 
             protected StandaloneStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
@@ -42,11 +44,11 @@ public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<Stri
             @Override
             protected @NotNull Component @NotNull [] checkType(@Nullable Object value) throws InvalidTypeException {
                 if (value instanceof String[])
-                    return Arrays.stream((String[]) value).map(CompositeComponent::new).toArray(Component[]::new);
+                    return Arrays.stream((String[]) value).map(element -> new CompositeComponent(style, element)).toArray(Component[]::new);
                 if (value instanceof List) {
                     return ((List<?>) value).stream().map(element -> {
                         if (element instanceof String)
-                            return new CompositeComponent((String) element);
+                            return new CompositeComponent(style, (String) element);
                         throw new InvalidTypeException();
                     }).toArray(Component[]::new);
                 }
@@ -68,7 +70,19 @@ public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<Stri
         return new StandaloneStringArrayEntryImpl(path, languageManager, placeholderResolver);
     }
 
+    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+        return of(path, languageManager, PlaceholderStyle.ANGLE_BRACKETS, placeholderResolver);
+    }
+
     static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager) {
-        return of(path, languageManager, PlaceholderResolver.empty());
+        return of(path, languageManager, PlaceholderStyle.ANGLE_BRACKETS, PlaceholderResolver.empty());
+    }
+
+    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull StandaloneLanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+        return of(path, languageManager, languageManager.style(), placeholderResolver);
+    }
+
+    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull StandaloneLanguageManager languageManager) {
+        return of(path, languageManager, languageManager.style(), PlaceholderResolver.empty());
     }
 }

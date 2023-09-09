@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface StandaloneStringEntry extends StandaloneLanguageEntry<String> {
 
-    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
         class StandaloneStringEntryImpl extends AbstractStandaloneLanguageEntry<String, Component> implements StandaloneStringEntry {
 
             protected StandaloneStringEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
@@ -40,7 +40,7 @@ public interface StandaloneStringEntry extends StandaloneLanguageEntry<String> {
             protected @NotNull Component checkType(@Nullable Object value) throws InvalidTypeException {
                 if (!(value instanceof String))
                     throw new InvalidTypeException();
-                return new CompositeComponent((String) value);
+                return new CompositeComponent(style, (String) value);
             }
 
             @Override
@@ -57,7 +57,19 @@ public interface StandaloneStringEntry extends StandaloneLanguageEntry<String> {
         return new StandaloneStringEntryImpl(path, languageManager, placeholderResolver);
     }
 
+    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+        return of(path, languageManager, PlaceholderStyle.ANGLE_BRACKETS, placeholderResolver);
+    }
+
     static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager) {
-        return of(path, languageManager, PlaceholderResolver.empty());
+        return of(path, languageManager, PlaceholderStyle.ANGLE_BRACKETS, PlaceholderResolver.empty());
+    }
+
+    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull StandaloneLanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+        return of(path, languageManager, languageManager.style(), placeholderResolver);
+    }
+
+    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull StandaloneLanguageManager languageManager) {
+        return of(path, languageManager, languageManager.style(), PlaceholderResolver.empty());
     }
 }
