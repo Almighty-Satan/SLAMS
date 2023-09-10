@@ -151,7 +151,7 @@ public class StandaloneTest {
         LanguageManager langManager = LanguageManager.create("0");
         Language lang = langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
-            map.put("test", new String[] {"Hello", "<test>"});
+            map.put("test", new String[]{"Hello", "<test>"});
             return map;
         });
 

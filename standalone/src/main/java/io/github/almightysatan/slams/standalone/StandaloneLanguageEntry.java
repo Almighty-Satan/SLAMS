@@ -36,7 +36,7 @@ public interface StandaloneLanguageEntry<T> extends LanguageEntry<T> {
         return this.value(context, PlaceholderResolver.empty());
     }
 
-    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull... placeholderResolvers) {
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
         Objects.requireNonNull(placeholderResolvers);
         return this.value(context, PlaceholderResolver.of(placeholderResolvers));
     }
