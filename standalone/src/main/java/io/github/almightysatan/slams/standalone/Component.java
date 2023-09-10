@@ -26,6 +26,7 @@ import io.github.almightysatan.slams.PlaceholderResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,7 +49,7 @@ interface Component {
             if (placeholder == null)
                 return raw;
             else
-                return placeholder.value(context, arguments);
+                return placeholder.value(context, Collections.unmodifiableList(arguments));
         };
     }
 }
