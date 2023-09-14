@@ -40,7 +40,7 @@ public class LanguageManagerImpl implements LanguageManager {
     }
 
     @Override
-    public @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser @NotNull... parsers) throws IOException {
+    public @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException {
         if (identifier.isEmpty())
             throw new IllegalArgumentException("Empty language identifier");
         if (this.languages.containsKey(identifier))
@@ -52,7 +52,7 @@ public class LanguageManagerImpl implements LanguageManager {
     }
 
     @Override
-    public void reload() throws IOException{
+    public void reload() throws IOException {
         for (Language language : this.languages.values())
             language.reload();
     }
