@@ -23,7 +23,6 @@ package io.github.almightysatan.slams.standalone;
 import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -130,7 +129,6 @@ public class StandaloneTest {
         assertEquals("Hello World", value);
     }
 
-    @Disabled
     @Test
     public void testPlaceholderArgument() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
