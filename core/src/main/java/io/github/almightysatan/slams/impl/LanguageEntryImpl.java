@@ -55,11 +55,14 @@ public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
 
     protected @NotNull LanguageImpl resolveLanguage(@Nullable Context context) {
         if (context != null) {
-            Language language = context.language();
-            if (language != null)
-                return (LanguageImpl) language;
+            String languageIdentifier = context.language();
+            if (languageIdentifier != null) {
+                LanguageImpl language = this.languageManager.language(languageIdentifier);
+                if (language != null)
+                    return language;
+            }
         }
-        return (LanguageImpl) this.languageManager().defaultLanguage();
+        return this.languageManager().defaultLanguage();
     }
 
     protected @NotNull P placeholderResolver() {

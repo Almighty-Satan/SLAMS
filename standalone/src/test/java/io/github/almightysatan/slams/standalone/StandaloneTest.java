@@ -20,7 +20,6 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.Language;
 import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
@@ -38,7 +37,7 @@ public class StandaloneTest {
     @Test
     public void testBasic() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        Language lang = langManager.load("0", paths -> {
+        langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "1234");
             return map;
@@ -52,12 +51,12 @@ public class StandaloneTest {
     @Test
     public void testDefaultLanguageSelection() throws IOException {
         LanguageManager langManager = LanguageManager.create("1");
-        Language otherLang = langManager.load("0", paths -> {
+        langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "123");
             return map;
         });
-        Language defaultLang = langManager.load("1", paths -> {
+        langManager.load("1", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "456");
             return map;
@@ -71,26 +70,26 @@ public class StandaloneTest {
     @Test
     public void testContextLanguageSelection() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        Language otherLang = langManager.load("0", paths -> {
+        langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "123");
             return map;
         });
-        Language contextLang = langManager.load("1", paths -> {
+        langManager.load("1", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "456");
             return map;
         });
 
         StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
-        String value = entry.value(new TestContext(contextLang, "YXZ"));
+        String value = entry.value(new TestContext("1", "YXZ"));
         assertEquals("456", value);
     }
 
     @Test
     public void testLocalPlaceholder() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        Language lang = langManager.load("0", paths -> {
+        langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "Hello <xxx>");
             return map;
@@ -104,7 +103,7 @@ public class StandaloneTest {
     @Test
     public void testPlaceholder() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        Language lang = langManager.load("0", paths -> {
+        langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "Hello <test>");
             return map;
@@ -118,7 +117,7 @@ public class StandaloneTest {
     @Test
     public void testContextPlaceholder() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        Language lang = langManager.load("0", paths -> {
+        langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "Hello <test>");
             return map;
@@ -135,7 +134,7 @@ public class StandaloneTest {
     @Test
     public void testPlaceholderArgument() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        Language lang = langManager.load("0", paths -> {
+        langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", "Hello <test:some other argument:World>");
             return map;
@@ -149,7 +148,7 @@ public class StandaloneTest {
     @Test
     public void testArray() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        Language lang = langManager.load("0", paths -> {
+        langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
             map.put("test", new String[]{"Hello", "<test>"});
             return map;

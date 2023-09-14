@@ -20,7 +20,6 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.Language;
 import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.LanguageParser;
 import org.jetbrains.annotations.NotNull;
@@ -43,8 +42,8 @@ public interface StandaloneLanguageManager extends LanguageManager {
             }
 
             @Override
-            public @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException {
-                return languageManager.load(identifier, parsers);
+            public void load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException {
+                languageManager.load(identifier, parsers);
             }
 
             @Override
@@ -53,13 +52,13 @@ public interface StandaloneLanguageManager extends LanguageManager {
             }
 
             @Override
-            public @NotNull Collection<Language> languages() {
+            public @NotNull Collection<@NotNull String> languages() {
                 return languageManager.languages();
             }
 
             @Override
-            public @NotNull Language defaultLanguage() {
-                return languageManager.defaultLanguage();
+            public @NotNull String defaultLanguageIdentifier() {
+                return languageManager.defaultLanguageIdentifier();
             }
         };
     }

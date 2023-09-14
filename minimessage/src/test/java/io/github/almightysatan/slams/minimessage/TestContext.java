@@ -21,22 +21,21 @@
 package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TestContext implements Context {
 
-    private final Language language;
+    private final String language;
     private final String name;
 
-    public TestContext(@Nullable Language language, @NotNull String name) {
+    public TestContext(@Nullable String language, @NotNull String name) {
         this.language = language;
         this.name = name;
     }
 
     @Override
-    public @Nullable Language language() {
+    public @Nullable String language() {
         return this.language;
     }
 

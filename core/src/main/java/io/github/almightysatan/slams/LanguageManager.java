@@ -28,13 +28,13 @@ import java.util.Collection;
 
 public interface LanguageManager { // TODO rename me
 
-    @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException;
+    void load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException;
 
     void reload() throws IOException;
 
-    @NotNull Collection<Language> languages();
+    @NotNull Collection<@NotNull String> languages();
 
-    @NotNull Language defaultLanguage();
+    @NotNull String defaultLanguageIdentifier();
 
     static LanguageManager create(@NotNull String defaultLanguageIdentifier) {
         return new LanguageManagerImpl(defaultLanguageIdentifier);

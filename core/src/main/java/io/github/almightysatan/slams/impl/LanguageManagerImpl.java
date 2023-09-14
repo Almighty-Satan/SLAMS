@@ -20,10 +20,10 @@
 
 package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.Language;
 import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.LanguageParser;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.*;
@@ -31,8 +31,8 @@ import java.util.*;
 public class LanguageManagerImpl implements LanguageManager {
 
     private final String defaultLanguageIdentifier;
-    private Language defaultLanguage;
-    private final Map<String, Language> languages;
+    private LanguageImpl defaultLanguage;
+    private final Map<String, LanguageImpl> languages;
 
     public LanguageManagerImpl(@NotNull String defaultLanguageIdentifier) {
         this.defaultLanguageIdentifier = defaultLanguageIdentifier;
@@ -40,31 +40,38 @@ public class LanguageManagerImpl implements LanguageManager {
     }
 
     @Override
-    public @NotNull Language load(@NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException {
+    public void load(@NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException {
         if (identifier.isEmpty())
             throw new IllegalArgumentException("Empty language identifier");
         if (this.languages.containsKey(identifier))
             throw new IllegalArgumentException("Duplicate language identifier");
 
-        Language language = new LanguageImpl(this, identifier, parsers);
+        LanguageImpl language = new LanguageImpl(this, identifier, parsers);
         this.languages.put(identifier, language);
-        return language;
     }
 
     @Override
     public void reload() throws IOException {
-        for (Language language : this.languages.values())
-            language.reload();
+        for (LanguageImpl language : this.languages.values())
+            language.load();
     }
 
     @Override
-    public @NotNull Collection<Language> languages() {
-        return Collections.unmodifiableCollection(this.languages.values());
+    public @NotNull Collection<@NotNull String> languages() {
+        return Collections.unmodifiableCollection(this.languages.keySet());
+    }
+
+    public @Nullable LanguageImpl language(@NotNull String identifier) {
+        return this.languages.get(identifier);
     }
 
     @Override
-    public @NotNull Language defaultLanguage() {
-        Language defaultLanguage = this.defaultLanguage;
+    public @NotNull String defaultLanguageIdentifier() {
+        return this.defaultLanguageIdentifier;
+    }
+
+    public @NotNull LanguageImpl defaultLanguage() {
+        LanguageImpl defaultLanguage = this.defaultLanguage;
 
         if (defaultLanguage == null) {
             defaultLanguage = this.languages.get(this.defaultLanguageIdentifier);
