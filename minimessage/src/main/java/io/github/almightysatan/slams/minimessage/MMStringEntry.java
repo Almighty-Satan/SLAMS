@@ -23,6 +23,7 @@ package io.github.almightysatan.slams.minimessage;
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
 import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.impl.LanguageEntryImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 public interface MMStringEntry extends MMLanguageEntry<Component> {
 
     static @NotNull MMStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
-        class MMStringEntryImpl extends AbstractMMLanguageEntry<Component, String> implements MMStringEntry {
+        class MMStringEntryImpl extends LanguageEntryImpl<Component, String, TagResolver> implements MMStringEntry {
 
             protected MMStringEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
                 super(path, languageManager, tagResolver);
@@ -48,7 +49,7 @@ public interface MMStringEntry extends MMLanguageEntry<Component> {
             @Override
             public @NotNull Component value(@Nullable Context context, @NotNull TagResolver tagResolver) {
                 String value = this.rawValue(context);
-                return MiniMessage.miniMessage().deserialize(value, new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, this.tagResolver)));
+                return MiniMessage.miniMessage().deserialize(value, new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, this.placeholderResolver())));
             }
         }
 

@@ -26,14 +26,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public abstract class LanguageEntryImpl<T, R> implements LanguageEntry<T> {
+public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
 
     private final String path;
     private final LanguageManagerImpl languageManager;
+    private final P implementationPlaceholderResolver;
 
-    protected LanguageEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager) {
+    protected LanguageEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull P implementationPlaceholderResolver) {
         this.path = Objects.requireNonNull(path);
         this.languageManager = (LanguageManagerImpl) Objects.requireNonNull(languageManager);
+        this.implementationPlaceholderResolver = Objects.requireNonNull(implementationPlaceholderResolver);
     }
 
     @Override
@@ -58,5 +60,9 @@ public abstract class LanguageEntryImpl<T, R> implements LanguageEntry<T> {
                 return (LanguageImpl) language;
         }
         return (LanguageImpl) this.languageManager().defaultLanguage();
+    }
+
+    protected @NotNull P placeholderResolver() {
+        return this.implementationPlaceholderResolver;
     }
 }

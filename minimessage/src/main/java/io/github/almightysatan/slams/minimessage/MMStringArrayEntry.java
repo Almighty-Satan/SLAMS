@@ -23,6 +23,7 @@ package io.github.almightysatan.slams.minimessage;
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
 import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.impl.LanguageEntryImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -35,7 +36,7 @@ import java.util.List;
 public interface MMStringArrayEntry extends MMLanguageEntry<Component[]> {
 
     static @NotNull MMStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
-        class MMStringArrayEntryImpl extends AbstractMMLanguageEntry<Component[], String[]> implements MMStringArrayEntry {
+        class MMStringArrayEntryImpl extends LanguageEntryImpl<Component[], String[], TagResolver> implements MMStringArrayEntry {
 
             protected MMStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
                 super(path, languageManager, tagResolver);
@@ -58,7 +59,7 @@ public interface MMStringArrayEntry extends MMLanguageEntry<Component[]> {
             @Override
             public @NotNull Component @NotNull [] value(@Nullable Context context, @NotNull TagResolver tagResolver) {
                 Object value = this.rawValue(context);
-                TagResolver adapter = new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, this.tagResolver));
+                TagResolver adapter = new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, this.placeholderResolver()));
                 return Arrays.stream((String[]) value).map(s -> MiniMessage.miniMessage().deserialize(s, adapter)).toArray(Component[]::new);
             }
         }

@@ -24,6 +24,7 @@ import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
 import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.impl.LanguageEntryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,7 @@ public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<Stri
 
     static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
         Objects.requireNonNull(style);
-        class StandaloneStringArrayEntryImpl extends AbstractStandaloneLanguageEntry<String[], Component[]> implements StandaloneStringArrayEntry {
+        class StandaloneStringArrayEntryImpl extends LanguageEntryImpl<String[], Component[], PlaceholderResolver> implements StandaloneStringArrayEntry {
 
             protected StandaloneStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
                 super(path, languageManager, placeholderResolver);
@@ -58,12 +59,9 @@ public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<Stri
             @Override
             public @NotNull String @NotNull [] value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
                 Component[] components = this.rawValue(context);
-                return Arrays.stream(components).map(component -> {
-                    if (this.placeholderResolver == null)
-                        return component.value(context, placeholderResolver);
-                    else
-                        return component.value(context, PlaceholderResolver.of(this.placeholderResolver, placeholderResolver));
-                }).toArray(String[]::new);
+                return Arrays.stream(components).map(component ->
+                        component.value(context, PlaceholderResolver.of(this.placeholderResolver(), placeholderResolver))
+                ).toArray(String[]::new);
             }
         }
 

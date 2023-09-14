@@ -24,13 +24,14 @@ import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
 import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.impl.LanguageEntryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface StandaloneStringEntry extends StandaloneLanguageEntry<String> {
 
     static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
-        class StandaloneStringEntryImpl extends AbstractStandaloneLanguageEntry<String, Component> implements StandaloneStringEntry {
+        class StandaloneStringEntryImpl extends LanguageEntryImpl<String, Component, PlaceholderResolver> implements StandaloneStringEntry {
 
             protected StandaloneStringEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
                 super(path, languageManager, placeholderResolver);
@@ -46,11 +47,7 @@ public interface StandaloneStringEntry extends StandaloneLanguageEntry<String> {
             @Override
             public @NotNull String value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
                 Component component = this.rawValue(context);
-
-                if (this.placeholderResolver == null)
-                    return component.value(context, placeholderResolver);
-                else
-                    return component.value(context, PlaceholderResolver.of(this.placeholderResolver, placeholderResolver));
+                return component.value(context, PlaceholderResolver.of(this.placeholderResolver(), placeholderResolver));
             }
         }
 
