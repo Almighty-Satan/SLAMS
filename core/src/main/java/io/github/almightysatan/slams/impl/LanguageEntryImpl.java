@@ -29,12 +29,12 @@ import java.util.Objects;
 public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
 
     private final String path;
-    private final LanguageManagerImpl languageManager;
+    private final InternalLanguageManager languageManager;
     private final P implementationPlaceholderResolver;
 
     protected LanguageEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull P implementationPlaceholderResolver) {
         this.path = Objects.requireNonNull(path);
-        this.languageManager = (LanguageManagerImpl) Objects.requireNonNull(languageManager);
+        this.languageManager = (InternalLanguageManager) Objects.requireNonNull(languageManager);
         this.implementationPlaceholderResolver = Objects.requireNonNull(implementationPlaceholderResolver);
     }
 
@@ -49,7 +49,7 @@ public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
         return this.checkType(this.resolveLanguage(context).value(this.path));
     }
 
-    protected @NotNull LanguageManagerImpl languageManager() {
+    protected @NotNull InternalLanguageManager languageManager() {
         return this.languageManager;
     }
 

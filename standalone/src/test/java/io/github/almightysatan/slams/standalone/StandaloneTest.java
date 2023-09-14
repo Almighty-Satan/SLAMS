@@ -87,10 +87,10 @@ public class StandaloneTest {
 
     @Test
     public void testLocalPlaceholder() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
+        StandaloneLanguageManager langManager = StandaloneLanguageManager.of(LanguageManager.create("0"), PlaceholderStyle.PERCENT);
         langManager.load("0", paths -> {
             Map<String, Object> map = new HashMap<>();
-            map.put("test", "Hello <xxx>");
+            map.put("test", "Hello %xxx%");
             return map;
         });
 

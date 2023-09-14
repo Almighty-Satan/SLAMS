@@ -22,7 +22,10 @@ package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.LanguageParser;
+import io.github.almightysatan.slams.impl.InternalLanguageManager;
+import io.github.almightysatan.slams.impl.LanguageImpl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -35,7 +38,7 @@ public interface StandaloneLanguageManager extends LanguageManager {
     static @NotNull StandaloneLanguageManager of(@NotNull LanguageManager languageManager, @NotNull PlaceholderStyle style) {
         Objects.requireNonNull(languageManager);
         Objects.requireNonNull(style);
-        return new StandaloneLanguageManager() {
+        class StandaloneLanguageManagerImpl implements InternalLanguageManager, StandaloneLanguageManager {
             @Override
             public @NotNull PlaceholderStyle style() {
                 return style;
@@ -60,6 +63,17 @@ public interface StandaloneLanguageManager extends LanguageManager {
             public @NotNull String defaultLanguageIdentifier() {
                 return languageManager.defaultLanguageIdentifier();
             }
-        };
+
+            @Override
+            public @Nullable LanguageImpl language(@NotNull String identifier) {
+                return ((InternalLanguageManager) languageManager).language(identifier);
+            }
+
+            @Override
+            public @NotNull LanguageImpl defaultLanguage() {
+                return ((InternalLanguageManager) languageManager).defaultLanguage();
+            }
+        }
+        return new StandaloneLanguageManagerImpl();
     }
 }

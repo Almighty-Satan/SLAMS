@@ -20,7 +20,6 @@
 
 package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.LanguageParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.*;
 
-public class LanguageManagerImpl implements LanguageManager {
+public class LanguageManagerImpl implements InternalLanguageManager {
 
     private final String defaultLanguageIdentifier;
     private LanguageImpl defaultLanguage;
@@ -61,6 +60,7 @@ public class LanguageManagerImpl implements LanguageManager {
         return Collections.unmodifiableCollection(this.languages.keySet());
     }
 
+    @Override
     public @Nullable LanguageImpl language(@NotNull String identifier) {
         return this.languages.get(identifier);
     }
@@ -70,6 +70,7 @@ public class LanguageManagerImpl implements LanguageManager {
         return this.defaultLanguageIdentifier;
     }
 
+    @Override
     public @NotNull LanguageImpl defaultLanguage() {
         LanguageImpl defaultLanguage = this.defaultLanguage;
 
