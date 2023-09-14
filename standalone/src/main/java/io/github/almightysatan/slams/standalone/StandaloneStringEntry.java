@@ -41,13 +41,13 @@ public interface StandaloneStringEntry extends StandaloneLanguageEntry<String> {
             protected @NotNull Component checkType(@Nullable Object value) throws InvalidTypeException {
                 if (!(value instanceof String))
                     throw new InvalidTypeException();
-                return new CompositeComponent(style, (String) value);
+                return new CompositeComponent(style, (String) value, this.placeholderResolver());
             }
 
             @Override
             public @NotNull String value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
                 Component component = this.rawValue(context);
-                return component.value(context, PlaceholderResolver.of(this.placeholderResolver(), placeholderResolver));
+                return component.value(context, PlaceholderResolver.of(placeholderResolver, this.placeholderResolver()));
             }
         }
 

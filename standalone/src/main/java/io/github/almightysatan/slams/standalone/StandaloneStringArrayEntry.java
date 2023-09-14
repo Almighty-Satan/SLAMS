@@ -45,11 +45,11 @@ public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<Stri
             @Override
             protected @NotNull Component @NotNull [] checkType(@Nullable Object value) throws InvalidTypeException {
                 if (value instanceof String[])
-                    return Arrays.stream((String[]) value).map(element -> new CompositeComponent(style, element)).toArray(Component[]::new);
+                    return Arrays.stream((String[]) value).map(element -> new CompositeComponent(style, element, this.placeholderResolver())).toArray(Component[]::new);
                 if (value instanceof List) {
                     return ((List<?>) value).stream().map(element -> {
                         if (element instanceof String)
-                            return new CompositeComponent(style, (String) element);
+                            return new CompositeComponent(style, (String) element, this.placeholderResolver());
                         throw new InvalidTypeException();
                     }).toArray(Component[]::new);
                 }
@@ -60,7 +60,7 @@ public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<Stri
             public @NotNull String @NotNull [] value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
                 Component[] components = this.rawValue(context);
                 return Arrays.stream(components).map(component ->
-                        component.value(context, PlaceholderResolver.of(this.placeholderResolver(), placeholderResolver))
+                        component.value(context, PlaceholderResolver.of(placeholderResolver, this.placeholderResolver()))
                 ).toArray(String[]::new);
             }
         }

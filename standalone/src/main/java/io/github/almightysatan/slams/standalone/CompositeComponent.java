@@ -35,8 +35,8 @@ final class CompositeComponent implements Component {
 
     private final Component[] components;
 
-    CompositeComponent(@NotNull PlaceholderStyle style, @NotNull String raw) {
-        this.components = processString(style, raw);
+    CompositeComponent(@NotNull PlaceholderStyle style, @NotNull String raw, @NotNull PlaceholderResolver placeholderResolver) {
+        this.components = processString(style, raw, placeholderResolver);
     }
 
     @Override
@@ -45,11 +45,11 @@ final class CompositeComponent implements Component {
     }
 
     @TestOnly
-    public @NotNull String value() {
+    @NotNull String value() {
         return value(null, PlaceholderResolver.empty());
     }
 
-    static @NotNull Component @NotNull [] processString(@NotNull PlaceholderStyle style, @NotNull String input) {
+    static @NotNull Component @NotNull [] processString(@NotNull PlaceholderStyle style, @NotNull String input, @NotNull PlaceholderResolver placeholderResolver) {
         char headChar = style.head();
         char tailChar = style.tail();
         char separatorChar = style.separator();
@@ -91,7 +91,7 @@ final class CompositeComponent implements Component {
                 if (c == tailChar) {
                     placeholder = false;
                     arguments.add(argument.toString());
-                    components.add(Component.placeholder(raw.toString(), arguments));
+                    components.add(Component.placeholder(raw.toString(), arguments, placeholderResolver));
                     raw.setLength(0);
                     argument.setLength(0);
                     arguments = new ArrayList<>();

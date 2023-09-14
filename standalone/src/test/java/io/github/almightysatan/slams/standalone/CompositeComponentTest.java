@@ -31,66 +31,66 @@ public class CompositeComponentTest {
 
     @Test
     public void testBasicPercent() {
-        Assertions.assertEquals("Hello World", new CompositeComponent(PlaceholderStyle.PERCENT, "Hello World").value());
-        Assertions.assertEquals("Hello %test:abc% World", new CompositeComponent(PlaceholderStyle.PERCENT, "Hello %test:abc% World").value());
-        Assertions.assertEquals("Hello %World%", new CompositeComponent(PlaceholderStyle.PERCENT, "Hello %World%").value());
-        Assertions.assertEquals("%Hello% World", new CompositeComponent(PlaceholderStyle.PERCENT, "%Hello% World").value());
-        Assertions.assertEquals("%Hello World%", new CompositeComponent(PlaceholderStyle.PERCENT, "%Hello World%").value());
-        Assertions.assertEquals("Hello%World", new CompositeComponent(PlaceholderStyle.PERCENT, "Hello%World").value());
-        Assertions.assertEquals("%%", new CompositeComponent(PlaceholderStyle.PERCENT, "%%").value());
-        Assertions.assertEquals("%%%", new CompositeComponent(PlaceholderStyle.PERCENT, "%%%").value());
-        Assertions.assertEquals("", new CompositeComponent(PlaceholderStyle.PERCENT, "").value());
+        Assertions.assertEquals("Hello World", new CompositeComponent(PlaceholderStyle.PERCENT, "Hello World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello %test:abc% World", new CompositeComponent(PlaceholderStyle.PERCENT, "Hello %test:abc% World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello %World%", new CompositeComponent(PlaceholderStyle.PERCENT, "Hello %World%", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("%Hello% World", new CompositeComponent(PlaceholderStyle.PERCENT, "%Hello% World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("%Hello World%", new CompositeComponent(PlaceholderStyle.PERCENT, "%Hello World%", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello%World", new CompositeComponent(PlaceholderStyle.PERCENT, "Hello%World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("%%", new CompositeComponent(PlaceholderStyle.PERCENT, "%%", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("%%%", new CompositeComponent(PlaceholderStyle.PERCENT, "%%%", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("", new CompositeComponent(PlaceholderStyle.PERCENT, "", PlaceholderResolver.empty()).value());
     }
 
     @Test
     public void testBasicAngleBrackets() {
-        Assertions.assertEquals("Hello World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello World").value());
-        Assertions.assertEquals("Hello <test:abc> World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello <test:abc> World").value());
-        Assertions.assertEquals("Hello <World>", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello <World>").value());
-        Assertions.assertEquals("<Hello> World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<Hello> World").value());
-        Assertions.assertEquals("<Hello World>", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<Hello World>").value());
-        Assertions.assertEquals("Hello<World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello<World").value());
-        Assertions.assertEquals("Hello>World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello>World").value());
-        Assertions.assertEquals("<>", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<>").value());
-        Assertions.assertEquals("<", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<").value());
-        Assertions.assertEquals(">", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, ">").value());
-        Assertions.assertEquals("<<<", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<<<").value());
-        Assertions.assertEquals(">>>", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, ">>>").value());
-        Assertions.assertEquals("", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "").value());
+        Assertions.assertEquals("Hello World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello <test:abc> World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello <test:abc> World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello <World>", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello <World>", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("<Hello> World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<Hello> World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("<Hello World>", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<Hello World>", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello<World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello<World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello>World", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "Hello>World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("<>", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<>", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("<", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals(">", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, ">", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("<<<", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<<<", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals(">>>", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, ">>>", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("", new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "", PlaceholderResolver.empty()).value());
     }
 
     @Test
     public void testBasicCurlyBrackets() {
-        Assertions.assertEquals("Hello World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello World").value());
-        Assertions.assertEquals("Hello {test:abc} World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello {test:abc} World").value());
-        Assertions.assertEquals("Hello {World}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello {World}").value());
-        Assertions.assertEquals("{Hello} World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{Hello} World").value());
-        Assertions.assertEquals("{Hello World}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{Hello World}").value());
-        Assertions.assertEquals("Hello{World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello{World").value());
-        Assertions.assertEquals("Hello}World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello}World").value());
-        Assertions.assertEquals("{}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{}").value());
-        Assertions.assertEquals("{", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{").value());
-        Assertions.assertEquals("}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "}").value());
-        Assertions.assertEquals("{{{", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{{{").value());
-        Assertions.assertEquals("}}}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "}}}").value());
-        Assertions.assertEquals("", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "").value());
+        Assertions.assertEquals("Hello World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello {test:abc} World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello {test:abc} World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello {World}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello {World}", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("{Hello} World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{Hello} World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("{Hello World}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{Hello World}", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello{World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello{World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello}World", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "Hello}World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("{}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{}", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("{", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "}", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("{{{", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "{{{", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("}}}", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "}}}", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("", new CompositeComponent(PlaceholderStyle.CURLY_BRACKETS, "", PlaceholderResolver.empty()).value());
     }
 
     @Test
     public void testBasicCurlyParentheses() {
-        Assertions.assertEquals("Hello World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello World").value());
-        Assertions.assertEquals("Hello (test:abc) World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello (test:abc) World").value());
-        Assertions.assertEquals("Hello (World)", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello (World)").value());
-        Assertions.assertEquals("(Hello) World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "(Hello) World").value());
-        Assertions.assertEquals("(Hello World)", new CompositeComponent(PlaceholderStyle.PARENTHESES, "(Hello World)").value());
-        Assertions.assertEquals("Hello(World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello(World").value());
-        Assertions.assertEquals("Hello)World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello)World").value());
-        Assertions.assertEquals("()", new CompositeComponent(PlaceholderStyle.PARENTHESES, "()").value());
-        Assertions.assertEquals("(", new CompositeComponent(PlaceholderStyle.PARENTHESES, "(").value());
-        Assertions.assertEquals(")", new CompositeComponent(PlaceholderStyle.PARENTHESES, ")").value());
-        Assertions.assertEquals("(((", new CompositeComponent(PlaceholderStyle.PARENTHESES, "(((").value());
-        Assertions.assertEquals(")))", new CompositeComponent(PlaceholderStyle.PARENTHESES, ")))").value());
-        Assertions.assertEquals("", new CompositeComponent(PlaceholderStyle.PARENTHESES, "").value());
+        Assertions.assertEquals("Hello World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello (test:abc) World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello (test:abc) World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello (World)", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello (World)", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("(Hello) World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "(Hello) World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("(Hello World)", new CompositeComponent(PlaceholderStyle.PARENTHESES, "(Hello World)", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello(World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello(World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("Hello)World", new CompositeComponent(PlaceholderStyle.PARENTHESES, "Hello)World", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("()", new CompositeComponent(PlaceholderStyle.PARENTHESES, "()", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("(", new CompositeComponent(PlaceholderStyle.PARENTHESES, "(", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals(")", new CompositeComponent(PlaceholderStyle.PARENTHESES, ")", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("(((", new CompositeComponent(PlaceholderStyle.PARENTHESES, "(((", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals(")))", new CompositeComponent(PlaceholderStyle.PARENTHESES, ")))", PlaceholderResolver.empty()).value());
+        Assertions.assertEquals("", new CompositeComponent(PlaceholderStyle.PARENTHESES, "", PlaceholderResolver.empty()).value());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class CompositeComponentTest {
                 Placeholder.constant("a<b", "c"),
                 Placeholder.constant("a>b", "d"),
                 Placeholder.withArgs("arg", args -> args.get(0)));
-        Function<String, String> eval = input -> new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, input).value(null, placeholderResolver);
+        Function<String, String> eval = input -> new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, input, PlaceholderResolver.empty()).value(null, placeholderResolver);
 
         Assertions.assertEquals("", eval.apply(""));
         Assertions.assertEquals("def", eval.apply("<abc>"));
@@ -134,5 +134,22 @@ public class CompositeComponentTest {
         // missing placeholder
         Assertions.assertEquals("Hello <test> World", eval.apply("Hello <test> World"));
         Assertions.assertEquals("Hello <test:abc:def> World", eval.apply("Hello <test:abc:def> World"));
+    }
+
+    @Test
+    public void testCaching() {
+        boolean[] resolved = new boolean[]{false};
+        PlaceholderResolver placeholderResolver = key -> {
+            if (resolved[0])
+                Assertions.fail();
+            resolved[0] = true;
+            return Placeholder.constant("hello", "world");
+        };
+
+        CompositeComponent component = new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, "<hello>", placeholderResolver);
+
+        Assertions.assertEquals("world", component.value(null, placeholderResolver));
+        Assertions.assertEquals("world", component.value(null, placeholderResolver));
+        Assertions.assertEquals("world", component.value(null, placeholderResolver));
     }
 }

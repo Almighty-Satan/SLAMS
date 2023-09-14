@@ -39,17 +39,22 @@ interface Component {
         return (context, placeholderResolver) -> value;
     }
 
-    static @NotNull Component placeholder(@NotNull String raw, @NotNull List<@NotNull String> arguments) {
+    static @NotNull Component placeholder(@NotNull String raw, @NotNull List<@NotNull String> arguments, @NotNull PlaceholderResolver placeholderResolver) {
         String key = arguments.remove(0);
 
         if (key.isEmpty())
             return simple(raw);
-        return (context, placeholderResolver) -> {
-            Placeholder placeholder = placeholderResolver.resolve(key); // TODO cache this
-            if (placeholder == null)
+
+        Placeholder placeholder = placeholderResolver.resolve(key);
+        if (placeholder != null)
+            return ((context, placeholderResolver1) -> placeholder.value(context, Collections.unmodifiableList(arguments)));
+
+        return (context, placeholderResolver0) -> {
+            Placeholder placeholder0 = placeholderResolver0.resolve(key);
+            if (placeholder0 == null)
                 return raw;
             else
-                return placeholder.value(context, Collections.unmodifiableList(arguments));
+                return placeholder0.value(context, Collections.unmodifiableList(arguments));
         };
     }
 }
