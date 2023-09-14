@@ -21,11 +21,21 @@
 package io.github.almightysatan.slams;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Set;
 
 public interface LanguageParser { // TODO rename me
 
-    @NotNull Map<String, Object> load(@NotNull Map<String, Object> entries) throws IOException;
+    void load(@NotNull Values values) throws IOException;
+
+    interface Values {
+        @NotNull @Unmodifiable Set<@NotNull String> paths();
+
+        @Nullable Object get(@NotNull String key);
+
+        void put(@NotNull String key, @NotNull Object value);
+    }
 }

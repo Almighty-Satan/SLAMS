@@ -23,8 +23,15 @@ package io.github.almightysatan.slams.impl;
 import io.github.almightysatan.slams.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.Set;
 
 public interface InternalLanguageManager extends LanguageManager {
+
+    void register(@NotNull LanguageEntryImpl<?, ?, ?> entry);
+
+    @NotNull @Unmodifiable Set<@NotNull String> paths();
 
     @Nullable LanguageImpl language(@NotNull String identifier);
 

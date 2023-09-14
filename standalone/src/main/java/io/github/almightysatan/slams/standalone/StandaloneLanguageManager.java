@@ -23,13 +23,16 @@ package io.github.almightysatan.slams.standalone;
 import io.github.almightysatan.slams.LanguageManager;
 import io.github.almightysatan.slams.LanguageParser;
 import io.github.almightysatan.slams.impl.InternalLanguageManager;
+import io.github.almightysatan.slams.impl.LanguageEntryImpl;
 import io.github.almightysatan.slams.impl.LanguageImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 public interface StandaloneLanguageManager extends LanguageManager {
 
@@ -42,6 +45,16 @@ public interface StandaloneLanguageManager extends LanguageManager {
             @Override
             public @NotNull PlaceholderStyle style() {
                 return style;
+            }
+
+            @Override
+            public void register(@NotNull LanguageEntryImpl<?, ?, ?> entry) {
+                ((InternalLanguageManager) languageManager).register(entry);
+            }
+
+            @Override
+            public @NotNull @Unmodifiable Set<@NotNull String> paths() {
+                return ((InternalLanguageManager) languageManager).paths();
             }
 
             @Override

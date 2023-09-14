@@ -27,8 +27,6 @@ import net.kyori.adventure.text.TextComponent;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,13 +35,10 @@ public class MiniMessageTest {
     @Test
     public void testBasic() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "1234");
-            return map;
-        });
-
         MMStringEntry entry = MMStringEntry.of("test", langManager);
+
+        langManager.load("0", values -> values.put("test", "1234"));
+
         TextComponent component = (TextComponent) entry.value(null);
         assertEquals("1234", component.content());
     }
@@ -51,18 +46,11 @@ public class MiniMessageTest {
     @Test
     public void testDefaultLanguageSelection() throws IOException {
         LanguageManager langManager = LanguageManager.create("1");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "123");
-            return map;
-        });
-        langManager.load("1", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "456");
-            return map;
-        });
-
         MMStringEntry entry = MMStringEntry.of("test", langManager);
+
+        langManager.load("0", values -> values.put("test", "123"));
+        langManager.load("1", values -> values.put("test", "456"));
+
         TextComponent component = (TextComponent) entry.value(null);
         assertEquals("456", component.content());
     }
@@ -70,18 +58,11 @@ public class MiniMessageTest {
     @Test
     public void testContextLanguageSelection() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "123");
-            return map;
-        });
-        langManager.load("1", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "456");
-            return map;
-        });
-
         MMStringEntry entry = MMStringEntry.of("test", langManager);
+
+        langManager.load("0", values -> values.put("test", "123"));
+        langManager.load("1", values -> values.put("test", "456"));
+
         TextComponent component = (TextComponent) entry.value(new TestContext("1", "YXZ"));
         assertEquals("456", component.content());
     }
@@ -89,13 +70,10 @@ public class MiniMessageTest {
     @Test
     public void testLocalPlaceholder() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "Hello <xxx>");
-            return map;
-        });
-
         MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.empty());
+
+        langManager.load("0", values -> values.put("test", "Hello <xxx>"));
+
         TextComponent component = (TextComponent) entry.value(null, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("xxx", "World"));
         assertEquals("Hello World", component.content());
     }
@@ -103,13 +81,10 @@ public class MiniMessageTest {
     @Test
     public void testPlaceholder() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "Hello <test>");
-            return map;
-        });
-
         MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.constant("test", "World")));
+
+        langManager.load("0", values -> values.put("test", "Hello <test>"));
+
         TextComponent component = (TextComponent) entry.value(null);
         assertEquals("Hello World", component.content());
     }
@@ -117,15 +92,11 @@ public class MiniMessageTest {
     @Test
     public void testContextPlaceholder() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "Hello <test>");
-            return map;
-        });
-
         TestContext context = new TestContext(null, "World");
-
         MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.contextual("test", TestContext.class, TestContext::getName)));
+
+        langManager.load("0", values -> values.put("test", "Hello <test>"));
+
         TextComponent component = (TextComponent) entry.value(context);
         assertEquals("Hello World", component.content());
     }
@@ -133,13 +104,10 @@ public class MiniMessageTest {
     @Test
     public void testPlaceholderArgument() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "Hello <test:some other argument:World>");
-            return map;
-        });
-
         MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
+
+        langManager.load("0", values -> values.put("test", "Hello <test:some other argument:World>"));
+
         TextComponent component = (TextComponent) entry.value(null);
         assertEquals("Hello World", component.content());
     }
@@ -147,13 +115,10 @@ public class MiniMessageTest {
     @Test
     public void testArray() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", new String[]{"Hello", "<test>"});
-            return map;
-        });
-
         MMStringArrayEntry entry = MMStringArrayEntry.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
+
+        langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
+
         Component[] components = entry.value(null);
         assertEquals("Hello", ((TextComponent) components[0]).content());
         assertEquals("World", ((TextComponent) components[1]).content());

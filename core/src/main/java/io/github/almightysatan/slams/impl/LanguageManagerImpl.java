@@ -23,19 +23,34 @@ package io.github.almightysatan.slams.impl;
 import io.github.almightysatan.slams.LanguageParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 import java.util.*;
 
 public class LanguageManagerImpl implements InternalLanguageManager {
 
+    private final Map<String, LanguageEntryImpl<?, ?, ?>> entries;
     private final String defaultLanguageIdentifier;
     private LanguageImpl defaultLanguage;
     private final Map<String, LanguageImpl> languages;
 
     public LanguageManagerImpl(@NotNull String defaultLanguageIdentifier) {
+        this.entries = new HashMap<>();
         this.defaultLanguageIdentifier = defaultLanguageIdentifier;
         this.languages = new HashMap<>();
+    }
+
+    @Override
+    public void register(@NotNull LanguageEntryImpl<?, ?, ?> entry) {
+        if (this.entries.containsKey(entry.path()))
+            throw new IllegalArgumentException("Duplicate path: " + entry.path());
+        this.entries.put(entry.path(), entry);
+    }
+
+    @Override
+    public @NotNull @Unmodifiable Set<@NotNull String> paths() {
+        return Collections.unmodifiableSet(entries.keySet());
     }
 
     @Override
@@ -77,14 +92,10 @@ public class LanguageManagerImpl implements InternalLanguageManager {
         if (defaultLanguage == null) {
             defaultLanguage = this.languages.get(this.defaultLanguageIdentifier);
             if (defaultLanguage == null)
-                throw new RuntimeException("Unknown default language: " + this.defaultLanguageIdentifier);
+                throw new RuntimeException("Unknown default language: " + this.defaultLanguageIdentifier); // TODO improve error handling
             this.defaultLanguage = defaultLanguage;
         }
 
         return defaultLanguage;
-    }
-
-    public @NotNull Set<String> paths() {
-        return new HashSet<>(this.languages.keySet());
     }
 }

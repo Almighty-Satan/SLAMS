@@ -36,6 +36,7 @@ public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
         this.path = Objects.requireNonNull(path);
         this.languageManager = (InternalLanguageManager) Objects.requireNonNull(languageManager);
         this.implementationPlaceholderResolver = Objects.requireNonNull(implementationPlaceholderResolver);
+        this.languageManager.register(this);
     }
 
     @Override

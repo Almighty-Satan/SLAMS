@@ -31,10 +31,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 public class JacksonParser implements LanguageParser {
@@ -48,16 +44,14 @@ public class JacksonParser implements LanguageParser {
     }
 
     @Override
-    public @NotNull Map<String, Object> load(@NotNull Map<String, Object> entries) throws IOException {
+    public void load(@NotNull Values values) throws IOException {
         JsonNode root = this.dataSource.readTree(this.mapper);
 
-        final Map<String, Object> newEntries = new HashMap<>();
-        for (Entry<String, Object> entry : entries.entrySet()) {
-            JsonNode node = resolveNode(root, entry.getKey());
-            newEntries.put(entry.getKey(), node != null ? this.mapper.treeToValue(node, Object.class) : entry.getValue());
+        for (String path : values.paths()) {
+            JsonNode node = resolveNode(root, path);
+            if (node != null)
+                values.put(path, this.mapper.treeToValue(node, Object.class));
         }
-
-        return Collections.unmodifiableMap(newEntries);
     }
 
     protected @Nullable JsonNode resolveNode(@NotNull JsonNode root, @NotNull String path) {

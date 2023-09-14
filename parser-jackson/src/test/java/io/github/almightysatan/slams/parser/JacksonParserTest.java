@@ -21,15 +21,15 @@
 package io.github.almightysatan.slams.parser;
 
 import io.github.almightysatan.slams.LanguageParser;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class JacksonParserTest {
 
@@ -45,15 +45,30 @@ public class JacksonParserTest {
         expectedResult.put("def", innerMap);
         expectedResult.put("ghi", "jkl");
 
-        Map<String, Object> emptyValues = new HashMap<>();
-        emptyValues.put("hello", "This value should be ignored");
-        emptyValues.put("0.1.2", null);
-        emptyValues.put("abc", null);
-        emptyValues.put("def", null);
-        emptyValues.put("ghi", "jkl");
+        Map<String, Object> result = new HashMap<>();
+        // Let's pretend these values were loaded by another parser
+        result.put("hello", "This value should be ignored");
+        result.put("ghi", "jkl");
 
         LanguageParser parser = JacksonParser.createJsonParser(new File("src/test/resources/test.json"));
-        Map<String, Object> result = parser.load(Collections.unmodifiableMap(emptyValues));
+        parser.load(new LanguageParser.Values() {
+            @Override
+            public @NotNull @Unmodifiable Set<@NotNull String> paths() {
+                return Collections.unmodifiableSet(expectedResult.keySet());
+            }
+
+            @Override
+            public @Nullable Object get(@NotNull String key) {
+                return result.get(key);
+            }
+
+            @Override
+            public void put(@NotNull String key, @NotNull Object value) {
+                if (!expectedResult.containsKey(key))
+                    Assertions.fail();
+                result.put(key, value);
+            }
+        });
 
         Assertions.assertEquals(expectedResult, result);
     }

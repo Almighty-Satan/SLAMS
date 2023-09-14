@@ -26,8 +26,6 @@ import io.github.almightysatan.slams.PlaceholderResolver;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,13 +34,10 @@ public class StandaloneTest {
     @Test
     public void testBasic() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "1234");
-            return map;
-        });
-
         StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
+
+        langManager.load("0", values -> values.put("test", "1234"));
+
         String value = entry.value();
         assertEquals("1234", value);
     }
@@ -50,18 +45,11 @@ public class StandaloneTest {
     @Test
     public void testDefaultLanguageSelection() throws IOException {
         LanguageManager langManager = LanguageManager.create("1");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "123");
-            return map;
-        });
-        langManager.load("1", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "456");
-            return map;
-        });
-
         StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
+
+        langManager.load("0", values -> values.put("test", "123"));
+        langManager.load("1", values -> values.put("test", "456"));
+
         String value = entry.value();
         assertEquals("456", value);
     }
@@ -69,18 +57,11 @@ public class StandaloneTest {
     @Test
     public void testContextLanguageSelection() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "123");
-            return map;
-        });
-        langManager.load("1", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "456");
-            return map;
-        });
-
         StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
+
+        langManager.load("0", values -> values.put("test", "123"));
+        langManager.load("1", values -> values.put("test", "456"));
+
         String value = entry.value(new TestContext("1", "YXZ"));
         assertEquals("456", value);
     }
@@ -88,13 +69,10 @@ public class StandaloneTest {
     @Test
     public void testLocalPlaceholder() throws IOException {
         StandaloneLanguageManager langManager = StandaloneLanguageManager.of(LanguageManager.create("0"), PlaceholderStyle.PERCENT);
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "Hello %xxx%");
-            return map;
-        });
-
         StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
+
+        langManager.load("0", values -> values.put("test", "Hello %xxx%"));
+
         String value = entry.value(null, Placeholder.constant("xxx", "World"));
         assertEquals("Hello World", value);
     }
@@ -102,13 +80,10 @@ public class StandaloneTest {
     @Test
     public void testPlaceholder() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "Hello <test>");
-            return map;
-        });
-
         StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, PlaceholderResolver.of(Placeholder.constant("test", "World")));
+
+        langManager.load("0", values -> values.put("test", "Hello <test>"));
+
         String value = entry.value();
         assertEquals("Hello World", value);
     }
@@ -116,15 +91,11 @@ public class StandaloneTest {
     @Test
     public void testContextPlaceholder() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "Hello <test>");
-            return map;
-        });
-
         TestContext context = new TestContext(null, "World");
-
         StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, Placeholder.contextual("test", TestContext.class, TestContext::getName));
+
+        langManager.load("0", values -> values.put("test", "Hello <test>"));
+
         String value = entry.value(context);
         assertEquals("Hello World", value);
     }
@@ -132,13 +103,10 @@ public class StandaloneTest {
     @Test
     public void testPlaceholderArgument() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", "Hello <test:some other argument:World>");
-            return map;
-        });
-
         StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, PlaceholderResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
+
+        langManager.load("0", values -> values.put("test", "Hello <test:some other argument:World>"));
+
         String value = entry.value();
         assertEquals("Hello World", value);
     }
@@ -146,13 +114,10 @@ public class StandaloneTest {
     @Test
     public void testArray() throws IOException {
         LanguageManager langManager = LanguageManager.create("0");
-        langManager.load("0", paths -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("test", new String[]{"Hello", "<test>"});
-            return map;
-        });
-
         StandaloneStringArrayEntry entry = StandaloneStringArrayEntry.of("test", langManager, Placeholder.constant("test", "World"));
+
+        langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
+
         String[] components = entry.value();
         assertEquals("Hello", components[0]);
         assertEquals("World", components[1]);
