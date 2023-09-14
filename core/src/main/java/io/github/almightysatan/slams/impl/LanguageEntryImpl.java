@@ -20,10 +20,14 @@
 
 package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.*;
+import io.github.almightysatan.slams.Context;
+import io.github.almightysatan.slams.InvalidTypeException;
+import io.github.almightysatan.slams.LanguageEntry;
+import io.github.almightysatan.slams.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.IdentityHashMap;
 import java.util.Objects;
 
 public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
@@ -31,6 +35,7 @@ public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
     private final String path;
     private final InternalLanguageManager languageManager;
     private final P implementationPlaceholderResolver;
+    private final IdentityHashMap<LanguageImpl, R> cache = new IdentityHashMap<>();
 
     protected LanguageEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull P implementationPlaceholderResolver) {
         this.path = Objects.requireNonNull(path);
@@ -47,7 +52,17 @@ public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
     protected abstract @NotNull R checkType(@Nullable Object value) throws InvalidTypeException;
 
     protected @NotNull R rawValue(@Nullable Context context) {
-        return this.checkType(this.resolveLanguage(context).value(this.path));
+        LanguageImpl language = this.resolveLanguage(context);
+        R value = this.cache.get(language);
+        if (value == null) {
+            value = this.checkType(language.value(this.path));
+            cache.put(language, value);
+        }
+        return value;
+    }
+
+    protected void clearCache() {
+        this.cache.clear();
     }
 
     protected @NotNull InternalLanguageManager languageManager() {

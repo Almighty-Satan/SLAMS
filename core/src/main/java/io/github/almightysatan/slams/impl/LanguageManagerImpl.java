@@ -68,6 +68,8 @@ public class LanguageManagerImpl implements InternalLanguageManager {
     public void reload() throws IOException {
         for (LanguageImpl language : this.languages.values())
             language.load();
+        for (LanguageEntryImpl<?, ?, ?> entry : this.entries.values())
+            entry.clearCache();
     }
 
     @Override
