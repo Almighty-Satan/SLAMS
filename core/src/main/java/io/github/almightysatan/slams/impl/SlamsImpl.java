@@ -28,21 +28,21 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.io.IOException;
 import java.util.*;
 
-public class LanguageManagerImpl implements InternalLanguageManager {
+public class SlamsImpl implements SlamsInternal {
 
-    private final Map<String, LanguageEntryImpl<?, ?, ?>> entries;
+    private final Map<String, MessageImpl<?, ?, ?>> entries;
     private final String defaultLanguageIdentifier;
-    private LanguageImpl defaultLanguage;
-    private final Map<String, LanguageImpl> languages;
+    private Language defaultLanguage;
+    private final Map<String, Language> languages;
 
-    public LanguageManagerImpl(@NotNull String defaultLanguageIdentifier) {
+    public SlamsImpl(@NotNull String defaultLanguageIdentifier) {
         this.entries = new HashMap<>();
         this.defaultLanguageIdentifier = defaultLanguageIdentifier;
         this.languages = new HashMap<>();
     }
 
     @Override
-    public void register(@NotNull LanguageEntryImpl<?, ?, ?> entry) {
+    public void register(@NotNull MessageImpl<?, ?, ?> entry) {
         if (this.entries.containsKey(entry.path()))
             throw new IllegalArgumentException("Duplicate path: " + entry.path());
         this.entries.put(entry.path(), entry);
@@ -60,15 +60,15 @@ public class LanguageManagerImpl implements InternalLanguageManager {
         if (this.languages.containsKey(identifier))
             throw new IllegalArgumentException("Duplicate language identifier");
 
-        LanguageImpl language = new LanguageImpl(this, identifier, parsers);
+        Language language = new Language(this, identifier, parsers);
         this.languages.put(identifier, language);
     }
 
     @Override
     public void reload() throws IOException {
-        for (LanguageImpl language : this.languages.values())
+        for (Language language : this.languages.values())
             language.load();
-        for (LanguageEntryImpl<?, ?, ?> entry : this.entries.values())
+        for (MessageImpl<?, ?, ?> entry : this.entries.values())
             entry.clearCache();
     }
 
@@ -78,7 +78,7 @@ public class LanguageManagerImpl implements InternalLanguageManager {
     }
 
     @Override
-    public @Nullable LanguageImpl language(@NotNull String identifier) {
+    public @Nullable Language language(@NotNull String identifier) {
         return this.languages.get(identifier);
     }
 
@@ -88,8 +88,8 @@ public class LanguageManagerImpl implements InternalLanguageManager {
     }
 
     @Override
-    public @NotNull LanguageImpl defaultLanguage() {
-        LanguageImpl defaultLanguage = this.defaultLanguage;
+    public @NotNull Language defaultLanguage() {
+        Language defaultLanguage = this.defaultLanguage;
 
         if (defaultLanguage == null) {
             defaultLanguage = this.languages.get(this.defaultLanguageIdentifier);

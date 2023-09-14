@@ -22,8 +22,8 @@ package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.LanguageManager;
-import io.github.almightysatan.slams.impl.LanguageEntryImpl;
+import io.github.almightysatan.slams.Slams;
+import io.github.almightysatan.slams.impl.MessageImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -33,12 +33,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-public interface MMStringArrayEntry extends MMLanguageEntry<Component[]> {
+public interface AdventureMessageArray extends AdventureGenericMessage<Component[]> {
 
-    static @NotNull MMStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
-        class MMStringArrayEntryImpl extends LanguageEntryImpl<Component[], String[], TagResolver> implements MMStringArrayEntry {
+    static @NotNull AdventureMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
+        class AdventureMessageArrayImpl extends MessageImpl<Component[], String[], TagResolver> implements AdventureMessageArray {
 
-            protected MMStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
+            protected AdventureMessageArrayImpl(@NotNull String path, @NotNull Slams languageManager, @NotNull TagResolver tagResolver) {
                 super(path, languageManager, tagResolver);
             }
 
@@ -64,10 +64,10 @@ public interface MMStringArrayEntry extends MMLanguageEntry<Component[]> {
             }
         }
 
-        return new MMStringArrayEntryImpl(path, languageManager, tagResolver);
+        return new AdventureMessageArrayImpl(path, slams, tagResolver);
     }
 
-    static @NotNull MMStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager) {
-        return of(path, languageManager, TagResolver.empty());
+    static @NotNull AdventureMessageArray of(@NotNull String path, @NotNull Slams slams) {
+        return of(path, slams, TagResolver.empty());
     }
 }

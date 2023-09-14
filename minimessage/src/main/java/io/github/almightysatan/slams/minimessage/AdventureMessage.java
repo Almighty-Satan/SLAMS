@@ -22,20 +22,20 @@ package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.LanguageManager;
-import io.github.almightysatan.slams.impl.LanguageEntryImpl;
+import io.github.almightysatan.slams.Slams;
+import io.github.almightysatan.slams.impl.MessageImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface MMStringEntry extends MMLanguageEntry<Component> {
+public interface AdventureMessage extends AdventureGenericMessage<Component> {
 
-    static @NotNull MMStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
-        class MMStringEntryImpl extends LanguageEntryImpl<Component, String, TagResolver> implements MMStringEntry {
+    static @NotNull AdventureMessage of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
+        class AdventureMessageImpl extends MessageImpl<Component, String, TagResolver> implements AdventureMessage {
 
-            protected MMStringEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull TagResolver tagResolver) {
+            protected AdventureMessageImpl(@NotNull String path, @NotNull Slams languageManager, @NotNull TagResolver tagResolver) {
                 super(path, languageManager, tagResolver);
             }
 
@@ -53,10 +53,10 @@ public interface MMStringEntry extends MMLanguageEntry<Component> {
             }
         }
 
-        return new MMStringEntryImpl(path, languageManager, tagResolver);
+        return new AdventureMessageImpl(path, slams, tagResolver);
     }
 
-    static @NotNull MMStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager) {
-        return of(path, languageManager, TagResolver.empty());
+    static @NotNull AdventureMessage of(@NotNull String path, @NotNull Slams slams) {
+        return of(path, slams, TagResolver.empty());
     }
 }

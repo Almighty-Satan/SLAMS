@@ -22,9 +22,9 @@ package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import io.github.almightysatan.slams.impl.LanguageEntryImpl;
+import io.github.almightysatan.slams.impl.MessageImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,13 +32,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<String[]> {
+public interface StandaloneMessageArray extends StandaloneGenericMessage<String[]> {
 
-    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
         Objects.requireNonNull(style);
-        class StandaloneStringArrayEntryImpl extends LanguageEntryImpl<String[], Component[], PlaceholderResolver> implements StandaloneStringArrayEntry {
+        class StandaloneMessageArrayImpl extends MessageImpl<String[], Component[], PlaceholderResolver> implements StandaloneMessageArray {
 
-            protected StandaloneStringArrayEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+            protected StandaloneMessageArrayImpl(@NotNull String path, @NotNull Slams languageManager, @NotNull PlaceholderResolver placeholderResolver) {
                 super(path, languageManager, placeholderResolver);
             }
 
@@ -65,22 +65,22 @@ public interface StandaloneStringArrayEntry extends StandaloneLanguageEntry<Stri
             }
         }
 
-        return new StandaloneStringArrayEntryImpl(path, languageManager, placeholderResolver);
+        return new StandaloneMessageArrayImpl(path, slams, placeholderResolver);
     }
 
-    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
-        return of(path, languageManager, PlaceholderStyle.ANGLE_BRACKETS, placeholderResolver);
+    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderResolver placeholderResolver) {
+        return of(path, slams, PlaceholderStyle.ANGLE_BRACKETS, placeholderResolver);
     }
 
-    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull LanguageManager languageManager) {
-        return of(path, languageManager, PlaceholderStyle.ANGLE_BRACKETS, PlaceholderResolver.empty());
+    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull Slams slams) {
+        return of(path, slams, PlaceholderStyle.ANGLE_BRACKETS, PlaceholderResolver.empty());
     }
 
-    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull StandaloneLanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull StandaloneSlams languageManager, @NotNull PlaceholderResolver placeholderResolver) {
         return of(path, languageManager, languageManager.style(), placeholderResolver);
     }
 
-    static @NotNull StandaloneStringArrayEntry of(@NotNull String path, @NotNull StandaloneLanguageManager languageManager) {
+    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull StandaloneSlams languageManager) {
         return of(path, languageManager, languageManager.style(), PlaceholderResolver.empty());
     }
 }

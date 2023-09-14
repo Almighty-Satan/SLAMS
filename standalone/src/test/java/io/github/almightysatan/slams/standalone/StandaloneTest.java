@@ -20,7 +20,7 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import org.junit.jupiter.api.Test;
@@ -33,8 +33,8 @@ public class StandaloneTest {
 
     @Test
     public void testBasic() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
+        Slams langManager = Slams.create("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "1234"));
 
@@ -44,8 +44,8 @@ public class StandaloneTest {
 
     @Test
     public void testDefaultLanguageSelection() throws IOException {
-        LanguageManager langManager = LanguageManager.create("1");
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
+        Slams langManager = Slams.create("1");
+        StandaloneMessage entry = StandaloneMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "123"));
         langManager.load("1", values -> values.put("test", "456"));
@@ -56,8 +56,8 @@ public class StandaloneTest {
 
     @Test
     public void testContextLanguageSelection() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
+        Slams langManager = Slams.create("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "123"));
         langManager.load("1", values -> values.put("test", "456"));
@@ -68,8 +68,8 @@ public class StandaloneTest {
 
     @Test
     public void testLocalPlaceholder() throws IOException {
-        StandaloneLanguageManager langManager = StandaloneLanguageManager.of(LanguageManager.create("0"), PlaceholderStyle.PERCENT);
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager);
+        StandaloneSlams langManager = StandaloneSlams.of(Slams.create("0"), PlaceholderStyle.PERCENT);
+        StandaloneMessage entry = StandaloneMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "Hello %xxx%"));
 
@@ -79,8 +79,8 @@ public class StandaloneTest {
 
     @Test
     public void testPlaceholder() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, PlaceholderResolver.of(Placeholder.constant("test", "World")));
+        Slams langManager = Slams.create("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", langManager, PlaceholderResolver.of(Placeholder.constant("test", "World")));
 
         langManager.load("0", values -> values.put("test", "Hello <test>"));
 
@@ -90,9 +90,9 @@ public class StandaloneTest {
 
     @Test
     public void testContextPlaceholder() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
+        Slams langManager = Slams.create("0");
         TestContext context = new TestContext(null, "World");
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, Placeholder.contextual("test", TestContext.class, TestContext::getName));
+        StandaloneMessage entry = StandaloneMessage.of("test", langManager, Placeholder.contextual("test", TestContext.class, TestContext::getName));
 
         langManager.load("0", values -> values.put("test", "Hello <test>"));
 
@@ -102,8 +102,8 @@ public class StandaloneTest {
 
     @Test
     public void testPlaceholderArgument() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        StandaloneStringEntry entry = StandaloneStringEntry.of("test", langManager, PlaceholderResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
+        Slams langManager = Slams.create("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", langManager, PlaceholderResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
 
         langManager.load("0", values -> values.put("test", "Hello <test:some other argument:World>"));
 
@@ -113,8 +113,8 @@ public class StandaloneTest {
 
     @Test
     public void testArray() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        StandaloneStringArrayEntry entry = StandaloneStringArrayEntry.of("test", langManager, Placeholder.constant("test", "World"));
+        Slams langManager = Slams.create("0");
+        StandaloneMessageArray entry = StandaloneMessageArray.of("test", langManager, Placeholder.constant("test", "World"));
 
         langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
 

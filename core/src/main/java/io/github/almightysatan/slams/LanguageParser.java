@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.io.IOException;
 import java.util.Set;
 
-public interface LanguageParser { // TODO rename me
+public interface LanguageParser {
 
     void load(@NotNull Values values) throws IOException;
 

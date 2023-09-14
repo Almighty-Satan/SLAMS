@@ -18,26 +18,22 @@
  * USA
  */
 
-package io.github.almightysatan.slams.minimessage;
+package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.LanguageEntry;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import io.github.almightysatan.slams.Slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Objects;
+import java.util.Set;
 
-public interface MMLanguageEntry<T> extends LanguageEntry<T> {
+public interface SlamsInternal extends Slams {
 
-    @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver);
+    void register(@NotNull MessageImpl<?, ?, ?> entry);
 
-    default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) {
-        Objects.requireNonNull(tagResolvers);
-        return this.value(context, ContextTagResolver.of(tagResolvers));
-    }
+    @NotNull @Unmodifiable Set<@NotNull String> paths();
 
-    default @NotNull T value(@Nullable Context context) {
-        return this.value(context, TagResolver.empty());
-    }
+    @Nullable Language language(@NotNull String identifier);
+
+    @NotNull Language defaultLanguage();
 }

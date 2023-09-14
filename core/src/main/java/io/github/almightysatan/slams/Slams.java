@@ -20,13 +20,13 @@
 
 package io.github.almightysatan.slams;
 
-import io.github.almightysatan.slams.impl.LanguageManagerImpl;
+import io.github.almightysatan.slams.impl.SlamsImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Collection;
 
-public interface LanguageManager { // TODO rename me
+public interface Slams {
 
     void load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException;
 
@@ -36,7 +36,7 @@ public interface LanguageManager { // TODO rename me
 
     @NotNull String defaultLanguageIdentifier();
 
-    static LanguageManager create(@NotNull String defaultLanguageIdentifier) {
-        return new LanguageManagerImpl(defaultLanguageIdentifier);
+    static Slams create(@NotNull String defaultLanguageIdentifier) {
+        return new SlamsImpl(defaultLanguageIdentifier);
     }
 }
