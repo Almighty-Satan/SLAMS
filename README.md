@@ -16,11 +16,11 @@ SLAMS has been created with support for Minecraft servers in mind and therefore 
 
 ### Mini-Message Example
 ```java
-Slams langManager = Slams.create("English"); // Set English as the default language
-langManager.load("English", JacksonParser.createJsonParser("messages.json")); // Register language and load messages from JSON file
+Slams slams = Slams.create("English"); // Set English as the default language
+slams.load("English", JacksonParser.createJsonParser("messages.json")); // Register language and load messages from JSON file
 
-AdventureMessage test0 = AdventureMessage.of("test0", langManager, null); // Just a simple message
-AdventureMessage test1 = AdventureMessage.of("test1", langManager, ctx -> Placeholder.unparsed("hello", "world")); // Message with placeholder, "hello" will be replaced with "world"
+AdventureMessage test0 = AdventureMessage.of("test0", slams, null); // Just a simple message
+AdventureMessage test1 = AdventureMessage.of("test1", slams, ctx -> Placeholder.unparsed("hello", "world")); // Message with placeholder, "hello" will be replaced with "world"
 
 player.sendMessage(test0.value(null)); // Send the message to a player. No context is provided and therefore the default language will be used. See Context#language
 player.sendMessage(test1.value(null, Placeholder.unparsed("123", "456"))); // Send another message but add an additional placeholder
