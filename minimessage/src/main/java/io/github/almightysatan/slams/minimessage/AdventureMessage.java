@@ -37,12 +37,12 @@ import org.jetbrains.annotations.Nullable;
 public interface AdventureMessage extends AdventureGenericMessage<Component> {
 
     /**
-     * Creates a new {@link MMStringEntry} with the given path, {@link LanguageManager} and {@link ContextTagResolver}.
+     * Creates a new {@link AdventureMessage} with the given path, {@link Slams} and {@link ContextTagResolver}.
      * If
      *
-     * @param path            the path of the entry
-     * @param languageManager the language manager
-     * @param tagResolver     the tag resolver
+     * @param path        the path of the entry
+     * @param slams       the language manager (slams instance) to use
+     * @param tagResolver the tag resolver
      * @return the created entry
      */
     static @NotNull AdventureMessage of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {

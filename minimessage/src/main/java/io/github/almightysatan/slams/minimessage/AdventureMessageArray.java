@@ -40,11 +40,11 @@ import java.util.List;
 public interface AdventureMessageArray extends AdventureGenericMessage<Component[]> {
 
     /**
-     * Creates a new {@link MMStringArrayEntry} with the given path, {@link LanguageManager} and {@link ContextTagResolver}.
+     * Creates a new {@link AdventureMessageArray} with the given path, {@link Slams} and {@link ContextTagResolver}.
      *
-     * @param path            the path of the entry
-     * @param languageManager the language manager
-     * @param tagResolver     the tag resolver
+     * @param path        the path of the entry
+     * @param slams       the language manager (slams instance) to use
+     * @param tagResolver the tag resolver
      * @return the created entry
      */
     static @NotNull AdventureMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
