@@ -20,7 +20,7 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.Placeholder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
@@ -34,8 +34,8 @@ public class MiniMessageTest {
 
     @Test
     public void testBasic() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        MMStringEntry entry = MMStringEntry.of("test", langManager);
+        Slams langManager = Slams.create("0");
+        AdventureMessage entry = AdventureMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "1234"));
 
@@ -45,8 +45,8 @@ public class MiniMessageTest {
 
     @Test
     public void testDefaultLanguageSelection() throws IOException {
-        LanguageManager langManager = LanguageManager.create("1");
-        MMStringEntry entry = MMStringEntry.of("test", langManager);
+        Slams langManager = Slams.create("1");
+        AdventureMessage entry = AdventureMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "123"));
         langManager.load("1", values -> values.put("test", "456"));
@@ -57,8 +57,8 @@ public class MiniMessageTest {
 
     @Test
     public void testContextLanguageSelection() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        MMStringEntry entry = MMStringEntry.of("test", langManager);
+        Slams langManager = Slams.create("0");
+        AdventureMessage entry = AdventureMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "123"));
         langManager.load("1", values -> values.put("test", "456"));
@@ -69,8 +69,8 @@ public class MiniMessageTest {
 
     @Test
     public void testLocalPlaceholder() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.empty());
+        Slams langManager = Slams.create("0");
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.empty());
 
         langManager.load("0", values -> values.put("test", "Hello <xxx>"));
 
@@ -80,8 +80,8 @@ public class MiniMessageTest {
 
     @Test
     public void testPlaceholder() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.constant("test", "World")));
+        Slams langManager = Slams.create("0");
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(Placeholder.constant("test", "World")));
 
         langManager.load("0", values -> values.put("test", "Hello <test>"));
 
@@ -91,9 +91,9 @@ public class MiniMessageTest {
 
     @Test
     public void testContextPlaceholder() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
+        Slams langManager = Slams.create("0");
         TestContext context = new TestContext(null, "World");
-        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.contextual("test", TestContext.class, TestContext::getName)));
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(Placeholder.contextual("test", TestContext.class, TestContext::getName)));
 
         langManager.load("0", values -> values.put("test", "Hello <test>"));
 
@@ -103,8 +103,8 @@ public class MiniMessageTest {
 
     @Test
     public void testPlaceholderArgument() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        MMStringEntry entry = MMStringEntry.of("test", langManager, ContextTagResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
+        Slams langManager = Slams.create("0");
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
 
         langManager.load("0", values -> values.put("test", "Hello <test:some other argument:World>"));
 
@@ -114,8 +114,8 @@ public class MiniMessageTest {
 
     @Test
     public void testArray() throws IOException {
-        LanguageManager langManager = LanguageManager.create("0");
-        MMStringArrayEntry entry = MMStringArrayEntry.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
+        Slams langManager = Slams.create("0");
+        AdventureMessageArray entry = AdventureMessageArray.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
 
         langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
 

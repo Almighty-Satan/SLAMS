@@ -18,26 +18,26 @@
  * USA
  */
 
-package io.github.almightysatan.slams.standalone;
+package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.LanguageEntry;
-import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.Message;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public interface StandaloneLanguageEntry<T> extends LanguageEntry<T> {
+public interface AdventureGenericMessage<T> extends Message<T> {
 
-    @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver);
+    @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver);
 
-    default @NotNull T value(@Nullable Context context) {
-        return this.value(context, PlaceholderResolver.empty());
+    default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) {
+        Objects.requireNonNull(tagResolvers);
+        return this.value(context, ContextTagResolver.of(tagResolvers));
     }
 
-    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
-        Objects.requireNonNull(placeholderResolvers);
-        return this.value(context, PlaceholderResolver.of(placeholderResolvers));
+    default @NotNull T value(@Nullable Context context) {
+        return this.value(context, TagResolver.empty());
     }
 }

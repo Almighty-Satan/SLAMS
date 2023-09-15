@@ -22,24 +22,24 @@ package io.github.almightysatan.slams.impl;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.LanguageEntry;
-import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.Message;
+import io.github.almightysatan.slams.Slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.IdentityHashMap;
 import java.util.Objects;
 
-public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
+public abstract class MessageImpl<T, R, P> implements Message<T> {
 
     private final String path;
-    private final InternalLanguageManager languageManager;
+    private final SlamsInternal languageManager;
     private final P implementationPlaceholderResolver;
-    private final IdentityHashMap<LanguageImpl, R> cache = new IdentityHashMap<>();
+    private final IdentityHashMap<Language, R> cache = new IdentityHashMap<>();
 
-    protected LanguageEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull P implementationPlaceholderResolver) {
+    protected MessageImpl(@NotNull String path, @NotNull Slams slams, @NotNull P implementationPlaceholderResolver) {
         this.path = Objects.requireNonNull(path);
-        this.languageManager = (InternalLanguageManager) Objects.requireNonNull(languageManager);
+        this.languageManager = (SlamsInternal) Objects.requireNonNull(slams);
         this.implementationPlaceholderResolver = Objects.requireNonNull(implementationPlaceholderResolver);
         this.languageManager.register(this);
     }
@@ -52,7 +52,7 @@ public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
     protected abstract @NotNull R checkType(@Nullable Object value) throws InvalidTypeException;
 
     protected @NotNull R rawValue(@Nullable Context context) {
-        LanguageImpl language = this.resolveLanguage(context);
+        Language language = this.resolveLanguage(context);
         R value = this.cache.get(language);
         if (value == null) {
             value = this.checkType(language.value(this.path));
@@ -65,15 +65,15 @@ public abstract class LanguageEntryImpl<T, R, P> implements LanguageEntry<T> {
         this.cache.clear();
     }
 
-    protected @NotNull InternalLanguageManager languageManager() {
+    protected @NotNull SlamsInternal languageManager() {
         return this.languageManager;
     }
 
-    protected @NotNull LanguageImpl resolveLanguage(@Nullable Context context) {
+    protected @NotNull Language resolveLanguage(@Nullable Context context) {
         if (context != null) {
             String languageIdentifier = context.language();
             if (languageIdentifier != null) {
-                LanguageImpl language = this.languageManager.language(languageIdentifier);
+                Language language = this.languageManager.language(languageIdentifier);
                 if (language != null)
                     return language;
             }

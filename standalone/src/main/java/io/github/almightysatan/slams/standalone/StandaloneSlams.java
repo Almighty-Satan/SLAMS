@@ -20,11 +20,11 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.LanguageParser;
-import io.github.almightysatan.slams.impl.InternalLanguageManager;
-import io.github.almightysatan.slams.impl.LanguageEntryImpl;
-import io.github.almightysatan.slams.impl.LanguageImpl;
+import io.github.almightysatan.slams.impl.SlamsInternal;
+import io.github.almightysatan.slams.impl.MessageImpl;
+import io.github.almightysatan.slams.impl.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -34,59 +34,59 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
-public interface StandaloneLanguageManager extends LanguageManager {
+public interface StandaloneSlams extends Slams {
 
     @NotNull PlaceholderStyle style();
 
-    static @NotNull StandaloneLanguageManager of(@NotNull LanguageManager languageManager, @NotNull PlaceholderStyle style) {
-        Objects.requireNonNull(languageManager);
+    static @NotNull StandaloneSlams of(@NotNull Slams slams, @NotNull PlaceholderStyle style) {
+        Objects.requireNonNull(slams);
         Objects.requireNonNull(style);
-        class StandaloneLanguageManagerImpl implements InternalLanguageManager, StandaloneLanguageManager {
+        class StandaloneSlamsImpl implements SlamsInternal, StandaloneSlams {
             @Override
             public @NotNull PlaceholderStyle style() {
                 return style;
             }
 
             @Override
-            public void register(@NotNull LanguageEntryImpl<?, ?, ?> entry) {
-                ((InternalLanguageManager) languageManager).register(entry);
+            public void register(@NotNull MessageImpl<?, ?, ?> entry) {
+                ((SlamsInternal) slams).register(entry);
             }
 
             @Override
             public @NotNull @Unmodifiable Set<@NotNull String> paths() {
-                return ((InternalLanguageManager) languageManager).paths();
+                return ((SlamsInternal) slams).paths();
             }
 
             @Override
             public void load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException {
-                languageManager.load(identifier, parsers);
+                slams.load(identifier, parsers);
             }
 
             @Override
             public void reload() throws IOException {
-                languageManager.reload();
+                slams.reload();
             }
 
             @Override
             public @NotNull Collection<@NotNull String> languages() {
-                return languageManager.languages();
+                return slams.languages();
             }
 
             @Override
             public @NotNull String defaultLanguageIdentifier() {
-                return languageManager.defaultLanguageIdentifier();
+                return slams.defaultLanguageIdentifier();
             }
 
             @Override
-            public @Nullable LanguageImpl language(@NotNull String identifier) {
-                return ((InternalLanguageManager) languageManager).language(identifier);
+            public @Nullable Language language(@NotNull String identifier) {
+                return ((SlamsInternal) slams).language(identifier);
             }
 
             @Override
-            public @NotNull LanguageImpl defaultLanguage() {
-                return ((InternalLanguageManager) languageManager).defaultLanguage();
+            public @NotNull Language defaultLanguage() {
+                return ((SlamsInternal) slams).defaultLanguage();
             }
         }
-        return new StandaloneLanguageManagerImpl();
+        return new StandaloneSlamsImpl();
     }
 }

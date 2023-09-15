@@ -18,18 +18,26 @@
  * USA
  */
 
-package io.github.almightysatan.slams;
+package io.github.almightysatan.slams.standalone;
 
+import io.github.almightysatan.slams.Context;
+import io.github.almightysatan.slams.Message;
+import io.github.almightysatan.slams.PlaceholderResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface LanguageEntry<T> {
+import java.util.Objects;
 
-    @NotNull String path();
+public interface StandaloneGenericMessage<T> extends Message<T> {
 
-    @NotNull T value(@Nullable Context context);
+    @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver);
 
-    default @NotNull T value() {
-        return this.value(null);
+    default @NotNull T value(@Nullable Context context) {
+        return this.value(context, PlaceholderResolver.empty());
+    }
+
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
+        Objects.requireNonNull(placeholderResolvers);
+        return this.value(context, PlaceholderResolver.of(placeholderResolvers));
     }
 }

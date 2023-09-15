@@ -30,14 +30,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class LanguageImpl {
+public class Language {
 
-    private final InternalLanguageManager languageManager;
+    private final SlamsInternal languageManager;
     private final String identifier;
     private final LanguageParser[] parsers;
     private Map<String, Object> entries;
 
-    public LanguageImpl(@NotNull InternalLanguageManager languageManager, @NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException {
+    public Language(@NotNull SlamsInternal languageManager, @NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException {
         this.languageManager = languageManager;
         this.identifier = identifier;
         this.parsers = parsers;

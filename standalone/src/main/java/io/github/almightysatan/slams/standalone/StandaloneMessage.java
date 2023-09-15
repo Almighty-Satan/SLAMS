@@ -22,18 +22,18 @@ package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.LanguageManager;
+import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import io.github.almightysatan.slams.impl.LanguageEntryImpl;
+import io.github.almightysatan.slams.impl.MessageImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface StandaloneStringEntry extends StandaloneLanguageEntry<String> {
+public interface StandaloneMessage extends StandaloneGenericMessage<String> {
 
-    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
-        class StandaloneStringEntryImpl extends LanguageEntryImpl<String, Component, PlaceholderResolver> implements StandaloneStringEntry {
+    static @NotNull StandaloneMessage of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
+        class StandaloneMessageImpl extends MessageImpl<String, Component, PlaceholderResolver> implements StandaloneMessage {
 
-            protected StandaloneStringEntryImpl(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+            protected StandaloneMessageImpl(@NotNull String path, @NotNull Slams languageManager, @NotNull PlaceholderResolver placeholderResolver) {
                 super(path, languageManager, placeholderResolver);
             }
 
@@ -51,22 +51,22 @@ public interface StandaloneStringEntry extends StandaloneLanguageEntry<String> {
             }
         }
 
-        return new StandaloneStringEntryImpl(path, languageManager, placeholderResolver);
+        return new StandaloneMessageImpl(path, slams, placeholderResolver);
     }
 
-    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
-        return of(path, languageManager, PlaceholderStyle.ANGLE_BRACKETS, placeholderResolver);
+    static @NotNull StandaloneMessage of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderResolver placeholderResolver) {
+        return of(path, slams, PlaceholderStyle.ANGLE_BRACKETS, placeholderResolver);
     }
 
-    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull LanguageManager languageManager) {
-        return of(path, languageManager, PlaceholderStyle.ANGLE_BRACKETS, PlaceholderResolver.empty());
+    static @NotNull StandaloneMessage of(@NotNull String path, @NotNull Slams slams) {
+        return of(path, slams, PlaceholderStyle.ANGLE_BRACKETS, PlaceholderResolver.empty());
     }
 
-    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull StandaloneLanguageManager languageManager, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull StandaloneMessage of(@NotNull String path, @NotNull StandaloneSlams languageManager, @NotNull PlaceholderResolver placeholderResolver) {
         return of(path, languageManager, languageManager.style(), placeholderResolver);
     }
 
-    static @NotNull StandaloneStringEntry of(@NotNull String path, @NotNull StandaloneLanguageManager languageManager) {
+    static @NotNull StandaloneMessage of(@NotNull String path, @NotNull StandaloneSlams languageManager) {
         return of(path, languageManager, languageManager.style(), PlaceholderResolver.empty());
     }
 }

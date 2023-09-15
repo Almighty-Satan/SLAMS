@@ -18,22 +18,18 @@
  * USA
  */
 
-package io.github.almightysatan.slams.impl;
+package io.github.almightysatan.slams;
 
-import io.github.almightysatan.slams.LanguageManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Set;
+public interface Message<T> {
 
-public interface InternalLanguageManager extends LanguageManager {
+    @NotNull String path();
 
-    void register(@NotNull LanguageEntryImpl<?, ?, ?> entry);
+    @NotNull T value(@Nullable Context context);
 
-    @NotNull @Unmodifiable Set<@NotNull String> paths();
-
-    @Nullable LanguageImpl language(@NotNull String identifier);
-
-    @NotNull LanguageImpl defaultLanguage();
+    default @NotNull T value() {
+        return this.value(null);
+    }
 }
