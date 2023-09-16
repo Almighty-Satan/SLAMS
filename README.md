@@ -32,8 +32,8 @@ slams.load("English", JacksonParser.createJsonParser("messages.json")); // Regis
 AdventureMessage test0 = AdventureMessage.of("test0", slams, null); // Just a simple message
 AdventureMessage test1 = AdventureMessage.of("test1", slams, ctx -> Placeholder.unparsed("hello", "world")); // Message with placeholder, "hello" will be replaced with "world"
 
-player.sendMessage(test0.value(null)); // Send the message to a player. No context is provided and therefore the default language will be used. See Context#language
-player.sendMessage(test1.value(null, Placeholder.unparsed("123", "456"))); // Send another message but add an additional placeholder
+audience.sendMessage(test0.value(null)); // Send the message to an Adventure Audience. No context is provided and therefore the default language will be used. See Context#language
+audience.sendMessage(test1.value(null, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("123", "456"))); // Send another message but add an additional minimessage placeholder
 ```
 
 [MiniMessages](https://docs.advntr.dev/minimessage/index.html) is a user friendly message format for Minecraft servers integrated into [Adventure](https://github.com/KyoriPowered/adventure). Every server core [implementing the Adventure-API](https://docs.advntr.dev/platform/native.html) (e.g. [Paper](https://papermc.io/)) should be supported out of the box while some others (e.g. [Craftbukkit or Spigot](https://docs.advntr.dev/platform/bukkit.html)) may require additional adapters.
