@@ -12,7 +12,17 @@ SLAMS is an easy to use message/language system allowing projects to easily supp
 SLAMS has been created with support for Minecraft servers in mind and therefore also supports formats like [MiniMessages](https://docs.advntr.dev/minimessage/index.html).
 
 ### Standalone Example
-// TODO
+```java
+Slams slams = Slams.create("English"); // Set English as the default language
+
+StandaloneMessage test0 = StandaloneMessage.of("test0", slams); // Just a simple message
+StandaloneMessage test1 = StandaloneMessage.of("test1", slams, Placeholder.constant("hello", "world")); // Message with placeholder, "hello" will be replaced with "world"
+
+slams.load("English", JacksonParser.createJsonParser("messages.json")); // Register language and load messages from JSON file
+
+System.out.println(test0.value()); // Print the message. No context is provided and therefore the default language will be used. See Context#language
+System.out.println(test1.value(null, Placeholder.constant("123", "456"))); // Print another message but add an additional placeholder
+```
 
 ### Mini-Message Example
 ```java
