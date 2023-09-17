@@ -31,6 +31,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * An internal class that represents a Language.
+ */
 public class Language {
 
     private final SlamsInternal languageManager;

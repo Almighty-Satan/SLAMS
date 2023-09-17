@@ -30,6 +30,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.IdentityHashMap;
 import java.util.Objects;
 
+/**
+ * An abstract implementation of the {@link Message} interface.
+ *
+ * @param <T> the type of this message's value
+ * @param <R> the type of this message's raw value (before placeholders are replaced)
+ * @param <P> the format-dependent placeholder resolver type (does not have to extend
+ *            {@link io.github.almightysatan.slams.PlaceholderResolver})
+ */
 public abstract class MessageImpl<T, R, P> implements Message<T> {
 
     private final String path;

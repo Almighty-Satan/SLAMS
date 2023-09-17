@@ -34,10 +34,25 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * An extension of the {@link Slams} interface that contains additional methods for the standalone format.
+ */
 public interface StandaloneSlams extends Slams {
 
+    /**
+     * Returns the {@link PlaceholderStyle}.
+     *
+     * @return the {@link PlaceholderStyle}
+     */
     @NotNull PlaceholderStyle style();
 
+    /**
+     * Creates a new {@link StandaloneSlams} from the given {@link Slams} and {@link PlaceholderStyle}.
+     *
+     * @param slams the Slams instance
+     * @param style the PlaceholderStyle
+     * @return a new {@link StandaloneSlams} instance
+     */
     static @NotNull StandaloneSlams of(@NotNull Slams slams, @NotNull PlaceholderStyle style) {
         Objects.requireNonNull(slams);
         Objects.requireNonNull(style);
@@ -58,7 +73,7 @@ public interface StandaloneSlams extends Slams {
             }
 
             @Override
-            public void load(@NotNull String identifier, @NotNull LanguageParser... parsers) throws IOException {
+            public void load(@NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException {
                 slams.load(identifier, parsers);
             }
 

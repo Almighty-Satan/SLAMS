@@ -29,7 +29,7 @@ import java.util.Objects;
  * Represents a message. The value of a message is not necessarily a {@link String}. It could be a multidimensional
  * array of Strings, some sort of Map, a MiniMessage Component or something completely different.
  *
- * @param <T> the type of this messages value
+ * @param <T> the type of this message's value
  */
 public interface Message<T> {
 

@@ -37,8 +37,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * An extension of MiniMessage's {@link TagResolver} which supports context-dependent Tags.
+ */
 public interface ContextTagResolver extends TagResolver {
 
+    /**
+     * Gets a tag from this {@link ContextTagResolver} based on the given {@link Context}. The context may be null.
+     *
+     * @param name      the name of the tag
+     * @param arguments the arguments
+     * @param ctx       the MiniMessage {@link net.kyori.adventure.text.minimessage.Context}
+     * @param context   the Slams {@link Context}
+     * @return a tag
+     * @throws ParsingException if the arguments provided are invalid
+     */
     @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException;
 
     @Override
@@ -49,6 +62,11 @@ public interface ContextTagResolver extends TagResolver {
     @Override
     boolean has(@NotNull String name);
 
+    /**
+     * Returns a {@link ContextTagResolver} that does not resolve any tags.
+     *
+     * @return a {@link ContextTagResolver}
+     */
     // TODO this should return a singleton
     static @NotNull ContextTagResolver empty() {
         return new ContextTagResolver() {
@@ -64,6 +82,14 @@ public interface ContextTagResolver extends TagResolver {
         };
     }
 
+    /**
+     * Returns a {@link ContextTagResolver} that will use the given {@link TagResolver TagResolvers} to find a
+     * {@link Tag}. It can therefore resolve any {@link Tag} resolved by at least one of the given
+     * {@link TagResolver TagResolvers}.
+     *
+     * @param tagResolvers an array of {@link TagResolver TagResolvers}
+     * @return a new {@link ContextTagResolver}
+     */
     static @NotNull ContextTagResolver of(@NotNull TagResolver @NotNull ... tagResolvers) {
         Objects.requireNonNull(tagResolvers);
         if (tagResolvers.length == 0)
@@ -94,6 +120,14 @@ public interface ContextTagResolver extends TagResolver {
         };
     }
 
+    /**
+     * Returns a {@link ContextTagResolver} that will use the given {@link ContextTagResolver ContextTagResolvers} to
+     * find a {@link Tag}. It can therefore resolve any {@link Tag} resolved by at least one of the given
+     * {@link ContextTagResolver ContextTagResolvers}.
+     *
+     * @param tagResolvers an array of {@link ContextTagResolver ContextTagResolvers}
+     * @return a new {@link ContextTagResolver}
+     */
     static @NotNull ContextTagResolver of(@NotNull ContextTagResolver @NotNull ... tagResolvers) {
         Objects.requireNonNull(tagResolvers);
         if (tagResolvers.length == 0)
@@ -120,10 +154,25 @@ public interface ContextTagResolver extends TagResolver {
         };
     }
 
+
+    /**
+     * Returns a {@link ContextTagResolver} that will use the given {@link TagResolver TagResolvers} to find a
+     * {@link Tag}. It can therefore resolve any {@link Tag} resolved by at least one of the given
+     * {@link TagResolver TagResolvers}.
+     *
+     * @param tagResolvers a {@link List} of {@link TagResolver TagResolvers}
+     * @return a new {@link ContextTagResolver}
+     */
     static @NotNull ContextTagResolver of(@NotNull List<@NotNull TagResolver> tagResolvers) {
         return of(tagResolvers.toArray(new TagResolver[0]));
     }
 
+    /**
+     * Creates a new {@link ContextTagResolver} from the given {@link PlaceholderResolver}.
+     *
+     * @param placeholderResolver the {@link PlaceholderResolver}
+     * @return a new {@link ContextTagResolver}
+     */
     static @NotNull ContextTagResolver of(@NotNull PlaceholderResolver placeholderResolver) {
         Objects.requireNonNull(placeholderResolver);
         return new ContextTagResolver() {

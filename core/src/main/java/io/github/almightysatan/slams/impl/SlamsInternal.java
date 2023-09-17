@@ -27,6 +27,9 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Set;
 
+/**
+ * An extension of the {@link Slams} interface that contains methods that should only be used internally.
+ */
 public interface SlamsInternal extends Slams {
 
     void register(@NotNull MessageImpl<?, ?, ?> entry);
