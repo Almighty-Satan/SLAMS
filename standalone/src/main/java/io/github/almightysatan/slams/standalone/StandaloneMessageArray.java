@@ -20,10 +20,7 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.Slams;
-import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.*;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public interface StandaloneMessageArray extends StandaloneGenericMessage<String[]> {
+public interface StandaloneMessageArray extends Message<String[]> {
 
     static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
         Objects.requireNonNull(style);

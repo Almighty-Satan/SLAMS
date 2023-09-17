@@ -20,15 +20,12 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.Slams;
-import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.*;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface StandaloneMessage extends StandaloneGenericMessage<String> {
+public interface StandaloneMessage extends Message<String> {
 
     static @NotNull StandaloneMessage of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
         class StandaloneMessageImpl extends MessageImpl<String, Component, PlaceholderResolver> implements StandaloneMessage {
