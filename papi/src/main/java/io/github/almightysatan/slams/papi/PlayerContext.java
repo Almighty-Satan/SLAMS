@@ -20,7 +20,6 @@
 
 package io.github.almightysatan.slams.papi;
 
-import io.github.almightysatan.slams.Language;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +45,7 @@ public interface PlayerContext extends OfflinePlayerContext {
             }
 
             @Override
-            public @Nullable Language language() {
+            public @Nullable String language() {
                 return null;
             }
         };
