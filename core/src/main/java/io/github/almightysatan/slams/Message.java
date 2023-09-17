@@ -23,11 +23,22 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public interface Message<T> {
 
     @NotNull String path();
 
-    @NotNull T value(@Nullable Context context);
+    @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver);
+
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
+        Objects.requireNonNull(placeholderResolvers);
+        return this.value(context, PlaceholderResolver.of(placeholderResolvers));
+    }
+
+    default @NotNull T value(@Nullable Context context) {
+        return this.value(context, PlaceholderResolver.empty());
+    }
 
     default @NotNull T value() {
         return this.value(null);

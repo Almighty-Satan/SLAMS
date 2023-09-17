@@ -22,6 +22,7 @@ package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.Message;
+import io.github.almightysatan.slams.PlaceholderResolver;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,8 @@ public interface AdventureGenericMessage<T> extends Message<T> {
         return this.value(context, ContextTagResolver.of(tagResolvers));
     }
 
-    default @NotNull T value(@Nullable Context context) {
-        return this.value(context, TagResolver.empty());
+    @Override
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
+        return this.value(context, ContextTagResolver.of(placeholderResolver));
     }
 }
