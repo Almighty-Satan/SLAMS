@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class Language {
@@ -60,9 +61,10 @@ public class Language {
             }
 
             @Override
-            public void put(@NotNull String key, @NotNull Object value) {
+            public void put(@NotNull String key, @NotNull Object value) throws IllegalArgumentException {
+                Objects.requireNonNull(value);
                 if (!paths.contains(key))
-                    throw new RuntimeException("Unknown path: " + key);
+                    throw new IllegalArgumentException("Unknown path: " + key);
                 entries.put(key, value);
             }
         };
