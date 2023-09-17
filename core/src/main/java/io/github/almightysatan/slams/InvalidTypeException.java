@@ -20,5 +20,9 @@
 
 package io.github.almightysatan.slams;
 
+/**
+ * Thrown if the type of an object loaded by a {@link LanguageParser} does not match its expected type. For example the
+ * {@link LanguageParser} loads a String when an array of Strings is required.
+ */
 public class InvalidTypeException extends RuntimeException {
 }

@@ -38,12 +38,11 @@ public interface AdventureMessage extends AdventureGenericMessage<Component> {
 
     /**
      * Creates a new {@link AdventureMessage} with the given path, {@link Slams} and {@link ContextTagResolver}.
-     * If
      *
      * @param path        the path of the entry
      * @param slams       the language manager (slams instance) to use
      * @param tagResolver the tag resolver
-     * @return the created entry
+     * @return a new {@link AdventureMessage}
      */
     static @NotNull AdventureMessage of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
         class AdventureMessageImpl extends MessageImpl<Component, String, TagResolver> implements AdventureMessage {
@@ -75,6 +74,13 @@ public interface AdventureMessage extends AdventureGenericMessage<Component> {
         return new AdventureMessageImpl(path, slams, tagResolver);
     }
 
+    /**
+     * Creates a new {@link AdventureMessage} with the given path.
+     *
+     * @param path        the path of the entry
+     * @param slams       the language manager (slams instance) to use
+     * @return a new {@link AdventureMessage}
+     */
     static @NotNull AdventureMessage of(@NotNull String path, @NotNull Slams slams) {
         return of(path, slams, TagResolver.empty());
     }

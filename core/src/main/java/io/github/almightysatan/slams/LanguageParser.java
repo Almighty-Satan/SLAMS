@@ -27,15 +27,44 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * Loads messages
+ */
 public interface LanguageParser {
 
+    /**
+     * Loads messages and calls {@link Values#put} to map a value to its path. {@link Values#put} should only be called
+     * for paths that are an element of {@link Values#paths}. Values loaded by previous parsers can be accessed via
+     * {@link Values#get}. Paths are case-sensitive.
+     *
+     * @param values the {@link Values} object used to map values
+     * @throws IOException if an error occurs while loading messages
+     */
     void load(@NotNull Values values) throws IOException;
 
     interface Values {
+        /**
+         * Returns a {@link Set} containing all valid paths.
+         *
+         * @return a {@link Set} containing all valid paths
+         */
         @NotNull @Unmodifiable Set<@NotNull String> paths();
 
+        /**
+         * Returns the value mapped to a given path or {@code null} if the value does not exist or the path is invalid.
+         *
+         * @param key the path
+         * @return the value
+         */
         @Nullable Object get(@NotNull String key);
 
-        void put(@NotNull String key, @NotNull Object value);
+        /**
+         * Maps a given value to its given path. May be called multiple times for the same path.
+         *
+         * @param key the path
+         * @param value the value
+         * @throws IllegalArgumentException if the path is invalid (is not an element of {@link Values#paths})
+         */
+        void put(@NotNull String key, @NotNull Object value) throws IllegalArgumentException;
     }
 }

@@ -26,10 +26,27 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a placeholder. Extends {@link PlaceholderResolver} as a placeholder can resolve itself.
+ *
+ * @see Placeholder#constant(String, String)
+ */
 public interface Placeholder extends PlaceholderResolver {
 
+    /**
+     * The key of this placeholder. This should always return the same value. A key should not be null or empty.
+     *
+     * @return the key
+     */
     @NotNull String key();
 
+    /**
+     * Evaluates the value of the placeholder using the given context and arguments.
+     *
+     * @param context the context
+     * @param arguments the arguments
+     * @return the value of this placeholder
+     */
     @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments);
 
     @Override
@@ -37,6 +54,13 @@ public interface Placeholder extends PlaceholderResolver {
         return key.equals(this.key()) ? this : null;
     }
 
+    /**
+     * Returns a new placeholder.
+     *
+     * @param key the placeholder's key
+     * @param valueFunction a function that evaluates this placeholder's value
+     * @return a new placeholder.
+     */
     static @NotNull Placeholder of(@NotNull String key, @NotNull ValueFunction valueFunction) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(valueFunction);
@@ -53,14 +77,35 @@ public interface Placeholder extends PlaceholderResolver {
         };
     }
 
+    /**
+     * Returns a new placeholder. The {@link Context} is ignored when evaluating its value.
+     *
+     * @param key the placeholder's key
+     * @param valueFunction a function that evaluates this placeholder's value
+     * @return a new placeholder.
+     */
     static @NotNull Placeholder withArgs(@NotNull String key, @NotNull ContextIndependentValueFunction valueFunction) {
         return of(key, valueFunction);
     }
 
+    /**
+     * Returns a new placeholder. Arguments are ignored when evaluating its value.
+     *
+     * @param key the placeholder's key
+     * @param valueFunction a function that evaluates this placeholder's value
+     * @return a new placeholder.
+     */
     static @NotNull Placeholder withContext(@NotNull String key, @NotNull ArgumentIndependentValueFunction valueFunction) {
         return of(key, valueFunction);
     }
 
+    /**
+     * Returns a new placeholder with a constant value.
+     *
+     * @param key the placeholder's key
+     * @param value the value
+     * @return a new placeholder
+     */
     static @NotNull Placeholder constant(@NotNull String key, @NotNull String value) {
         Objects.requireNonNull(value);
         return of(key, (context, arguments) -> value);

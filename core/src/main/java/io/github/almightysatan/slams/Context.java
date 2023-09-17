@@ -23,9 +23,15 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Determines which language should be used and provides additional context for placeholders.
+ * Determines which language should be used and can be extended to provide additional context for placeholders.
  */
 public interface Context {
 
+    /**
+     * Returns the identifier of the language that should be used for this context. The default language is used in case
+     * this returns {@code null}.
+     *
+     * @return the identifier of the language that should be used for this context
+     */
     @Nullable String language();
 }

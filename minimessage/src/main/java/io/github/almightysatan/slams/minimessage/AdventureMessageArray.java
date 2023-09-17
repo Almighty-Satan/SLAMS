@@ -45,7 +45,7 @@ public interface AdventureMessageArray extends AdventureGenericMessage<Component
      * @param path        the path of the entry
      * @param slams       the language manager (slams instance) to use
      * @param tagResolver the tag resolver
-     * @return the created entry
+     * @return a new {@link AdventureMessageArray}
      */
     static @NotNull AdventureMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
         class AdventureMessageArrayImpl extends MessageImpl<Component[], String[], TagResolver> implements AdventureMessageArray {
@@ -85,6 +85,13 @@ public interface AdventureMessageArray extends AdventureGenericMessage<Component
         return new AdventureMessageArrayImpl(path, slams, tagResolver);
     }
 
+    /**
+     * Creates a new {@link AdventureMessageArray} with the given path.
+     *
+     * @param path        the path of the entry
+     * @param slams       the language manager (slams instance) to use
+     * @return a new {@link AdventureMessageArray}
+     */
     static @NotNull AdventureMessageArray of(@NotNull String path, @NotNull Slams slams) {
         return of(path, slams, TagResolver.empty());
     }
