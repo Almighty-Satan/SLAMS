@@ -34,7 +34,7 @@ import java.util.Objects;
 public interface Message<T> {
 
     /**
-     * The dotted path of this message.
+     * The case-sensitive dotted path of this message. For example 'path.to.example.message'.
      *
      * @return the path of this message
      */
