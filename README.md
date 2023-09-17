@@ -27,10 +27,11 @@ System.out.println(test1.value(null, Placeholder.constant("123", "456"))); // Pr
 ### Mini-Message Example
 ```java
 Slams slams = Slams.create("English"); // Set English as the default language
-slams.load("English", JacksonParser.createJsonParser("messages.json")); // Register language and load messages from JSON file
 
 AdventureMessage test0 = AdventureMessage.of("test0", slams, null); // Just a simple message
 AdventureMessage test1 = AdventureMessage.of("test1", slams, ctx -> Placeholder.unparsed("hello", "world")); // Message with placeholder, "hello" will be replaced with "world"
+
+slams.load("English", JacksonParser.createJsonParser("messages.json")); // Register language and load messages from JSON file
 
 audience.sendMessage(test0.value(null)); // Send the message to an Adventure Audience. No context is provided and therefore the default language will be used. See Context#language
 audience.sendMessage(test1.value(null, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("123", "456"))); // Send another message but add an additional minimessage placeholder
