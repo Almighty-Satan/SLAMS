@@ -28,7 +28,7 @@ System.out.println(test1.value(null, Placeholder.constant("123", "456"))); // Pr
 ```java
 Slams slams = Slams.create("English"); // Set English as the default language
 
-AdventureMessage test0 = AdventureMessage.of("test0", slams, null); // Just a simple message
+AdventureMessage test0 = AdventureMessage.of("test0", slams); // Just a simple message
 AdventureMessage test1 = AdventureMessage.of("test1", slams, ctx -> Placeholder.unparsed("hello", "world")); // Message with placeholder, "hello" will be replaced with "world"
 
 slams.load("English", JacksonParser.createJsonParser("messages.json")); // Register language and load messages from JSON file
