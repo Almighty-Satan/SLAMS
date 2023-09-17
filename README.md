@@ -33,7 +33,7 @@ AdventureMessage test1 = AdventureMessage.of("test1", slams, ctx -> net.kyori.ad
 
 slams.load("English", JacksonParser.createJsonParser("messages.json")); // Register language and load messages from JSON file
 
-audience.sendMessage(test0.value(null)); // Send the message to an Adventure Audience. No context is provided and therefore the default language will be used. See Context#language
+audience.sendMessage(test0.value()); // Send the message to an Adventure Audience. No context is provided and therefore the default language will be used. See Context#language
 audience.sendMessage(test1.value(null, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("123", "456"))); // Send another message but add an additional minimessage placeholder
 ```
 
