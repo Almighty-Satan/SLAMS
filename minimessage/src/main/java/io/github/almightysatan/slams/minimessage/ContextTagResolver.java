@@ -42,6 +42,18 @@ import java.util.Objects;
  */
 public interface ContextTagResolver extends TagResolver {
 
+    ContextTagResolver EMPTY = new ContextTagResolver() {
+        @Override
+        public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+            return null;
+        }
+
+        @Override
+        public boolean has(@NotNull String name) {
+            return false;
+        }
+    };
+
     /**
      * Gets a tag from this {@link ContextTagResolver} based on the given {@link Context}. The context may be null.
      *
@@ -67,19 +79,8 @@ public interface ContextTagResolver extends TagResolver {
      *
      * @return a {@link ContextTagResolver}
      */
-    // TODO this should return a singleton
     static @NotNull ContextTagResolver empty() {
-        return new ContextTagResolver() {
-            @Override
-            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
-                return null;
-            }
-
-            @Override
-            public boolean has(@NotNull String name) {
-                return false;
-            }
-        };
+        return EMPTY;
     }
 
     /**

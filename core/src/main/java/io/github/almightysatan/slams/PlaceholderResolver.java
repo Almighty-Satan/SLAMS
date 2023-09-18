@@ -34,6 +34,8 @@ import java.util.Objects;
 @FunctionalInterface
 public interface PlaceholderResolver {
 
+    PlaceholderResolver EMPTY = key -> null;
+
     /**
      * Searches for a {@link Placeholder} with the given key. SLAMS may cache the resulting {@link Placeholder} if
      * possible.
@@ -50,7 +52,7 @@ public interface PlaceholderResolver {
      * @return a {@link PlaceholderResolver} that always returns null
      */
     static @NotNull PlaceholderResolver empty() {
-        return key -> null;
+        return EMPTY;
     }
 
     /**
