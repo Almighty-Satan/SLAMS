@@ -98,6 +98,10 @@ Using multiple placeholders is also possible:
 PlaceholderResolver placeholderResolver = PlaceholderResolver.of(Placeholder.constant("hello", "world"), Placeholder.constant("1234", "5678"));
 StandaloneMessage.of("test2", slams, placeholderResolver);
 ```
+Though you might want to use a builder for that:
+```java
+PlaceholderResolver placeholderResolver = PlaceholderResolver.builder().constant("hello", "world").constant("1234", "5678").build();
+```
 `PlaceholderResolver` and `Placeholder` objects can be re-used as many times as you'd like.
 
 ### Context/Argument Dependent Placeholders

@@ -20,6 +20,7 @@
 
 package io.github.almightysatan.slams.minimessage;
 
+import io.github.almightysatan.slams.PlaceholderResolver;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.Placeholder;
 import net.kyori.adventure.text.Component;
@@ -93,7 +94,7 @@ public class MiniMessageTest {
     public void testContextPlaceholder() throws IOException {
         Slams langManager = Slams.create("0");
         TestContext context = new TestContext(null, "World");
-        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(Placeholder.contextual("test", TestContext.class, TestContext::getName)));
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(PlaceholderResolver.builder().contextual("test", TestContext.class, TestContext::getName).build()));
 
         langManager.load("0", values -> values.put("test", "Hello <test>"));
 

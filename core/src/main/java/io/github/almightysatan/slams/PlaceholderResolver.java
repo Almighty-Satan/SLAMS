@@ -23,7 +23,9 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -113,5 +115,189 @@ public interface PlaceholderResolver {
         return of(placeholderResolvers.toArray(new PlaceholderResolver[0]));
     }
 
-    // TODO add builder
+    /**
+     * Returns a new {@link Builder Builder}.
+     *
+     * @return a new {@link Builder Builder}
+     */
+    static @NotNull Builder builder() {
+        return new Builder() {
+            private final Map<String, Placeholder> placeholderMap = new HashMap<>();
+
+            @Override
+            public @NotNull PlaceholderResolver build() {
+                return this.placeholderMap::get;
+            }
+
+            @Override
+            public @NotNull Builder add(@NotNull Placeholder placeholder) {
+                String key = Objects.requireNonNull(placeholder.key());
+                this.placeholderMap.put(key, placeholder);
+                return this;
+            }
+        };
+    }
+
+    /**
+     * Used to build a {@link PlaceholderResolver}.
+     */
+    interface Builder {
+
+        @NotNull PlaceholderResolver build();
+
+        /**
+         * Adds a new {@link Placeholder}.
+         *
+         * @param placeholder the {@link Placeholder}
+         * @return this {@link Builder}
+         */
+        @NotNull Builder add(@NotNull Placeholder placeholder);
+
+        /**
+         * Adds a new {@link Placeholder}.
+         *
+         * @param key           the placeholder's key
+         * @param valueFunction a function that evaluates this placeholder's value
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder add(@NotNull String key, @NotNull Placeholder.ValueFunction valueFunction) {
+            return this.add(Placeholder.of(key, valueFunction));
+        }
+
+        /**
+         * Adds a new placeholder. The {@link Context} is ignored when evaluating its value.
+         *
+         * @param key           the placeholder's key
+         * @param valueFunction a function that evaluates this placeholder's value
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder withArgs(@NotNull String key, @NotNull Placeholder.ContextIndependentValueFunction valueFunction) {
+            return this.add(Placeholder.withArgs(key, valueFunction));
+        }
+
+        /**
+         * Adds a new placeholder. Arguments are ignored when evaluating its value.
+         *
+         * @param key           the placeholder's key
+         * @param valueFunction a function that evaluates this placeholder's value
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder withContext(@NotNull String key, @NotNull Placeholder.ArgumentIndependentValueFunction valueFunction) {
+            return this.add(Placeholder.withContext(key, valueFunction));
+        }
+
+        /**
+         * Adds a new placeholder. Arguments and {@link Context} are ignored when evaluating its value.
+         *
+         * @param key           the placeholder's key
+         * @param valueFunction a function that evaluates this placeholder's value
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder variable(@NotNull String key, @NotNull Placeholder.ArgumentAndContextIndependentValueFunction valueFunction) {
+            return this.add(Placeholder.variable(key, valueFunction));
+        }
+
+        /**
+         * Adds a new placeholder with a constant value.
+         *
+         * @param key   the placeholder's key
+         * @param value the value
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder constant(@NotNull String key, @NotNull String value) {
+            return this.add(Placeholder.constant(key, value));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValueFunction} will be
+         * used.
+         *
+         * @param key                   the placeholder's key
+         * @param type                  class of the context type
+         * @param contextValueFunction  a function that evaluates this placeholder's value
+         * @param fallbackValueFunction a function that evaluates this placeholder's value
+         * @param <T>                   the context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextualValueFunction<T> contextValueFunction, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
+            return this.add(Placeholder.contextual(key, type, contextValueFunction, fallbackValueFunction));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValue} will be used.
+         *
+         * @param key                  the placeholder's key
+         * @param type                 class of the context type
+         * @param contextValueFunction a function that evaluates this placeholder's value
+         * @param fallbackValue        the fallback value
+         * @param <T>                  the context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+            return this.add(Placeholder.contextual(key, type, contextValueFunction, fallbackValue));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * {@code contextValueFunction} will be used to evaluate the value.
+         *
+         * @param key                  the placeholder's key
+         * @param type                 class of the context type
+         * @param contextValueFunction a function that evaluates this placeholder's value
+         * @param <T>                  the context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextualValueFunction<T> contextValueFunction) {
+            return this.add(Placeholder.contextual(key, type, contextValueFunction));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValueFunction} will be
+         * used. Possible arguments passed to the placeholder are ignored.
+         *
+         * @param key                   the placeholder's key
+         * @param type                  class of the context type
+         * @param contextValueFunction  a function that evaluates this placeholder's value
+         * @param fallbackValueFunction a function that evaluates this placeholder's value
+         * @param <T>                   the context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
+            return this.add(Placeholder.contextual(key, type, contextValueFunction, fallbackValueFunction));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValue} will be used.
+         * Possible arguments passed to the placeholder are ignored.
+         *
+         * @param key                  the placeholder's key
+         * @param type                 class of the context type
+         * @param contextValueFunction a function that evaluates this placeholder's value
+         * @param fallbackValue        the fallback value
+         * @param <T>                  the context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+            return this.add(Placeholder.contextual(key, type, contextValueFunction, fallbackValue));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * {@code contextValueFunction} will be used to evaluate the value. Possible arguments passed to the placeholder are
+         * ignored.
+         *
+         * @param key                  the placeholder's key
+         * @param type                 class of the context type
+         * @param contextValueFunction a function that evaluates this placeholder's value
+         * @param <T>                  the context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextualValueFunction<T> contextValueFunction) {
+            return this.add(Placeholder.contextual(key, type, contextValueFunction));
+        }
+    }
 }
