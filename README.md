@@ -23,6 +23,9 @@ slams.load("English", JacksonParser.createJsonParser("messages.json")); // Regis
 System.out.println(test0.value()); // Print the message. No context is provided and therefore the default language will be used. See Context#language
 System.out.println(test1.value(null, Placeholder.constant("123", "456"))); // Print another message but add an additional placeholder
 ```
+The style of placeholders can be changed by declaring a `PlaceholderStyle` or using a `StandaloneSlams` object when registering a message.  
+By default they look like this `<key:argument0:argument1:argument2>`
+and can be escaped by using ``\``: `This does not contain a \<placeholder\>`
 
 ### Mini-Message Example
 ```java
@@ -38,6 +41,82 @@ audience.sendMessage(test1.value(null, net.kyori.adventure.text.minimessage.tag.
 ```
 
 [MiniMessages](https://docs.advntr.dev/minimessage/index.html) is a user friendly message format for Minecraft servers integrated into [Adventure](https://github.com/KyoriPowered/adventure). Every server core [implementing the Adventure-API](https://docs.advntr.dev/platform/native.html) (e.g. [Paper](https://papermc.io/)) should be supported out of the box while some others (e.g. [Craftbukkit or Spigot](https://docs.advntr.dev/platform/bukkit.html)) may require additional adapters.
+
+### Languages
+SLAMS supports using multiple languages. Which language is used is determined by the `Context` object
+that is passed when calling `Message#value`. SLAMS automatically uses the default language if either the
+context is `null` or `Context#language` returns `null`.
+```java
+Slams slams = Slams.create("English"); // Set English as the default language
+
+StandaloneMessage message = StandaloneMessage.of("example.greeting", slams); // Just a simple message
+
+// Let's load our languages
+slams.load("English", JacksonParser.createJsonParser("english_messages.json"));
+slams.load("German", JacksonParser.createJsonParser("german_messages.json"));
+slams.load("Spanish", JacksonParser.createJsonParser("spanish_messages.json"));
+
+System.out.println(message.value()); // This will use the default language (English)
+System.out.println(message.value(null)); // This also uses the default language
+
+Context context = new Context() { // You can extend this interface however you want
+    @Override
+    public @Nullable String language() {
+        return "Spanish";
+    }
+};
+
+System.out.println(message.value(context)); // This prints a Spanish message
+```
+`english_messages.json` would look something like this:
+```json
+{
+  "example": {
+    "greeting": "Hello"
+  }
+}
+```
+We can also use more than one `LanguageParser` when loading a language. They will be run in sequential order and can
+read or overwrite values loaded by previous parsers. This could be used provide a user with a config to change messages
+and use a pre-configured default value if a message is missing from the user's config.
+```java
+slams.load("English", JacksonParser.createJsonParser("internal/default_messages.json"), JacksonParser.createJsonParser("config/user_messages.json"));
+```
+Implementing your own `LanguageParser` is also possible. Have a look at `JacksonParser` as a reference.
+
+### Placeholders
+Placeholders can either be passed when registering a message
+```java
+StandaloneMessage testMessage = StandaloneMessage.of("test", slams, Placeholder.constant("pi", "3"));
+```
+or when calling `Message#value`
+```java
+testMessage.value(context, Placeholder.constant("e", "3"));
+```
+Using multiple placeholders is also possible:
+```java
+PlaceholderResolver placeholderResolver = PlaceholderResolver.of(Placeholder.constant("hello", "world"), Placeholder.constant("1234", "5678"));
+StandaloneMessage.of("test2", slams, placeholderResolver);
+```
+`PlaceholderResolver` and `Placeholder` objects can be re-used as many times as you'd like.
+
+### Context/Argument Dependent Placeholders
+Placeholders can have arguments. The following placeholder always replaces itself with its first argument.
+For example `<test:Hello World>` would be replaced with `Hello World`. Using arguments like this might seem pretty
+useless, but you might want wo use them to pass something like a `SimpleDateFormat`.
+```java
+Placeholder.withArgs("test", arguments -> arguments.isEmpty() ? "Empty" : arguments.get(0));
+```
+Let's say we have a `User` that extends from `Context` and `User` has a method `getName`. We can now create a 
+placeholder that is replaced with the name of the user.
+```java
+Placeholder.contextual("name", User.class, User::getName);
+```
+If the provided context is `null` or not a `User` this placeholder would be replaced with something telling us our
+context is invalid. If we want to avoid this we can provide our own fallback value:
+```java
+Placeholder.contextual("name", User.class, User::getName, "Unknown User");
+```
 
 ### Building
 To build the project, open the terminal and type `./gradlew build`. All jars will be located at `<module>/build/libs/<module>-<version>.jar`.
