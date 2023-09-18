@@ -55,11 +55,11 @@ public interface Placeholder extends PlaceholderResolver {
     }
 
     /**
-     * Returns a new placeholder.
+     * Returns a new {@link Placeholder}.
      *
      * @param key           the placeholder's key
      * @param valueFunction a function that evaluates this placeholder's value
-     * @return a new placeholder.
+     * @return a new placeholder
      */
     static @NotNull Placeholder of(@NotNull String key, @NotNull ValueFunction valueFunction) {
         Objects.requireNonNull(key);
@@ -78,29 +78,29 @@ public interface Placeholder extends PlaceholderResolver {
     }
 
     /**
-     * Returns a new placeholder. The {@link Context} is ignored when evaluating its value.
+     * Returns a new {@link Placeholder}. The {@link Context} is ignored when evaluating its value.
      *
      * @param key           the placeholder's key
      * @param valueFunction a function that evaluates this placeholder's value
-     * @return a new placeholder.
+     * @return a new placeholder
      */
     static @NotNull Placeholder withArgs(@NotNull String key, @NotNull ContextIndependentValueFunction valueFunction) {
         return of(key, valueFunction);
     }
 
     /**
-     * Returns a new placeholder. Arguments are ignored when evaluating its value.
+     * Returns a new {@link Placeholder}. Arguments are ignored when evaluating its value.
      *
      * @param key           the placeholder's key
      * @param valueFunction a function that evaluates this placeholder's value
-     * @return a new placeholder.
+     * @return a new placeholder
      */
     static @NotNull Placeholder withContext(@NotNull String key, @NotNull ArgumentIndependentValueFunction valueFunction) {
         return of(key, valueFunction);
     }
 
     /**
-     * Returns a new placeholder. Arguments and {@link Context} are ignored when evaluating its value.
+     * Returns a new {@link Placeholder}. Arguments and {@link Context} are ignored when evaluating its value.
      *
      * @param key           the placeholder's key
      * @param valueFunction a function that evaluates this placeholder's value
@@ -112,7 +112,7 @@ public interface Placeholder extends PlaceholderResolver {
     }
 
     /**
-     * Returns a new placeholder with a constant value.
+     * Returns a new {@link Placeholder} with a constant value.
      *
      * @param key   the placeholder's key
      * @param value the value
@@ -123,30 +123,98 @@ public interface Placeholder extends PlaceholderResolver {
         return of(key, (context, arguments) -> value);
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+     * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValueFunction} will be
+     * used.
+     *
+     * @param key                   the placeholder's key
+     * @param type                  class of the context type
+     * @param contextValueFunction  a function that evaluates this placeholder's value
+     * @param fallbackValueFunction a function that evaluates this placeholder's value
+     * @param <T>                   the context type
+     * @return a new placeholder
+     */
     @SuppressWarnings("unchecked")
-    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction, ValueFunction fallbackValueFunction) {
+    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(contextValueFunction);
         Objects.requireNonNull(fallbackValueFunction);
         return of(key, (context, arguments) -> context != null && type.isAssignableFrom(context.getClass()) ? contextValueFunction.value((T) context, arguments) : fallbackValueFunction.value(context, arguments));
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+     * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValue} will be used.
+     *
+     * @param key                  the placeholder's key
+     * @param type                 class of the context type
+     * @param contextValueFunction a function that evaluates this placeholder's value
+     * @param fallbackValue        the fallback value
+     * @param <T>                  the context type
+     * @return a new placeholder
+     */
     static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
         return contextual(key, type, contextValueFunction, (context, arguments) -> fallbackValue);
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+     * {@code contextValueFunction} will be used to evaluate the value.
+     *
+     * @param key                  the placeholder's key
+     * @param type                 class of the context type
+     * @param contextValueFunction a function that evaluates this placeholder's value
+     * @param <T>                  the context type
+     * @return a new placeholder
+     */
     static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction) {
         return contextual(key, type, contextValueFunction, "INVALID_CONTEXT");
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+     * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValueFunction} will be
+     * used. Possible arguments passed to the placeholder are ignored.
+     *
+     * @param key                   the placeholder's key
+     * @param type                  class of the context type
+     * @param contextValueFunction  a function that evaluates this placeholder's value
+     * @param fallbackValueFunction a function that evaluates this placeholder's value
+     * @param <T>                   the context type
+     * @return a new placeholder
+     */
     static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
         return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction, fallbackValueFunction);
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+     * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValue} will be used.
+     * Possible arguments passed to the placeholder are ignored.
+     *
+     * @param key                  the placeholder's key
+     * @param type                 class of the context type
+     * @param contextValueFunction a function that evaluates this placeholder's value
+     * @param fallbackValue        the fallback value
+     * @param <T>                  the context type
+     * @return a new placeholder
+     */
     static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
         return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction, fallbackValue);
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+     * {@code contextValueFunction} will be used to evaluate the value. Possible arguments passed to the placeholder are
+     * ignored.
+     *
+     * @param key                  the placeholder's key
+     * @param type                 class of the context type
+     * @param contextValueFunction a function that evaluates this placeholder's value
+     * @param <T>                  the context type
+     * @return a new placeholder
+     */
     static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction) {
         return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction);
     }
