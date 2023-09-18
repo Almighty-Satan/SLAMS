@@ -43,7 +43,7 @@ public interface Placeholder extends PlaceholderResolver {
     /**
      * Evaluates the value of the placeholder using the given context and arguments.
      *
-     * @param context the context
+     * @param context   the context
      * @param arguments the arguments
      * @return the value of this placeholder
      */
@@ -57,7 +57,7 @@ public interface Placeholder extends PlaceholderResolver {
     /**
      * Returns a new placeholder.
      *
-     * @param key the placeholder's key
+     * @param key           the placeholder's key
      * @param valueFunction a function that evaluates this placeholder's value
      * @return a new placeholder.
      */
@@ -80,7 +80,7 @@ public interface Placeholder extends PlaceholderResolver {
     /**
      * Returns a new placeholder. The {@link Context} is ignored when evaluating its value.
      *
-     * @param key the placeholder's key
+     * @param key           the placeholder's key
      * @param valueFunction a function that evaluates this placeholder's value
      * @return a new placeholder.
      */
@@ -91,7 +91,7 @@ public interface Placeholder extends PlaceholderResolver {
     /**
      * Returns a new placeholder. Arguments are ignored when evaluating its value.
      *
-     * @param key the placeholder's key
+     * @param key           the placeholder's key
      * @param valueFunction a function that evaluates this placeholder's value
      * @return a new placeholder.
      */
@@ -100,9 +100,21 @@ public interface Placeholder extends PlaceholderResolver {
     }
 
     /**
+     * Returns a new placeholder. Arguments and {@link Context} are ignored when evaluating its value.
+     *
+     * @param key           the placeholder's key
+     * @param valueFunction a function that evaluates this placeholder's value
+     * @return a new placeholder
+     */
+    static @NotNull Placeholder variable(@NotNull String key, @NotNull ArgumentAndContextIndependentValueFunction valueFunction) {
+        Objects.requireNonNull(valueFunction);
+        return of(key, valueFunction);
+    }
+
+    /**
      * Returns a new placeholder with a constant value.
      *
-     * @param key the placeholder's key
+     * @param key   the placeholder's key
      * @param value the value
      * @return a new placeholder
      */
@@ -161,6 +173,16 @@ public interface Placeholder extends PlaceholderResolver {
         @Override
         default @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments) {
             return this.value(arguments);
+        }
+    }
+
+    @FunctionalInterface
+    interface ArgumentAndContextIndependentValueFunction extends ValueFunction {
+        @NotNull String value();
+
+        @Override
+        default @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments) {
+            return this.value();
         }
     }
 
