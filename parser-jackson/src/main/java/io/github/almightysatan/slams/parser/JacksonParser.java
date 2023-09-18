@@ -56,11 +56,12 @@ public class JacksonParser implements LanguageParser {
     public void load(@NotNull Values values) throws IOException {
         JsonNode root = this.dataSource.readTree(this.mapper);
 
-        for (String path : values.paths()) {
-            JsonNode node = resolveNode(root, path);
-            if (node != null)
-                values.put(path, this.mapper.treeToValue(node, Object.class));
-        }
+        if (root != null)
+            for (String path : values.paths()) {
+                JsonNode node = resolveNode(root, path);
+                if (node != null)
+                    values.put(path, this.mapper.treeToValue(node, Object.class));
+            }
     }
 
     /**
