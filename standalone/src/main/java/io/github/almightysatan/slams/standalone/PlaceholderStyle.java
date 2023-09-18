@@ -22,22 +22,60 @@ package io.github.almightysatan.slams.standalone;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The Style of Placeholders.
+ */
 public interface PlaceholderStyle {
 
+    /**
+     * Placeholders look like this: {@code <key:arg1:arg2>}
+     */
     PlaceholderStyle ANGLE_BRACKETS = of('<', '>', ':');
 
+    /**
+     * Placeholders look like this: {@code {key:arg1:arg2}}
+     */
     PlaceholderStyle CURLY_BRACKETS = of('{', '}', ':');
 
+    /**
+     * Placeholders look like this: {@code (key:arg1:arg2)}
+     */
     PlaceholderStyle PARENTHESES = of('(', ')', ':');
 
+    /**
+     * Placeholders look like this: {@code %key:arg1:arg2%}
+     */
     PlaceholderStyle PERCENT = of('%', '%', ':');
 
+    /**
+     * Returns the first char of a placeholder.
+     *
+     * @return the first char of a placeholder
+     */
     char head();
 
+    /**
+     * Returns the last char of a placeholder.
+     *
+     * @return the last char of a placeholder
+     */
     char tail();
 
+    /**
+     * Returns the char used to separate arguments
+     *
+     * @return the char used to separate arguments
+     */
     char separator();
 
+    /**
+     * Creates a new {@link PlaceholderStyle}.
+     *
+     * @param head the first char of a placeholder
+     * @param tail the last char of a placeholder
+     * @param separator the char used to separate arguments
+     * @return a new {@link PlaceholderStyle}
+     */
     static @NotNull PlaceholderStyle of(char head, char tail, char separator) {
         return new PlaceholderStyle() {
             @Override

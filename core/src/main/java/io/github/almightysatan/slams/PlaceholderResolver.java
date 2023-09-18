@@ -26,20 +26,48 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Resolves {@link Placeholder Placeholders}.
+ */
 @FunctionalInterface
 public interface PlaceholderResolver {
 
+    /**
+     * Searches for a {@link Placeholder} with the given key. SLAMS may cache the resulting {@link Placeholder} if
+     * possible.
+     *
+     * @param key the key
+     * @return the placeholder or {@code null}
+     */
     @Nullable Placeholder resolve(@NotNull String key);
 
+    /**
+     * Returns a {@link PlaceholderResolver} that always returns null (does not resolve any
+     * {@link Placeholder Placeholders}).
+     *
+     * @return a {@link PlaceholderResolver} that always returns null
+     */
     static @NotNull PlaceholderResolver empty() {
         return key -> null;
     }
 
+    /**
+     * Returns a {@link PlaceholderResolver} that only resolves a single {@link Placeholder}.
+     *
+     * @param placeholder the {@link Placeholder}
+     * @return a new {@link PlaceholderResolver}
+     */
     static @NotNull PlaceholderResolver of(@NotNull Placeholder placeholder) {
         Objects.requireNonNull(placeholder);
         return key -> key.equals(placeholder.key()) ? placeholder : null;
     }
 
+    /**
+     * Returns a {@link PlaceholderResolver} that can resolve all the given {@link Placeholder Placeholders}.
+     *
+     * @param placeholders an array of {@link Placeholder Placeholders}
+     * @return a new {@link PlaceholderResolver}
+     */
     static @NotNull PlaceholderResolver of(@NotNull Placeholder @NotNull ... placeholders) {
         if (placeholders.length == 0)
             return empty();
@@ -52,6 +80,14 @@ public interface PlaceholderResolver {
         };
     }
 
+    /**
+     * Returns a {@link PlaceholderResolver} that will use the given {@link PlaceholderResolver PlaceholderResolvers} to
+     * find a {@link Placeholder}. It can therefore resolve any {@link Placeholder} resolved by at least one of the
+     * given {@link PlaceholderResolver PlaceholderResolvers}.
+     *
+     * @param placeholderResolvers an array of {@link PlaceholderResolver PlaceholderResolvers}
+     * @return a new {@link PlaceholderResolver}
+     */
     static @NotNull PlaceholderResolver of(@NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
         if (placeholderResolvers.length == 0)
             return empty();
@@ -65,6 +101,14 @@ public interface PlaceholderResolver {
         };
     }
 
+    /**
+     * Returns a {@link PlaceholderResolver} that will use the given {@link PlaceholderResolver PlaceholderResolvers} to
+     * find a {@link Placeholder}. It can therefore resolve any {@link Placeholder} resolved by at least one of the
+     * given {@link PlaceholderResolver PlaceholderResolvers}.
+     *
+     * @param placeholderResolvers a list of {@link PlaceholderResolver PlaceholderResolvers}
+     * @return a new {@link PlaceholderResolver}
+     */
     static @NotNull PlaceholderResolver of(@NotNull List<@NotNull PlaceholderResolver> placeholderResolvers) {
         return of(placeholderResolvers.toArray(new PlaceholderResolver[0]));
     }

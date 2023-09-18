@@ -29,10 +29,29 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+/**
+ * Represents a MiniMessage {@link Message}.
+ *
+ * @param <T> the type of this messages value
+ */
 public interface AdventureGenericMessage<T> extends Message<T> {
 
+    /**
+     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
+     *
+     * @param context the context
+     * @param tagResolver a {@link TagResolver}
+     * @return the value
+     */
     @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver);
 
+    /**
+     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
+     *
+     * @param context the context
+     * @param tagResolvers an array of {@link TagResolver TagResolvers}
+     * @return the value
+     */
     default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) {
         Objects.requireNonNull(tagResolvers);
         return this.value(context, ContextTagResolver.of(tagResolvers));

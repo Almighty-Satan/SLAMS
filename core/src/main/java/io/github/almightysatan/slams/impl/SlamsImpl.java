@@ -28,6 +28,9 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * An implementation of the {@link SlamsInternal} interface.
+ */
 public class SlamsImpl implements SlamsInternal {
 
     private final Map<String, MessageImpl<?, ?, ?>> entries;

@@ -33,8 +33,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Represents an array of messages parsed in MiniMessage format.
+ * They can be used to get a {@link Component} array.
+ */
 public interface AdventureMessageArray extends AdventureGenericMessage<Component[]> {
 
+    /**
+     * Creates a new {@link AdventureMessageArray} with the given path, {@link Slams} and {@link ContextTagResolver}.
+     *
+     * @param path        the path of the entry
+     * @param slams       the language manager (slams instance) to use
+     * @param tagResolver the tag resolver
+     * @return a new {@link AdventureMessageArray}
+     */
     static @NotNull AdventureMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
         class AdventureMessageArrayImpl extends MessageImpl<Component[], String[], TagResolver> implements AdventureMessageArray {
 
@@ -56,6 +68,12 @@ public interface AdventureMessageArray extends AdventureGenericMessage<Component
                 throw new InvalidTypeException();
             }
 
+            /**
+             * Returns the value of this entry as a {@link Component} array.
+             * @param context       the context
+             * @param tagResolver   the tag resolver
+             * @return the value of this entry as a {@link Component} array
+             */
             @Override
             public @NotNull Component @NotNull [] value(@Nullable Context context, @NotNull TagResolver tagResolver) {
                 Object value = this.rawValue(context);
@@ -67,6 +85,13 @@ public interface AdventureMessageArray extends AdventureGenericMessage<Component
         return new AdventureMessageArrayImpl(path, slams, tagResolver);
     }
 
+    /**
+     * Creates a new {@link AdventureMessageArray} with the given path.
+     *
+     * @param path        the path of the entry
+     * @param slams       the language manager (slams instance) to use
+     * @return a new {@link AdventureMessageArray}
+     */
     static @NotNull AdventureMessageArray of(@NotNull String path, @NotNull Slams slams) {
         return of(path, slams, TagResolver.empty());
     }
