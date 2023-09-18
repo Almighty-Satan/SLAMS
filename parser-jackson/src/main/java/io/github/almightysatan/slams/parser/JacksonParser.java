@@ -32,6 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * A {@link LanguageParser} that parses message from different formats (e.g. JSON) using Jackson.
@@ -45,7 +46,7 @@ public class JacksonParser implements LanguageParser {
      * Creates a new {@link JacksonParser} from the given {@link ObjectMapper} and {@link DataSource}.
      *
      * @param objectMapper the {@link ObjectMapper}
-     * @param dataSource the {@link DataSource}
+     * @param dataSource   the {@link DataSource}
      */
     protected JacksonParser(@NotNull ObjectMapper objectMapper, @NotNull DataSource dataSource) {
         this.mapper = Objects.requireNonNull(objectMapper);
@@ -92,7 +93,7 @@ public class JacksonParser implements LanguageParser {
      * {@link File}.
      *
      * @param objectMapper the {@link ObjectMapper}
-     * @param file {@link File}
+     * @param file         the {@link File}
      * @return a new {@link LanguageParser}
      */
     public static @NotNull LanguageParser createParser(@NotNull ObjectMapper objectMapper, @NotNull File file) {
@@ -106,24 +107,28 @@ public class JacksonParser implements LanguageParser {
     }
 
     /**
-     * Creates a new {@link LanguageParser} that will use the given {@link ObjectMapper} to read messages from a given
-     * {@link InputStream}.
+     * Creates a new {@link LanguageParser} that will use the given {@link ObjectMapper} to read messages from an
+     * {@link InputStream} that is supplied by the given {@link Supplier}.
      *
-     * @param objectMapper the {@link ObjectMapper}
-     * @param inputStream {@link InputStream}
+     * @param objectMapper        the {@link ObjectMapper}
+     * @param inputStreamSupplier the {@link Supplier} that supplies {@link InputStream InputStreams}
      * @return a new {@link LanguageParser}
      */
-    public static @NotNull LanguageParser createParser(@NotNull ObjectMapper objectMapper, @NotNull InputStream inputStream) {
+    public static @NotNull LanguageParser createParser(@NotNull ObjectMapper objectMapper, @NotNull Supplier<@NotNull InputStream> inputStreamSupplier) {
         Objects.requireNonNull(objectMapper);
-        Objects.requireNonNull(inputStream);
-        return new JacksonParser(objectMapper, mapper -> mapper.readTree(inputStream));
+        Objects.requireNonNull(inputStreamSupplier);
+        return new JacksonParser(objectMapper, mapper -> {
+            try (InputStream inputStream = inputStreamSupplier.get()) {
+                return mapper.readTree(inputStream);
+            }
+        });
     }
 
     /**
      * Creates a new {@link LanguageParser} that will use Jackson's {@link JsonMapper} to read messages from a given
      * {@link File}.
      *
-     * @param file {@link File}
+     * @param file the {@link File}
      * @return a new {@link LanguageParser}
      */
     public static @NotNull LanguageParser createJsonParser(@NotNull File file) {
@@ -131,13 +136,13 @@ public class JacksonParser implements LanguageParser {
     }
 
     /**
-     * Creates a new {@link LanguageParser} that will use Jackson's {@link JsonMapper} to read messages from a given
-     * {@link InputStream}.
+     * Creates a new {@link LanguageParser} that will use Jackson's {@link JsonMapper} to read messages from an
+     * {@link InputStream} that is supplied by the given {@link Supplier}.
      *
-     * @param inputStream {@link InputStream}
+     * @param inputStreamSupplier the {@link Supplier} that supplies {@link InputStream InputStreams}
      * @return a new {@link LanguageParser}
      */
-    public static @NotNull LanguageParser createJsonParser(@NotNull InputStream inputStream) {
-        return createParser(new JsonMapper(), inputStream);
+    public static @NotNull LanguageParser createJsonParser(@NotNull Supplier<@NotNull InputStream> inputStreamSupplier) {
+        return createParser(new JsonMapper(), inputStreamSupplier);
     }
 }
