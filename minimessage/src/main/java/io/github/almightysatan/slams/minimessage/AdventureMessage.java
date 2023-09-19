@@ -39,7 +39,7 @@ public interface AdventureMessage extends AdventureGenericMessage<Component> {
     /**
      * Creates a new {@link AdventureMessage} with the given path, {@link Slams} and {@link ContextTagResolver}.
      *
-     * @param path        the path of the entry
+     * @param path        the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams       the language manager (slams instance) to use
      * @param tagResolver the tag resolver
      * @return a new {@link AdventureMessage}
@@ -77,7 +77,7 @@ public interface AdventureMessage extends AdventureGenericMessage<Component> {
     /**
      * Creates a new {@link AdventureMessage} with the given path.
      *
-     * @param path        the path of the entry
+     * @param path        the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams       the language manager (slams instance) to use
      * @return a new {@link AdventureMessage}
      */

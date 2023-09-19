@@ -38,7 +38,7 @@ public interface StandaloneMessageArray extends Message<String[]> {
      * Creates a new {@link StandaloneMessageArray} with the given path, {@link PlaceholderStyle}, {@link Slams} and
      * {@link PlaceholderResolver}.
      *
-     * @param path                the path of the entry
+     * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams               the language manager (slams instance) to use
      * @param style               the {@link PlaceholderStyle}
      * @param placeholderResolver the tag resolver
@@ -82,7 +82,7 @@ public interface StandaloneMessageArray extends Message<String[]> {
      * Creates a new {@link StandaloneMessageArray} with the given path, {@link Slams} and {@link PlaceholderResolver}.
      * Uses {@link PlaceholderStyle#ANGLE_BRACKETS}.
      *
-     * @param path                the path of the entry
+     * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams               the language manager (slams instance) to use
      * @param placeholderResolver the tag resolver
      * @return a new {@link StandaloneMessageArray}
@@ -94,7 +94,7 @@ public interface StandaloneMessageArray extends Message<String[]> {
     /**
      * Creates a new {@link StandaloneMessageArray} with the given path. Uses {@link PlaceholderStyle#ANGLE_BRACKETS}.
      *
-     * @param path                the path of the entry
+     * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams               the language manager (slams instance) to use
      * @return a new {@link StandaloneMessageArray}
      */
@@ -106,7 +106,7 @@ public interface StandaloneMessageArray extends Message<String[]> {
      * Creates a new {@link StandaloneMessageArray} with the given path, {@link PlaceholderStyle}, {@link StandaloneSlams}
      * and {@link PlaceholderResolver}.  Uses {@link StandaloneSlams#style()}.
      *
-     * @param path                the path of the entry
+     * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams               the language manager (slams instance) to use
      * @param placeholderResolver the tag resolver
      * @return a new {@link StandaloneMessageArray}
@@ -119,7 +119,7 @@ public interface StandaloneMessageArray extends Message<String[]> {
      * Creates a new {@link StandaloneMessageArray} with the given path, {@link PlaceholderStyle}, {@link StandaloneSlams}
      * and {@link PlaceholderResolver}. Uses {@link StandaloneSlams#style()}.
      *
-     * @param path                the path of the entry
+     * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams               the language manager (slams instance) to use
      * @return a new {@link StandaloneMessageArray}
      */
