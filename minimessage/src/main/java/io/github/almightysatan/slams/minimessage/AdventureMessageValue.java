@@ -18,28 +18,28 @@
  * USA
  */
 
-package io.github.almightysatan.slams.impl;
+package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Slams;
+import io.github.almightysatan.slams.MessageValue;
+import io.github.almightysatan.slams.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Set;
+import java.util.Objects;
 
-/**
- * An extension of the {@link Slams} interface that contains methods that should only be used internally.
- */
-public interface SlamsInternal extends Slams {
+public interface AdventureMessageValue<T> extends MessageValue<T> {
 
-    void register(@NotNull MessageImpl<?> entry);
+    @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver);
 
-    @NotNull @Unmodifiable Set<@NotNull String> paths();
+    default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) {
+        Objects.requireNonNull(tagResolvers);
+        return this.value(context, ContextTagResolver.of(tagResolvers));
+    }
 
-    @Nullable Language language(@NotNull String identifier);
-
-    @NotNull Language defaultLanguage();
-
-    @NotNull Language language(@Nullable Context context);
+    @Override
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
+        return this.value(context, ContextTagResolver.of(placeholderResolver));
+    }
 }

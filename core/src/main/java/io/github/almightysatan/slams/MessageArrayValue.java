@@ -18,28 +18,11 @@
  * USA
  */
 
-package io.github.almightysatan.slams.impl;
+package io.github.almightysatan.slams;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Slams;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
+public interface MessageArrayValue<T, U extends MessageValue<T>> extends MessageValue<T[]> {
 
-import java.util.Set;
+    U get(int index);
 
-/**
- * An extension of the {@link Slams} interface that contains methods that should only be used internally.
- */
-public interface SlamsInternal extends Slams {
-
-    void register(@NotNull MessageImpl<?> entry);
-
-    @NotNull @Unmodifiable Set<@NotNull String> paths();
-
-    @Nullable Language language(@NotNull String identifier);
-
-    @NotNull Language defaultLanguage();
-
-    @NotNull Language language(@Nullable Context context);
+    int size();
 }

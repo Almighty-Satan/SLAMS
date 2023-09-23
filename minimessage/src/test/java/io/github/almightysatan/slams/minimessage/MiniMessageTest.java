@@ -28,6 +28,8 @@ import net.kyori.adventure.text.TextComponent;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -123,5 +125,32 @@ public class MiniMessageTest {
         Component[] components = entry.value(null);
         assertEquals("Hello", ((TextComponent) components[0]).content());
         assertEquals("World", ((TextComponent) components[1]).content());
+    }
+
+    @Test
+    public void testArray2d() throws IOException {
+        Slams langManager = Slams.create("0");
+        AdventureMessageArray2d entry = AdventureMessageArray2d.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
+
+        langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
+
+        Component[][] components = entry.value(null);
+        assertEquals("Hello", ((TextComponent) components[0][0]).content());
+        assertEquals("World", ((TextComponent) components[0][1]).content());
+    }
+
+    @Test
+    public void testMap() throws IOException {
+        Slams langManager = Slams.create("0");
+        AdventureMessageMap<Integer> entry = AdventureMessageMap.of("test", langManager, Integer.class, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
+
+        Map<Integer, String> map = new HashMap<>();
+        map.put(5, "Hello");
+        map.put(99, "<test>");
+        langManager.load("0", values -> values.put("test", map));
+
+        Map<Integer, Component> components = entry.value();
+        assertEquals("Hello", ((TextComponent) components.get(5)).content());
+        assertEquals("World", ((TextComponent) components.get(99)).content());
     }
 }

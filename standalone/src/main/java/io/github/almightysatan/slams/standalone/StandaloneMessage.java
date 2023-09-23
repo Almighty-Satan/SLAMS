@@ -20,15 +20,19 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.*;
+import io.github.almightysatan.slams.Message;
+import io.github.almightysatan.slams.MessageValue;
+import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * Represents a {@link Message} in Standalone format. The value of this message is a String.
  */
-public interface StandaloneMessage extends Message<String> {
+public interface StandaloneMessage extends StandaloneGenericMessage<String> {
 
     /**
      * Creates a new {@link StandaloneMessage} with the given path, {@link PlaceholderStyle}, {@link Slams} and
@@ -41,27 +45,19 @@ public interface StandaloneMessage extends Message<String> {
      * @return a new {@link StandaloneMessage}
      */
     static @NotNull StandaloneMessage of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
-        class StandaloneMessageImpl extends MessageImpl<String, Component, PlaceholderResolver> implements StandaloneMessage {
+        Objects.requireNonNull(style);
+        class StandaloneMessageImpl extends MessageImpl<String> implements StandaloneMessage {
 
-            protected StandaloneMessageImpl(@NotNull String path, @NotNull Slams languageManager, @NotNull PlaceholderResolver placeholderResolver) {
-                super(path, languageManager, placeholderResolver);
+            protected StandaloneMessageImpl() {
+                super(path, slams);
             }
 
             @Override
-            protected @NotNull Component checkType(@Nullable Object value) throws InvalidTypeException {
-                if (!(value instanceof String))
-                    throw new InvalidTypeException();
-                return new CompositeComponent(style, (String) value, this.placeholderResolver());
-            }
-
-            @Override
-            public @NotNull String value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
-                Component component = this.rawValue(context);
-                return component.value(context, PlaceholderResolver.of(placeholderResolver, this.placeholderResolver()));
+            protected @NotNull MessageValue<String> toMessageValue(Object value) {
+                return StandaloneTypes.messageValue(style, placeholderResolver, value);
             }
         }
-
-        return new StandaloneMessageImpl(path, slams, placeholderResolver);
+        return new StandaloneMessageImpl();
     }
 
     /**

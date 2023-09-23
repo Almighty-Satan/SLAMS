@@ -21,14 +21,14 @@
 package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.InvalidTypeException;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * Represents a message parsed in MiniMessage format.
@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
 public interface AdventureMessage extends AdventureGenericMessage<Component> {
 
     /**
-     * Creates a new {@link AdventureMessage} with the given path, {@link Slams} and {@link ContextTagResolver}.
+     * Creates a new {@link AdventureMessage} with the given path, {@link Slams} and {@link TagResolver}.
      *
      * @param path        the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams       the language manager (slams instance) to use
@@ -45,33 +45,24 @@ public interface AdventureMessage extends AdventureGenericMessage<Component> {
      * @return a new {@link AdventureMessage}
      */
     static @NotNull AdventureMessage of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
-        class AdventureMessageImpl extends MessageImpl<Component, String, TagResolver> implements AdventureMessage {
+        Objects.requireNonNull(tagResolver);
+        class AdventureMessageImpl extends MessageImpl<Component> implements AdventureMessage {
 
-            protected AdventureMessageImpl(@NotNull String path, @NotNull Slams languageManager, @NotNull TagResolver tagResolver) {
-                super(path, languageManager, tagResolver);
+            protected AdventureMessageImpl() {
+                super(path, slams);
             }
 
             @Override
-            protected @NotNull String checkType(@Nullable Object value) throws InvalidTypeException {
-                if (!(value instanceof String))
-                    throw new InvalidTypeException();
-                return (String) value;
+            protected @NotNull AdventureMessageValue<Component> toMessageValue(Object value) {
+                return AdventureTypes.messageValue(tagResolver, value);
             }
 
-            /**
-             * Returns the value of this entry as a {@link Component}.
-             * @param context       the context
-             * @param tagResolver   the tag resolver
-             * @return the value of this entry as a {@link Component}
-             */
             @Override
-            public @NotNull Component value(@Nullable Context context, @NotNull TagResolver tagResolver) {
-                String value = this.rawValue(context);
-                return MiniMessage.miniMessage().deserialize(value, new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, this.placeholderResolver())));
+            public @NotNull AdventureMessageValue<Component> get(@Nullable Context context) {
+                return (AdventureMessageValue<Component>) super.get(context);
             }
         }
-
-        return new AdventureMessageImpl(path, slams, tagResolver);
+        return new AdventureMessageImpl();
     }
 
     /**

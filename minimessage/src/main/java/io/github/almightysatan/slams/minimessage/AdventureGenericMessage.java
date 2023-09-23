@@ -36,6 +36,10 @@ import java.util.Objects;
  */
 public interface AdventureGenericMessage<T> extends Message<T> {
 
+    @Override
+    @NotNull
+    AdventureMessageValue<T> get(@Nullable Context context);
+
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
      *
@@ -43,7 +47,9 @@ public interface AdventureGenericMessage<T> extends Message<T> {
      * @param tagResolver a {@link TagResolver}
      * @return the value
      */
-    @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver);
+    default @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver) {
+        return this.get(context).value(context, tagResolver);
+    }
 
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
