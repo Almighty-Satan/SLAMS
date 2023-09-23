@@ -29,13 +29,13 @@ import java.util.Objects;
 
 public interface OfflinePlayerContext extends Context {
 
-    @NotNull OfflinePlayer offlinePlayer();
+    @NotNull OfflinePlayer player();
 
     static @NotNull OfflinePlayerContext of(@NotNull OfflinePlayer offlinePlayer) {
         Objects.requireNonNull(offlinePlayer);
         return new OfflinePlayerContext() {
             @Override
-            public @NotNull OfflinePlayer offlinePlayer() {
+            public @NotNull OfflinePlayer player() {
                 return offlinePlayer;
             }
 

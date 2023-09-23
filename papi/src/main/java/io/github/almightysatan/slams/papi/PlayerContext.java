@@ -20,7 +20,6 @@
 
 package io.github.almightysatan.slams.papi;
 
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,12 +28,8 @@ import java.util.Objects;
 
 public interface PlayerContext extends OfflinePlayerContext {
 
-    @NotNull Player player();
-
     @Override
-    default @NotNull OfflinePlayer offlinePlayer() {
-        return this.player();
-    }
+    @NotNull Player player();
 
     static @NotNull PlayerContext of(@NotNull Player player) {
         Objects.requireNonNull(player);

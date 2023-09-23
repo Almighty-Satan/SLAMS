@@ -39,7 +39,7 @@ public interface PapiPlaceholderResolver {
             if (expansion == null)
                 return "UNKNOWN_PAPI_EXPANSION";
 
-            String value = expansion.onRequest(context instanceof OfflinePlayerContext ? ((OfflinePlayerContext) context).offlinePlayer() : null, arguments.get(1));
+            String value = expansion.onRequest(context instanceof OfflinePlayerContext ? ((OfflinePlayerContext) context).player() : null, arguments.get(1));
             if (value == null)
                 return "UNKNOWN_PAPI_PLACEHOLDER";
             return value;
