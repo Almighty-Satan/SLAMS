@@ -23,10 +23,7 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Resolves {@link Placeholder Placeholders}.
@@ -164,6 +161,30 @@ public interface PlaceholderResolver {
          */
         default @NotNull Builder add(@NotNull String key, @NotNull Placeholder.ValueFunction valueFunction) {
             return this.add(Placeholder.of(key, valueFunction));
+        }
+
+        /**
+         * Adds multiple {@link Placeholder Placeholders}.
+         *
+         * @param placeholders an array of {@link Placeholder Placeholders}
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder add(@NotNull Placeholder @NotNull ... placeholders) {
+            for (Placeholder placeholder : placeholders)
+                this.add(placeholder);
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link Placeholder Placeholders}.
+         *
+         * @param placeholders a {@link Collection} of {@link Placeholder Placeholders}
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder add(@NotNull Collection<@NotNull Placeholder> placeholders) {
+            for (Placeholder placeholder : placeholders)
+                this.add(placeholder);
+            return this;
         }
 
         /**
