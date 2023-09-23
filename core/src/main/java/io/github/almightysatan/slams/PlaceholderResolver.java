@@ -72,13 +72,7 @@ public interface PlaceholderResolver {
     static @NotNull PlaceholderResolver of(@NotNull Placeholder @NotNull ... placeholders) {
         if (placeholders.length == 0)
             return empty();
-        return key -> {
-            for (Placeholder placeholder : placeholders) {
-                if (key.equals(placeholder.key()))
-                    return placeholder;
-            }
-            return null;
-        };
+        return builder().add(placeholders).build();
     }
 
     /**
