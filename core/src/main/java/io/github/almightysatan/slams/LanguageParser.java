@@ -25,7 +25,9 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Loads messages
@@ -59,12 +61,89 @@ public interface LanguageParser {
         @Nullable Object get(@NotNull String key);
 
         /**
-         * Maps a given value to its given path. May be called multiple times for the same path.
+         * Returns the value mapped to a given path or throws an exception supplied by the given {@link Supplier} if the
+         * value does not exist or the path is invalid.
+         *
+         * @param key               the path
+         * @param throwableSupplier the supplier
+         * @return the value
+         */
+        default <T extends Throwable> @NotNull Object getOrThrow(@NotNull String key, @NotNull Supplier<? extends T> throwableSupplier) throws T {
+            Object value = this.get(key);
+            if (value == null)
+                throw throwableSupplier.get();
+            return value;
+        }
+
+        /**
+         * Returns an optional that contains the value mapped to the given path, if it exists.
          *
          * @param key the path
+         * @return an optional containing the value
+         */
+        default @NotNull Optional<Object> getOptional(@NotNull String key) {
+            return Optional.ofNullable(this.get(key));
+        }
+
+        /**
+         * Maps a given value to its given path. May be called multiple times for the same path.
+         *
+         * @param key   the path
          * @param value the value
          * @throws IllegalArgumentException if the path is invalid (is not an element of {@link Values#paths})
          */
         void put(@NotNull String key, @NotNull Object value) throws IllegalArgumentException;
+
+        /**
+         * Maps a given value to the given path if there is no value present for the path. May be called multiple times
+         * for the same path.
+         *
+         * @param key   the path
+         * @param value the value
+         * @throws IllegalArgumentException if the path is invalid (is not an element of {@link Values#paths})
+         */
+        default void putIfAbsent(@NotNull String key, @NotNull Object value) {
+            if (this.get(key) == null)
+                this.put(key, value);
+        }
+
+        /**
+         * Maps a given value to the given path if there is already a value present for the path. May be called multiple
+         * times for the same path.
+         *
+         * @param key   the path
+         * @param value the value
+         * @throws IllegalArgumentException if the path is invalid (is not an element of {@link Values#paths})
+         */
+        default void putIfPresent(@NotNull String key, @NotNull Object value) {
+            if (this.get(key) != null)
+                this.put(key, value);
+        }
+
+        /**
+         * If there is no value present for the given path, the {@link Supplier} is evaluated and its returned value
+         * mapped to the path. May be called multiple times for the same path.
+         *
+         * @param key           the path
+         * @param valueSupplier the supplier
+         * @throws IllegalArgumentException if the path is invalid (is not an element of {@link Values#paths})
+         */
+        default void putIfAbsent(@NotNull String key, @NotNull Supplier<Object> valueSupplier) {
+            if (this.get(key) == null)
+                this.put(key, valueSupplier.get());
+        }
+
+        /**
+         * If a value for the given path already exists, the {@link Supplier} is evaluated and its returned value mapped
+         * to the path. May be called multiple times for the same path.
+         *
+         * @param key           the path
+         * @param valueSupplier the supplier
+         * @throws IllegalArgumentException if the path is invalid (is not an element of {@link Values#paths})
+         */
+        default void putIfPresent(@NotNull String key, @NotNull Supplier<Object> valueSupplier) {
+            if (this.get(key) != null)
+                this.put(key, valueSupplier.get());
+        }
     }
 }
