@@ -31,14 +31,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.Objects;
 
-public class PapiExpansion extends PlaceholderExpansion {
+public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
 
     private final String identifier;
     private final String author;
     private final String version;
     private final PlaceholderResolver placeholderResolver;
 
-    public PapiExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version, @NotNull PlaceholderResolver placeholderResolver) {
+    public SlamsPlaceholderExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version, @NotNull PlaceholderResolver placeholderResolver) {
         this.identifier = Objects.requireNonNull(identifier);
         this.author = Objects.requireNonNull(author);
         this.version = Objects.requireNonNull(version);
