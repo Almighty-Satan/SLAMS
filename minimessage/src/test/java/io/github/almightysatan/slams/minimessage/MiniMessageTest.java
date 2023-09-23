@@ -153,4 +153,16 @@ public class MiniMessageTest {
         assertEquals("Hello", ((TextComponent) components.get(5)).content());
         assertEquals("World", ((TextComponent) components.get(99)).content());
     }
+
+    @Test
+    public void testMessageArrayValue() throws IOException {
+        Slams langManager = Slams.create("0");
+        AdventureMessageArray2d entry = AdventureMessageArray2d.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
+
+        langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
+
+        assertEquals(1, entry.get(null).size());
+        assertEquals(2, entry.get(null).get(0).size());
+        assertEquals("World", ((TextComponent) entry.get(null).get(0).get(1).value()).content());
+    }
 }

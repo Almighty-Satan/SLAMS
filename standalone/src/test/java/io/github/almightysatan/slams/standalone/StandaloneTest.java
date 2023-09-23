@@ -151,4 +151,16 @@ public class StandaloneTest {
         assertEquals("Hello", components.get(5));
         assertEquals("World", components.get(99));
     }
+
+    @Test
+    public void testMessageArrayValue() throws IOException {
+        Slams langManager = Slams.create("0");
+        StandaloneMessageArray2d entry = StandaloneMessageArray2d.of("test", langManager, Placeholder.constant("test", "World"));
+
+        langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
+
+        assertEquals(1, entry.get(null).size());
+        assertEquals(2, entry.get(null).get(0).size());
+        assertEquals("World", entry.get(null).get(0).get(1).value());
+    }
 }
