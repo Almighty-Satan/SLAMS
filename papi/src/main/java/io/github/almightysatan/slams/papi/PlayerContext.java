@@ -36,7 +36,7 @@ public interface PlayerContext extends OfflinePlayerContext {
         return this.player();
     }
 
-    static PlayerContext of(@NotNull Player player) {
+    static @NotNull PlayerContext of(@NotNull Player player) {
         Objects.requireNonNull(player);
         return new PlayerContext() {
             @Override
