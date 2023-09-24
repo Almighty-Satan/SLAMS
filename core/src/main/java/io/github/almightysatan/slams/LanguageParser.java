@@ -66,7 +66,9 @@ public interface LanguageParser {
          *
          * @param key               the path
          * @param throwableSupplier the supplier
+         * @param <T>               the exception
          * @return the value
+         * @throws T if the value does not exist or the path is invalid
          */
         default <T extends Throwable> @NotNull Object getOrThrow(@NotNull String key, @NotNull Supplier<? extends T> throwableSupplier) throws T {
             Object value = this.get(key);
