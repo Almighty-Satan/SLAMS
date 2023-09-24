@@ -57,7 +57,7 @@ public interface AdventureMessageArray2d extends AdventureGenericMessage<Compone
             }
 
             @Override
-            protected @NotNull MessageValue<Component[][]> toMessageValue(Object value) {
+            protected @NotNull MessageValue<Component[][]> toMessageValue(@NotNull Object value) {
                 return AdventureTypes.messageArrayValue(value, Component[][]::new, element0 ->
                         AdventureTypes.messageArrayValue(element0, Component[]::new, element1 ->
                                 AdventureTypes.messageValue(tagResolver, element1)));

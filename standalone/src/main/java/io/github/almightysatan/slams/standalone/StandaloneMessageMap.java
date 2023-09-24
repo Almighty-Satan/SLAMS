@@ -76,7 +76,7 @@ public interface StandaloneMessageMap<K> extends StandaloneGenericMessage<Map<K,
             }
 
             @Override
-            protected @NotNull MessageValue<Map<K, String>> toMessageValue(Object value) {
+            protected @NotNull MessageValue<Map<K, String>> toMessageValue(@NotNull Object value) {
                 return StandaloneTypes.messageMapValue(value, keyType, element -> StandaloneTypes.messageValue(style, placeholderResolver, element));
             }
         }

@@ -54,7 +54,7 @@ public interface StandaloneMessageArray2d extends StandaloneGenericMessage<Strin
             }
 
             @Override
-            protected @NotNull MessageValue<String[][]> toMessageValue(Object value) {
+            protected @NotNull MessageValue<String[][]> toMessageValue(@NotNull Object value) {
                 return StandaloneTypes.messageArrayValue(value, String[][]::new, element0 ->
                         StandaloneTypes.messageArrayValue(element0, String[]::new, element1 ->
                                 StandaloneTypes.messageValue(style, placeholderResolver, element1)));

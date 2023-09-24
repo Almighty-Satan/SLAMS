@@ -20,10 +20,7 @@
 
 package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Message;
-import io.github.almightysatan.slams.MessageValue;
-import io.github.almightysatan.slams.Slams;
+import io.github.almightysatan.slams.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,13 +81,16 @@ public abstract class MessageImpl<T> implements Message<T> {
         Language language = this.languageManager.language(context);
         MessageValue<T> value = this.cache.get(language);
         if (value == null) {
-            value = this.toMessageValue(language.value(this.path));
+            Object rawValue = language.value(this.path);
+            if (rawValue == null)
+                throw new MissingTranslationException(language.identifier(), this.path);
+            value = this.toMessageValue(rawValue);
             cache.put(language, value);
         }
         return value;
     }
 
-    protected abstract @NotNull MessageValue<T> toMessageValue(Object value);
+    protected abstract @NotNull MessageValue<T> toMessageValue(@NotNull Object value);
 
     protected void clearCache() {
         this.cache.clear();

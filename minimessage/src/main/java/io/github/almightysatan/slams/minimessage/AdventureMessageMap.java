@@ -77,7 +77,7 @@ public interface AdventureMessageMap<K> extends AdventureGenericMessage<Map<K, C
             }
 
             @Override
-            protected @NotNull MessageValue<Map<K, Component>> toMessageValue(Object value) {
+            protected @NotNull MessageValue<Map<K, Component>> toMessageValue(@NotNull Object value) {
                 return AdventureTypes.messageMapValue(value, keyType, element -> AdventureTypes.messageValue(tagResolver, element));
             }
 

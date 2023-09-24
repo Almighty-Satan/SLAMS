@@ -53,7 +53,7 @@ public interface AdventureMessage extends AdventureGenericMessage<Component> {
             }
 
             @Override
-            protected @NotNull AdventureMessageValue<Component> toMessageValue(Object value) {
+            protected @NotNull AdventureMessageValue<Component> toMessageValue(@NotNull Object value) {
                 return AdventureTypes.messageValue(tagResolver, value);
             }
 

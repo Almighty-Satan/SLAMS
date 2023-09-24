@@ -53,7 +53,7 @@ public interface StandaloneMessage extends StandaloneGenericMessage<String> {
             }
 
             @Override
-            protected @NotNull MessageValue<String> toMessageValue(Object value) {
+            protected @NotNull MessageValue<String> toMessageValue(@NotNull Object value) {
                 return StandaloneTypes.messageValue(style, placeholderResolver, value);
             }
         }

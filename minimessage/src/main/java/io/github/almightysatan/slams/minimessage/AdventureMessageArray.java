@@ -57,7 +57,7 @@ public interface AdventureMessageArray extends AdventureGenericMessage<Component
             }
 
             @Override
-            protected @NotNull MessageValue<Component[]> toMessageValue(Object value) {
+            protected @NotNull MessageValue<Component[]> toMessageValue(@NotNull Object value) {
                 return AdventureTypes.messageArrayValue(value, Component[]::new, element -> AdventureTypes.messageValue(tagResolver, element));
             }
 
