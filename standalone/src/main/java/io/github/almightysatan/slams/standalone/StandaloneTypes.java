@@ -57,9 +57,19 @@ class StandaloneTypes {
         };
     }
 
-    static <K, T, U extends Translation<T>> Translation<Map<K, T>> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
+    static <K, T, U extends Translation<T>> TranslationMap<K, T, U> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
         Map<K, U> values = Types.checkMap(input, keyClass, callback);
-        return new Translation<Map<K, T>>() {
+        return new TranslationMap<K, T, U>() {
+            @Override
+            public @Nullable U get(K key) {
+                return values.get(key);
+            }
+
+            @Override
+            public int size() {
+                return values.size();
+            }
+
             @Override
             public @NotNull Map<K, T> value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
                 Map<K, T> map = new HashMap<>();

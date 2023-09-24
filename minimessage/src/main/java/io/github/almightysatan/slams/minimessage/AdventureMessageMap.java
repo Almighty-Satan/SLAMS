@@ -20,10 +20,7 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Message;
-import io.github.almightysatan.slams.Translation;
-import io.github.almightysatan.slams.Slams;
+import io.github.almightysatan.slams.*;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -48,6 +45,9 @@ import java.util.Objects;
  * @param <K> the type of the Map's key
  */
 public interface AdventureMessageMap<K> extends AdventureGenericMessage<Map<K, Component>> {
+
+    @Override
+    @NotNull AdventureTranslationMap<K, Component, AdventureTranslation<Component>> translate(@Nullable Context context);
 
     /**
      * Creates a new {@link AdventureMessageMap} with the given path, {@link Slams} and {@link TagResolver}.
@@ -77,13 +77,13 @@ public interface AdventureMessageMap<K> extends AdventureGenericMessage<Map<K, C
             }
 
             @Override
-            protected @NotNull Translation<Map<K, Component>> toMessageValue(@NotNull Object value) {
+            protected @NotNull AdventureTranslationMap<K, Component, AdventureTranslation<Component>> toMessageValue(@NotNull Object value) {
                 return AdventureTypes.messageMapValue(value, keyType, element -> AdventureTypes.messageValue(tagResolver, element));
             }
 
             @Override
-            public @NotNull AdventureTranslation<Map<K, Component>> translate(@Nullable Context context) {
-                return (AdventureTranslation<Map<K, Component>>) super.translate(context);
+            public @NotNull AdventureTranslationMap<K, Component, AdventureTranslation<Component>> translate(@Nullable Context context) {
+                return (AdventureTranslationMap<K, Component, AdventureTranslation<Component>>) super.translate(context);
             }
         }
         return new AdventureMessageMapImpl();

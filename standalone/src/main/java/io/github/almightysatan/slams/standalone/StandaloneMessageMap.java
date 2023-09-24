@@ -20,12 +20,10 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.Message;
-import io.github.almightysatan.slams.Translation;
-import io.github.almightysatan.slams.PlaceholderResolver;
-import io.github.almightysatan.slams.Slams;
+import io.github.almightysatan.slams.*;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +43,9 @@ import java.util.Objects;
  * @param <K> the type of the Map's key
  */
 public interface StandaloneMessageMap<K> extends StandaloneGenericMessage<Map<K, String>> {
+
+    @Override
+    @NotNull TranslationMap<K, String, Translation<String>> translate(@Nullable Context context);
 
     /**
      * Creates a new {@link StandaloneMessageMap} with the given path, {@link PlaceholderStyle}, {@link Slams} and
@@ -76,8 +77,13 @@ public interface StandaloneMessageMap<K> extends StandaloneGenericMessage<Map<K,
             }
 
             @Override
-            protected @NotNull Translation<Map<K, String>> toMessageValue(@NotNull Object value) {
+            protected @NotNull TranslationMap<K, String, Translation<String>> toMessageValue(@NotNull Object value) {
                 return StandaloneTypes.messageMapValue(value, keyType, element -> StandaloneTypes.messageValue(style, placeholderResolver, element));
+            }
+
+            @Override
+            public @NotNull TranslationMap<K, String, Translation<String>> translate(@Nullable Context context) {
+                return (TranslationMap<K, String, Translation<String>>) super.translate(context);
             }
         }
 
