@@ -23,7 +23,7 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface MessageValue<T> {
+public interface Translation<T> {
 
     /**
      * Replaces placeholders and returns the resulting value.

@@ -36,7 +36,7 @@ public abstract class MessageImpl<T> implements Message<T> {
 
     private final String path;
     private final SlamsInternal languageManager;
-    private final IdentityHashMap<Language, MessageValue<T>> cache = new IdentityHashMap<>();
+    private final IdentityHashMap<Language, Translation<T>> cache = new IdentityHashMap<>();
 
     protected MessageImpl(@NotNull String path, @NotNull Slams slams) {
         this.path = this.checkPath(path);
@@ -77,9 +77,9 @@ public abstract class MessageImpl<T> implements Message<T> {
     }
 
     @Override
-    public @NotNull MessageValue<T> get(@Nullable Context context) {
+    public @NotNull Translation<T> translate(@Nullable Context context) {
         Language language = this.languageManager.language(context);
-        MessageValue<T> value = this.cache.get(language);
+        Translation<T> value = this.cache.get(language);
         if (value == null) {
             Object rawValue = language.value(this.path);
             if (rawValue == null)
@@ -90,7 +90,7 @@ public abstract class MessageImpl<T> implements Message<T> {
         return value;
     }
 
-    protected abstract @NotNull MessageValue<T> toMessageValue(@NotNull Object value);
+    protected abstract @NotNull Translation<T> toMessageValue(@NotNull Object value);
 
     protected void clearCache() {
         this.cache.clear();

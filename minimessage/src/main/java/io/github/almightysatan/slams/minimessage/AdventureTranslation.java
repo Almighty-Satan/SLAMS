@@ -21,7 +21,7 @@
 package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.MessageValue;
+import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public interface AdventureMessageValue<T> extends MessageValue<T> {
+public interface AdventureTranslation<T> extends Translation<T> {
 
     @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver);
 

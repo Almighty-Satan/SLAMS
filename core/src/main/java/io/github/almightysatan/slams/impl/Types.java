@@ -21,7 +21,7 @@
 package io.github.almightysatan.slams.impl;
 
 import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.MessageValue;
+import io.github.almightysatan.slams.Translation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,16 +44,16 @@ public class Types {
         return (String) input;
     }
 
-    public static <T, U extends MessageValue<T>> MessageValue<?>[] checkArray(@Nullable Object input, @NotNull Function<Object, U> callback) throws InvalidTypeException {
+    public static <T, U extends Translation<T>> Translation<?>[] checkArray(@Nullable Object input, @NotNull Function<Object, U> callback) throws InvalidTypeException {
         if (input instanceof Object[])
-            return Arrays.stream((Object[]) input).map(callback).toArray(MessageValue[]::new);
+            return Arrays.stream((Object[]) input).map(callback).toArray(Translation[]::new);
         else if (input instanceof Collection)
-            return ((Collection<?>) input).stream().map(callback).toArray(MessageValue[]::new);
+            return ((Collection<?>) input).stream().map(callback).toArray(Translation[]::new);
         else
             throw new InvalidTypeException();
     }
 
-    public static <K, T, U extends MessageValue<T>> Map<K, U> checkMap(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
+    public static <K, T, U extends Translation<T>> Map<K, U> checkMap(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
         if (!(input instanceof Map))
             throw new InvalidTypeException();
         @SuppressWarnings("unchecked")

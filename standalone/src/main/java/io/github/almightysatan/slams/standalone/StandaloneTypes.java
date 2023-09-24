@@ -31,14 +31,14 @@ import java.util.function.IntFunction;
 
 class StandaloneTypes {
 
-    static MessageValue<String> messageValue(PlaceholderStyle style, PlaceholderResolver placeholderResolver, Object input) {
+    static Translation<String> messageValue(PlaceholderStyle style, PlaceholderResolver placeholderResolver, Object input) {
         Component component = new CompositeComponent(style, Types.checkString(input), placeholderResolver);
         return component::value;
     }
 
-    static <T, U extends MessageValue<T>> MessageArrayValue<T, U> messageArrayValue(@Nullable Object input, @NotNull IntFunction<T[]> arrayFun, @NotNull Function<Object, U> callback) throws InvalidTypeException {
-        MessageValue<?>[] values = Types.checkArray(input, callback);
-        return new MessageArrayValue<T, U>() {
+    static <T, U extends Translation<T>> TranslationArray<T, U> messageArrayValue(@Nullable Object input, @NotNull IntFunction<T[]> arrayFun, @NotNull Function<Object, U> callback) throws InvalidTypeException {
+        Translation<?>[] values = Types.checkArray(input, callback);
+        return new TranslationArray<T, U>() {
             @SuppressWarnings("unchecked")
             @Override
             public U get(int index) {
@@ -52,14 +52,14 @@ class StandaloneTypes {
 
             @Override
             public T @NotNull [] value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
-                return Arrays.stream(values).map(MessageValue::value).toArray(arrayFun);
+                return Arrays.stream(values).map(Translation::value).toArray(arrayFun);
             }
         };
     }
 
-    static <K, T, U extends MessageValue<T>> MessageValue<Map<K, T>> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
+    static <K, T, U extends Translation<T>> Translation<Map<K, T>> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
         Map<K, U> values = Types.checkMap(input, keyClass, callback);
-        return new MessageValue<Map<K, T>>() {
+        return new Translation<Map<K, T>>() {
             @Override
             public @NotNull Map<K, T> value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
                 Map<K, T> map = new HashMap<>();

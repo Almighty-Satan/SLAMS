@@ -159,8 +159,8 @@ public class StandaloneTest {
 
         langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
 
-        assertEquals(1, entry.get(null).size());
-        assertEquals(2, entry.get(null).get(0).size());
-        assertEquals("World", entry.get(null).get(0).get(1).value());
+        assertEquals(1, entry.translate(null).size());
+        assertEquals(2, entry.translate(null).get(0).size());
+        assertEquals("World", entry.translate(null).get(0).get(1).value());
     }
 }

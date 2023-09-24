@@ -30,6 +30,6 @@ public interface StandaloneGenericMessage<T> extends Message<T> {
 
     @Override
     default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
-        return this.get(context).value(context, placeholderResolver);
+        return this.translate(context).value(context, placeholderResolver);
     }
 }

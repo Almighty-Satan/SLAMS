@@ -20,7 +20,7 @@
 
 package io.github.almightysatan.slams;
 
-public interface MessageArrayValue<T, U extends MessageValue<T>> extends MessageValue<T[]> {
+public interface TranslationArray<T, U extends Translation<T>> extends Translation<T[]> {
 
     U get(int index);
 

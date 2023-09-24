@@ -33,7 +33,7 @@ import java.util.Objects;
 public interface StandaloneMessageArray extends StandaloneGenericMessage<String[]> {
 
     @Override
-    @NotNull MessageArrayValue<String, MessageValue<String>> get(@Nullable Context context);
+    @NotNull TranslationArray<String, Translation<String>> translate(@Nullable Context context);
 
     /**
      * Creates a new {@link StandaloneMessageArray} with the given path, {@link PlaceholderStyle}, {@link Slams} and
@@ -54,13 +54,13 @@ public interface StandaloneMessageArray extends StandaloneGenericMessage<String[
             }
 
             @Override
-            protected @NotNull MessageValue<String[]> toMessageValue(@NotNull Object value) {
+            protected @NotNull Translation<String[]> toMessageValue(@NotNull Object value) {
                 return StandaloneTypes.messageArrayValue(value, String[]::new, element -> StandaloneTypes.messageValue(style, placeholderResolver, element));
             }
 
             @Override
-            public @NotNull MessageArrayValue<String, MessageValue<String>> get(@Nullable Context context) {
-                return (MessageArrayValue<String, MessageValue<String>>) super.get(context);
+            public @NotNull TranslationArray<String, Translation<String>> translate(@Nullable Context context) {
+                return (TranslationArray<String, Translation<String>>) super.translate(context);
             }
         }
         return new StandaloneMessageArrayImpl();

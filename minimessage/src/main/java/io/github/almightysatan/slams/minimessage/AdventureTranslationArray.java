@@ -20,7 +20,7 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.MessageArrayValue;
+import io.github.almightysatan.slams.TranslationArray;
 
-public interface AdventureMessageArrayValue<T, U extends AdventureMessageValue<T>> extends MessageArrayValue<T, U>, AdventureMessageValue<T[]> {
+public interface AdventureTranslationArray<T, U extends AdventureTranslation<T>> extends TranslationArray<T, U>, AdventureTranslation<T[]> {
 }

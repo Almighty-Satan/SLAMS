@@ -38,7 +38,7 @@ public interface AdventureGenericMessage<T> extends Message<T> {
 
     @Override
     @NotNull
-    AdventureMessageValue<T> get(@Nullable Context context);
+    AdventureTranslation<T> translate(@Nullable Context context);
 
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
@@ -48,7 +48,7 @@ public interface AdventureGenericMessage<T> extends Message<T> {
      * @return the value
      */
     default @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver) {
-        return this.get(context).value(context, tagResolver);
+        return this.translate(context).value(context, tagResolver);
     }
 
     /**

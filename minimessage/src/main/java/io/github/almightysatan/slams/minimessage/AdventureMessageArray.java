@@ -21,7 +21,7 @@
 package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.MessageValue;
+import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import net.kyori.adventure.text.Component;
@@ -38,7 +38,7 @@ import java.util.Objects;
 public interface AdventureMessageArray extends AdventureGenericMessage<Component[]> {
 
     @Override
-    @NotNull AdventureMessageArrayValue<Component, AdventureMessageValue<Component>> get(@Nullable Context context);
+    @NotNull AdventureTranslationArray<Component, AdventureTranslation<Component>> translate(@Nullable Context context);
 
     /**
      * Creates a new {@link AdventureMessageArray} with the given path, {@link Slams} and {@link TagResolver}.
@@ -57,13 +57,13 @@ public interface AdventureMessageArray extends AdventureGenericMessage<Component
             }
 
             @Override
-            protected @NotNull MessageValue<Component[]> toMessageValue(@NotNull Object value) {
+            protected @NotNull Translation<Component[]> toMessageValue(@NotNull Object value) {
                 return AdventureTypes.messageArrayValue(value, Component[]::new, element -> AdventureTypes.messageValue(tagResolver, element));
             }
 
             @Override
-            public @NotNull AdventureMessageArrayValue<Component, AdventureMessageValue<Component>> get(@Nullable Context context) {
-                return (AdventureMessageArrayValue<Component, AdventureMessageValue<Component>>) super.get(context);
+            public @NotNull AdventureTranslationArray<Component, AdventureTranslation<Component>> translate(@Nullable Context context) {
+                return (AdventureTranslationArray<Component, AdventureTranslation<Component>>) super.translate(context);
             }
         }
         return new AdventureMessageArrayImpl();

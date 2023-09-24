@@ -21,7 +21,7 @@
 package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.Message;
-import io.github.almightysatan.slams.MessageValue;
+import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.impl.MessageImpl;
@@ -53,7 +53,7 @@ public interface StandaloneMessage extends StandaloneGenericMessage<String> {
             }
 
             @Override
-            protected @NotNull MessageValue<String> toMessageValue(@NotNull Object value) {
+            protected @NotNull Translation<String> toMessageValue(@NotNull Object value) {
                 return StandaloneTypes.messageValue(style, placeholderResolver, value);
             }
         }

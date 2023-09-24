@@ -53,13 +53,13 @@ public interface AdventureMessage extends AdventureGenericMessage<Component> {
             }
 
             @Override
-            protected @NotNull AdventureMessageValue<Component> toMessageValue(@NotNull Object value) {
+            protected @NotNull AdventureTranslation<Component> toMessageValue(@NotNull Object value) {
                 return AdventureTypes.messageValue(tagResolver, value);
             }
 
             @Override
-            public @NotNull AdventureMessageValue<Component> get(@Nullable Context context) {
-                return (AdventureMessageValue<Component>) super.get(context);
+            public @NotNull AdventureTranslation<Component> translate(@Nullable Context context) {
+                return (AdventureTranslation<Component>) super.translate(context);
             }
         }
         return new AdventureMessageImpl();

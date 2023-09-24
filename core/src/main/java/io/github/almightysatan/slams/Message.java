@@ -40,7 +40,7 @@ public interface Message<T> {
      */
     @NotNull String path();
 
-    @NotNull MessageValue<T> get(@Nullable Context context);
+    @NotNull Translation<T> translate(@Nullable Context context);
 
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.

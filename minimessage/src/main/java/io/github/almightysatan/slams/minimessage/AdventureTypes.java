@@ -22,7 +22,7 @@ package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.MessageValue;
+import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.impl.Types;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -39,14 +39,14 @@ import java.util.function.IntFunction;
 
 class AdventureTypes {
 
-    static AdventureMessageValue<Component> messageValue(TagResolver tagResolver, Object value) {
+    static AdventureTranslation<Component> messageValue(TagResolver tagResolver, Object value) {
         String string = Types.checkString(value);
         return (context, tagResolver0) -> MiniMessage.miniMessage().deserialize(string, new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, tagResolver0)));
     }
 
-    static <T, U extends AdventureMessageValue<T>> AdventureMessageArrayValue<T, U> messageArrayValue(@Nullable Object input, @NotNull IntFunction<T[]> arrayFun, @NotNull Function<Object, U> callback) throws InvalidTypeException {
-        MessageValue<?>[] values = Types.checkArray(input, callback);
-        return new AdventureMessageArrayValue<T, U>() {
+    static <T, U extends AdventureTranslation<T>> AdventureTranslationArray<T, U> messageArrayValue(@Nullable Object input, @NotNull IntFunction<T[]> arrayFun, @NotNull Function<Object, U> callback) throws InvalidTypeException {
+        Translation<?>[] values = Types.checkArray(input, callback);
+        return new AdventureTranslationArray<T, U>() {
             @SuppressWarnings("unchecked")
             @Override
             public U get(int index) {
@@ -60,14 +60,14 @@ class AdventureTypes {
 
             @Override
             public T @NotNull [] value(@Nullable Context context, @NotNull TagResolver tagResolver) {
-                return Arrays.stream(values).map(MessageValue::value).toArray(arrayFun);
+                return Arrays.stream(values).map(Translation::value).toArray(arrayFun);
             }
         };
     }
 
-    static <K, T, U extends AdventureMessageValue<T>> AdventureMessageValue<Map<K, T>> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
+    static <K, T, U extends AdventureTranslation<T>> AdventureTranslation<Map<K, T>> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
         Map<K, U> values = Types.checkMap(input, keyClass, callback);
-        return new AdventureMessageValue<Map<K, T>>() {
+        return new AdventureTranslation<Map<K, T>>() {
             @Override
             public @NotNull Map<K, T> value(@Nullable Context context, @NotNull TagResolver tagResolver) {
                 Map<K, T> map = new HashMap<>();

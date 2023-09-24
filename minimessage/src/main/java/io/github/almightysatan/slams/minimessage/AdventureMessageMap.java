@@ -22,7 +22,7 @@ package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.Message;
-import io.github.almightysatan.slams.MessageValue;
+import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import net.kyori.adventure.text.Component;
@@ -77,13 +77,13 @@ public interface AdventureMessageMap<K> extends AdventureGenericMessage<Map<K, C
             }
 
             @Override
-            protected @NotNull MessageValue<Map<K, Component>> toMessageValue(@NotNull Object value) {
+            protected @NotNull Translation<Map<K, Component>> toMessageValue(@NotNull Object value) {
                 return AdventureTypes.messageMapValue(value, keyType, element -> AdventureTypes.messageValue(tagResolver, element));
             }
 
             @Override
-            public @NotNull AdventureMessageValue<Map<K, Component>> get(@Nullable Context context) {
-                return (AdventureMessageValue<Map<K, Component>>) super.get(context);
+            public @NotNull AdventureTranslation<Map<K, Component>> translate(@Nullable Context context) {
+                return (AdventureTranslation<Map<K, Component>>) super.translate(context);
             }
         }
         return new AdventureMessageMapImpl();

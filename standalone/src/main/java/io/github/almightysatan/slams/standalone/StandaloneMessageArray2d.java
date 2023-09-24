@@ -33,7 +33,7 @@ import java.util.Objects;
 public interface StandaloneMessageArray2d extends StandaloneGenericMessage<String[][]> {
 
     @Override
-    @NotNull MessageArrayValue<String[], MessageArrayValue<String, MessageValue<String>>> get(@Nullable Context context);
+    @NotNull TranslationArray<String[], TranslationArray<String, Translation<String>>> translate(@Nullable Context context);
 
     /**
      * Creates a new {@link StandaloneMessageArray2d} with the given path, {@link PlaceholderStyle}, {@link Slams} and
@@ -54,15 +54,15 @@ public interface StandaloneMessageArray2d extends StandaloneGenericMessage<Strin
             }
 
             @Override
-            protected @NotNull MessageValue<String[][]> toMessageValue(@NotNull Object value) {
+            protected @NotNull Translation<String[][]> toMessageValue(@NotNull Object value) {
                 return StandaloneTypes.messageArrayValue(value, String[][]::new, element0 ->
                         StandaloneTypes.messageArrayValue(element0, String[]::new, element1 ->
                                 StandaloneTypes.messageValue(style, placeholderResolver, element1)));
             }
 
             @Override
-            public @NotNull MessageArrayValue<String[], MessageArrayValue<String, MessageValue<String>>> get(@Nullable Context context) {
-                return (MessageArrayValue<String[], MessageArrayValue<String, MessageValue<String>>>) super.get(context);
+            public @NotNull TranslationArray<String[], TranslationArray<String, Translation<String>>> translate(@Nullable Context context) {
+                return (TranslationArray<String[], TranslationArray<String, Translation<String>>>) super.translate(context);
             }
         }
         return new StandaloneMessageArray2dImpl();

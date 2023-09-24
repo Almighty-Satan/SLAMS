@@ -21,7 +21,7 @@
 package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.Message;
-import io.github.almightysatan.slams.MessageValue;
+import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.impl.MessageImpl;
@@ -76,7 +76,7 @@ public interface StandaloneMessageMap<K> extends StandaloneGenericMessage<Map<K,
             }
 
             @Override
-            protected @NotNull MessageValue<Map<K, String>> toMessageValue(@NotNull Object value) {
+            protected @NotNull Translation<Map<K, String>> toMessageValue(@NotNull Object value) {
                 return StandaloneTypes.messageMapValue(value, keyType, element -> StandaloneTypes.messageValue(style, placeholderResolver, element));
             }
         }
