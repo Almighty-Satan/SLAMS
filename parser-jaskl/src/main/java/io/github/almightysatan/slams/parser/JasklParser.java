@@ -60,8 +60,13 @@ public class JasklParser implements LanguageParser {
     @Override
     public void load(@NotNull Values values) throws IOException {
         try {
-            for (String path : values.paths())
-                this.entries.computeIfAbsent(path, p -> ConfigEntry.of(this.config, p, Optional.empty(), TYPE));
+            for (String path : values.paths()) {
+                ConfigEntry<Optional<?>> entry = this.entries.get(path);
+                if (entry == null)
+                    entries.put(path, ConfigEntry.of(this.config, path, Optional.empty(), TYPE));
+                else
+                    entry.setValue(Optional.empty());
+            }
 
             config.load();
 
