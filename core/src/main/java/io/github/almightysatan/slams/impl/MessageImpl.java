@@ -46,10 +46,37 @@ public abstract class MessageImpl<T, R, P> implements Message<T> {
     private final IdentityHashMap<Language, R> cache = new IdentityHashMap<>();
 
     protected MessageImpl(@NotNull String path, @NotNull Slams slams, @NotNull P implementationPlaceholderResolver) {
-        this.path = Objects.requireNonNull(path);
+        this.path = this.checkPath(path);
         this.languageManager = (SlamsInternal) Objects.requireNonNull(slams);
         this.implementationPlaceholderResolver = Objects.requireNonNull(implementationPlaceholderResolver);
         this.languageManager.register(this);
+    }
+
+    private String checkPath(@NotNull String path) {
+        if (path.isEmpty())
+            throw new IllegalArgumentException("Path should not be empty!");
+
+        boolean prevDot = false;
+        char[] chars = path.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+
+            if (c == 0x2E) {
+                if (i == 0 || i == chars.length - 1)
+                    throw new IllegalArgumentException("Path cannot start or end with a dot!");
+                if (prevDot)
+                    throw new IllegalArgumentException("Path cannot contain two or more dots directly following each other!");
+                prevDot = true;
+                continue;
+            }
+            prevDot = false;
+
+            if ((c >= 0x30 && c <= 0x39) || (c >= 0x41 && c <= 0x5A) || (c >= 0x61 && c <= 0x7A))
+                continue;
+
+            throw new IllegalArgumentException("Path contains invalid characters!");
+        }
+        return path;
     }
 
     @Override
