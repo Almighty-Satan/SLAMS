@@ -37,11 +37,13 @@ import java.util.Set;
 public class Language {
 
     private final SlamsInternal languageManager;
+    private final String identifier;
     private final LanguageParser[] parsers;
     private Map<String, Object> entries;
 
-    public Language(@NotNull SlamsInternal languageManager, @NotNull LanguageParser @NotNull ... parsers) throws IOException {
+    public Language(@NotNull SlamsInternal languageManager, @NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException {
         this.languageManager = languageManager;
+        this.identifier = identifier;
         this.parsers = parsers;
 
         this.load();
@@ -72,6 +74,10 @@ public class Language {
         for (LanguageParser parser : this.parsers)
             parser.load(values);
         this.entries = entries;
+    }
+
+    public @NotNull String identifier() {
+        return this.identifier;
     }
 
     public @Nullable Object value(@NotNull String path) {

@@ -63,7 +63,7 @@ public class SlamsImpl implements SlamsInternal {
         if (this.languages.containsKey(identifier))
             throw new IllegalArgumentException("Duplicate language identifier");
 
-        Language language = new Language(this, parsers);
+        Language language = new Language(this, identifier, parsers);
         this.languages.put(identifier, language);
     }
 
