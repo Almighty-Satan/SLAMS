@@ -46,6 +46,7 @@ public interface AdventureTranslation<T> extends Translation<T> {
     /**
      * Replaces placeholders and returns the resulting value.
      *
+     * @param context the context
      * @param tagResolvers an array of {@link TagResolver TagResolvers}
      * @return the value
      */
