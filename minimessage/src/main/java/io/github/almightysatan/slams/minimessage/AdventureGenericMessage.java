@@ -63,6 +63,27 @@ public interface AdventureGenericMessage<T> extends Message<T> {
         return this.value(context, ContextTagResolver.of(tagResolvers));
     }
 
+    /**
+     * Replaces placeholders and returns the resulting value. Uses the default language.
+     *
+     * @param tagResolver a {@link TagResolver}
+     * @return the value
+     */
+    default @NotNull T value(@NotNull TagResolver tagResolver) {
+        return this.value(null, tagResolver);
+    }
+
+    /**
+     * Replaces placeholders and returns the resulting value. Uses the default language.
+     *
+     * @param tagResolvers an array of {@link TagResolver TagResolvers}
+     * @return the value
+     */
+    default @NotNull T value(@NotNull TagResolver @NotNull ... tagResolvers) {
+        Objects.requireNonNull(tagResolvers);
+        return this.value(ContextTagResolver.of(tagResolvers));
+    }
+
     @Override
     default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
         return this.value(context, ContextTagResolver.of(placeholderResolver));

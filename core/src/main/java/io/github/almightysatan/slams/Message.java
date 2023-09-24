@@ -51,7 +51,7 @@ public interface Message<T> {
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
      *
-     * @param context the context
+     * @param context             the context
      * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
      * @return the value
      */
@@ -60,7 +60,7 @@ public interface Message<T> {
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
      *
-     * @param context the context
+     * @param context              the context
      * @param placeholderResolvers an array of {@link PlaceholderResolver} with additional
      *                             {@link Placeholder Placeholders}
      * @return the value
@@ -68,6 +68,29 @@ public interface Message<T> {
     default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
         Objects.requireNonNull(placeholderResolvers);
         return this.value(context, PlaceholderResolver.of(placeholderResolvers));
+    }
+
+    /**
+     * Replaces placeholders and returns the resulting value. Uses the default language.
+     *
+     * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
+     * @return the value
+     */
+    default @NotNull T value(@NotNull PlaceholderResolver placeholderResolver) {
+        Objects.requireNonNull(placeholderResolver);
+        return this.value(null, placeholderResolver);
+    }
+
+    /**
+     * Replaces placeholders and returns the resulting value. Uses the default language.
+     *
+     * @param placeholderResolvers an array of {@link PlaceholderResolver} with additional
+     *                             {@link Placeholder Placeholders}
+     * @return the value
+     */
+    default @NotNull T value(@NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
+        Objects.requireNonNull(placeholderResolvers);
+        return this.value(PlaceholderResolver.of(placeholderResolvers));
     }
 
     /**
@@ -86,6 +109,6 @@ public interface Message<T> {
      * @return the value
      */
     default @NotNull T value() {
-        return this.value(null);
+        return this.value((Context) null);
     }
 }

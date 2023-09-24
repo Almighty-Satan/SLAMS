@@ -27,8 +27,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 /**
  * Represents a translation of a message in a specific language in MiniMessage format.
  *
@@ -39,6 +37,7 @@ public interface AdventureTranslation<T> extends Translation<T> {
     /**
      * Replaces placeholders and returns the resulting value.
      *
+     * @param context the context
      * @param tagResolver a {@link TagResolver}
      * @return the value
      */
@@ -51,8 +50,17 @@ public interface AdventureTranslation<T> extends Translation<T> {
      * @return the value
      */
     default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) {
-        Objects.requireNonNull(tagResolvers);
         return this.value(context, ContextTagResolver.of(tagResolvers));
+    }
+
+    /**
+     * Replaces placeholders and returns the resulting value.
+     *
+     * @param tagResolvers an array of {@link TagResolver TagResolvers}
+     * @return the value
+     */
+    default @NotNull T value(@NotNull TagResolver @NotNull ... tagResolvers) {
+        return this.value(null, tagResolvers);
     }
 
     @Override

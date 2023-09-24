@@ -33,10 +33,52 @@ public interface Translation<T> {
     /**
      * Replaces placeholders and returns the resulting value.
      *
+     * @param context the context
      * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
      * @return the value
      */
     @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver);
+
+    /**
+     * Replaces placeholders and returns the resulting value.
+     *
+     * @param context the context
+     * @param placeholderResolvers an array of {@link PlaceholderResolver PlaceholderResolvers}
+     * @return the value
+     */
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
+        return this.value(context, PlaceholderResolver.of(placeholderResolvers));
+    }
+
+    /**
+     * Replaces placeholders and returns the resulting value.
+     *
+     * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
+     * @return the value
+     */
+    default @NotNull T value(@NotNull PlaceholderResolver placeholderResolver) {
+        return this.value(null, placeholderResolver);
+    }
+
+    /**
+     * Replaces placeholders and returns the resulting value.
+     *
+     * @param placeholderResolvers an array of {@link PlaceholderResolver PlaceholderResolvers}
+     * @return the value
+     */
+    default @NotNull T value(@NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
+        return this.value(PlaceholderResolver.of(placeholderResolvers));
+    }
+
+    /**
+     * Replaces placeholders and returns the resulting value.
+     *
+     * @param context the context
+     * @return the value
+     */
+    default @NotNull T value(@Nullable Context context) {
+        return this.value(context, PlaceholderResolver.empty());
+    }
 
     /**
      * Replaces placeholders and returns the resulting value.

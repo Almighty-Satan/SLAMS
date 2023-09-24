@@ -42,7 +42,7 @@ public class MiniMessageTest {
 
         langManager.load("0", values -> values.put("test", "1234"));
 
-        TextComponent component = (TextComponent) entry.value(null);
+        TextComponent component = (TextComponent) entry.value();
         assertEquals("1234", component.content());
     }
 
@@ -54,7 +54,7 @@ public class MiniMessageTest {
         langManager.load("0", values -> values.put("test", "123"));
         langManager.load("1", values -> values.put("test", "456"));
 
-        TextComponent component = (TextComponent) entry.value(null);
+        TextComponent component = (TextComponent) entry.value();
         assertEquals("456", component.content());
     }
 
@@ -88,7 +88,7 @@ public class MiniMessageTest {
 
         langManager.load("0", values -> values.put("test", "Hello <test>"));
 
-        TextComponent component = (TextComponent) entry.value(null);
+        TextComponent component = (TextComponent) entry.value();
         assertEquals("Hello World", component.content());
     }
 
@@ -111,7 +111,7 @@ public class MiniMessageTest {
 
         langManager.load("0", values -> values.put("test", "Hello <test:some other argument:World>"));
 
-        TextComponent component = (TextComponent) entry.value(null);
+        TextComponent component = (TextComponent) entry.value();
         assertEquals("Hello World", component.content());
     }
 
@@ -122,7 +122,7 @@ public class MiniMessageTest {
 
         langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
 
-        Component[] components = entry.value(null);
+        Component[] components = entry.value();
         assertEquals("Hello", ((TextComponent) components[0]).content());
         assertEquals("World", ((TextComponent) components[1]).content());
     }
@@ -134,7 +134,7 @@ public class MiniMessageTest {
 
         langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
 
-        Component[][] components = entry.value(null);
+        Component[][] components = entry.value();
         assertEquals("Hello", ((TextComponent) components[0][0]).content());
         assertEquals("World", ((TextComponent) components[0][1]).content());
     }
