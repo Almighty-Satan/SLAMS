@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     id("checkstyle")
+    id("java-test-fixtures")
     id("maven-publish")
     id("signing")
 }
@@ -27,14 +28,20 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains:annotations:24.0.1")
+    testFixturesImplementation("org.jetbrains:annotations:24.0.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    testFixturesImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
 }
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
+
+val skipPublish: (String) -> Unit = { (components["java"] as AdhocComponentWithVariants).withVariantsFromConfiguration(configurations[it], ConfigurationVariantDetails::skip) }
+skipPublish("testFixturesApiElements")
+skipPublish("testFixturesRuntimeElements")
 
 publishing {
     publications {
