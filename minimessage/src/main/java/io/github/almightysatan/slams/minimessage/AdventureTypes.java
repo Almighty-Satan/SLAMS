@@ -49,7 +49,7 @@ class AdventureTypes {
         return new AdventureTranslationArray<T, U>() {
             @SuppressWarnings("unchecked")
             @Override
-            public U get(int index) {
+            public @NotNull U get(int index) {
                 return (U) values[index];
             }
 

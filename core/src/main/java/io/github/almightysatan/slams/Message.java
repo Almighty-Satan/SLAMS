@@ -40,10 +40,16 @@ public interface Message<T> {
      */
     @NotNull String path();
 
+    /**
+     * Returns a {@link Translation} of this message in the given {@link Context Context's} language.
+     *
+     * @param context the context
+     * @return a translation of this message
+     */
     @NotNull Translation<T> translate(@Nullable Context context);
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
+     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
      *
      * @param context the context
      * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
@@ -52,7 +58,7 @@ public interface Message<T> {
     @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver);
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
+     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
      *
      * @param context the context
      * @param placeholderResolvers an array of {@link PlaceholderResolver} with additional
@@ -65,7 +71,7 @@ public interface Message<T> {
     }
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
+     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
      *
      * @param context the context
      * @return the value

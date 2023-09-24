@@ -22,5 +22,11 @@ package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.TranslationArray;
 
+/**
+ * Represents an array of {@link AdventureTranslation AdventureTranslations}.
+ *
+ * @param <T> the type of this translation
+ * @param <U> the {@link AdventureTranslation AdventureTranslations} in this array
+ */
 public interface AdventureTranslationArray<T, U extends AdventureTranslation<T>> extends TranslationArray<T, U>, AdventureTranslation<T[]> {
 }

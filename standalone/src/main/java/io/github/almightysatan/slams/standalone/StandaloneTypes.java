@@ -41,7 +41,7 @@ class StandaloneTypes {
         return new TranslationArray<T, U>() {
             @SuppressWarnings("unchecked")
             @Override
-            public U get(int index) {
+            public @NotNull U get(int index) {
                 return (U) values[index];
             }
 

@@ -23,6 +23,11 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a translation of a message in a specific language.
+ *
+ * @param <T> the type of this translation
+ */
 public interface Translation<T> {
 
     /**

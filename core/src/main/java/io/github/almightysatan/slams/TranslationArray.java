@@ -20,9 +20,30 @@
 
 package io.github.almightysatan.slams;
 
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * Represents an array of {@link Translation Translations}.
+ *
+ * @param <T> the type of this translation
+ * @param <U> the {@link Translation Translations} in this array
+ */
 public interface TranslationArray<T, U extends Translation<T>> extends Translation<T[]> {
 
-    U get(int index);
+    /**
+     * Returns the {@link Translation} at the specified index of the array.
+     *
+     * @param index the index
+     * @return the translation at the given index
+     * @throws ArrayIndexOutOfBoundsException if the index is either negative or greater than or equal to the size of
+     *                                        the array
+     */
+    @NotNull U get(int index);
 
+    /**
+     * Returns the size of the array.
+     *
+     * @return the size of the array
+     */
     int size();
 }
