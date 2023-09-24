@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 /**
- * A {@link LanguageParser} that parses message from different formats using JASKL.
+ * A {@link LanguageParser} that parses messages from different formats using JASKL.
  */
 public class JasklParser implements LanguageParser {
 
@@ -77,6 +77,12 @@ public class JasklParser implements LanguageParser {
         }
     }
 
+    /**
+     * Creates a new {@link LanguageParser} that uses a JASKL {@link Config} to load messages.
+     *
+     * @param config the {@link Config}
+     * @return a new {@link LanguageParser}
+     */
     public static @NotNull LanguageParser createParser(@NotNull Config config) {
         return new JasklParser(config);
     }
