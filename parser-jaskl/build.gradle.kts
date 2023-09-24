@@ -2,11 +2,12 @@ plugins {
     buildplugin
 }
 
+val jasklVersion = "1.4.0"
 dependencies {
     api(project(":core"))
     testImplementation(testFixtures(project(":core")))
-    implementation("io.github.almighty-satan.jaskl:jaskl-core:1.4.0")
-    testImplementation("io.github.almighty-satan.jaskl:jaskl-yaml:1.4.0")
-    testImplementation("io.github.almighty-satan.jaskl:jaskl-hocon:1.4.0")
-    testImplementation("io.github.almighty-satan.jaskl:jaskl-json:1.4.0")
+    implementation("io.github.almighty-satan.jaskl:jaskl-core:$jasklVersion")
+    testImplementation("io.github.almighty-satan.jaskl:jaskl-yaml:$jasklVersion")
+    testImplementation("io.github.almighty-satan.jaskl:jaskl-hocon:$jasklVersion")
+    testImplementation("io.github.almighty-satan.jaskl:jaskl-json:$jasklVersion")
 }
