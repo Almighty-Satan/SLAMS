@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
- * A {@link LanguageParser} that parses message from different formats (e.g. JSON) using Jackson.
+ * A {@link LanguageParser} that parses messages from different formats (e.g. JSON) using Jackson.
  */
 public class JacksonParser implements LanguageParser {
 
