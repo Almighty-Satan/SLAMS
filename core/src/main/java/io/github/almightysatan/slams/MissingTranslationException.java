@@ -23,7 +23,7 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Throw if a translation is missing for a specific language.
+ * Thrown if a translation is missing for a specific language.
  */
 public class MissingTranslationException extends RuntimeException {
 
