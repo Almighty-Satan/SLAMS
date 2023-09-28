@@ -21,17 +21,15 @@
 package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.InvalidTypeException;
+import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents an array of messages parsed in MiniMessage format.
@@ -39,8 +37,11 @@ import java.util.List;
  */
 public interface AdventureMessageArray extends AdventureGenericMessage<Component[]> {
 
+    @Override
+    @NotNull AdventureTranslationArray<Component, AdventureTranslation<Component>> translate(@Nullable Context context);
+
     /**
-     * Creates a new {@link AdventureMessageArray} with the given path, {@link Slams} and {@link ContextTagResolver}.
+     * Creates a new {@link AdventureMessageArray} with the given path, {@link Slams} and {@link TagResolver}.
      *
      * @param path        the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams       the language manager (slams instance) to use
@@ -48,41 +49,24 @@ public interface AdventureMessageArray extends AdventureGenericMessage<Component
      * @return a new {@link AdventureMessageArray}
      */
     static @NotNull AdventureMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull TagResolver tagResolver) {
-        class AdventureMessageArrayImpl extends MessageImpl<Component[], String[], TagResolver> implements AdventureMessageArray {
+        Objects.requireNonNull(tagResolver);
+        class AdventureMessageArrayImpl extends MessageImpl<Component[]> implements AdventureMessageArray {
 
-            protected AdventureMessageArrayImpl(@NotNull String path, @NotNull Slams languageManager, @NotNull TagResolver tagResolver) {
-                super(path, languageManager, tagResolver);
+            protected AdventureMessageArrayImpl() {
+                super(path, slams);
             }
 
             @Override
-            protected String @NotNull [] checkType(@Nullable Object value) throws InvalidTypeException {
-                if (value instanceof String[])
-                    return (String[]) value;
-                if (value instanceof List) {
-                    return ((List<?>) value).stream().map(element -> {
-                        if (element instanceof String)
-                            return (String) element;
-                        throw new InvalidTypeException();
-                    }).toArray(String[]::new);
-                }
-                throw new InvalidTypeException();
+            protected @NotNull Translation<Component[]> toMessageValue(@NotNull Object value) {
+                return AdventureTypes.messageArrayValue(value, Component[]::new, element -> AdventureTypes.messageValue(tagResolver, element));
             }
 
-            /**
-             * Returns the value of this entry as a {@link Component} array.
-             * @param context       the context
-             * @param tagResolver   the tag resolver
-             * @return the value of this entry as a {@link Component} array
-             */
             @Override
-            public @NotNull Component @NotNull [] value(@Nullable Context context, @NotNull TagResolver tagResolver) {
-                Object value = this.rawValue(context);
-                TagResolver adapter = new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, this.placeholderResolver()));
-                return Arrays.stream((String[]) value).map(s -> MiniMessage.miniMessage().deserialize(s, adapter)).toArray(Component[]::new);
+            public @NotNull AdventureTranslationArray<Component, AdventureTranslation<Component>> translate(@Nullable Context context) {
+                return (AdventureTranslationArray<Component, AdventureTranslation<Component>>) super.translate(context);
             }
         }
-
-        return new AdventureMessageArrayImpl(path, slams, tagResolver);
+        return new AdventureMessageArrayImpl();
     }
 
     /**

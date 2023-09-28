@@ -28,90 +28,92 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 /**
- * Represents a {@link Message} in Standalone format. The value of this message is an array of Strings.
+ * Represents a {@link Message} in Standalone format. The value of this message is a two-dimensional array of Strings.
  */
-public interface StandaloneMessageArray extends StandaloneGenericMessage<String[]> {
+public interface StandaloneMessageArray2d extends StandaloneGenericMessage<String[][]> {
 
     @Override
-    @NotNull TranslationArray<String, Translation<String>> translate(@Nullable Context context);
+    @NotNull TranslationArray<String[], TranslationArray<String, Translation<String>>> translate(@Nullable Context context);
 
     /**
-     * Creates a new {@link StandaloneMessageArray} with the given path, {@link PlaceholderStyle}, {@link Slams} and
+     * Creates a new {@link StandaloneMessageArray2d} with the given path, {@link PlaceholderStyle}, {@link Slams} and
      * {@link PlaceholderResolver}.
      *
      * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams               the language manager (slams instance) to use
      * @param style               the {@link PlaceholderStyle}
      * @param placeholderResolver the tag resolver
-     * @return a new {@link StandaloneMessageArray}
+     * @return a new {@link StandaloneMessageArray2d}
      */
-    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
         Objects.requireNonNull(style);
-        class StandaloneMessageArrayImpl extends MessageImpl<String[]> implements StandaloneMessageArray {
+        class StandaloneMessageArray2dImpl extends MessageImpl<String[][]> implements StandaloneMessageArray2d {
 
-            protected StandaloneMessageArrayImpl() {
+            protected StandaloneMessageArray2dImpl() {
                 super(path, slams);
             }
 
             @Override
-            protected @NotNull Translation<String[]> toMessageValue(@NotNull Object value) {
-                return StandaloneTypes.messageArrayValue(value, String[]::new, element -> StandaloneTypes.messageValue(style, placeholderResolver, element));
+            protected @NotNull Translation<String[][]> toMessageValue(@NotNull Object value) {
+                return StandaloneTypes.messageArrayValue(value, String[][]::new, element0 ->
+                        StandaloneTypes.messageArrayValue(element0, String[]::new, element1 ->
+                                StandaloneTypes.messageValue(style, placeholderResolver, element1)));
             }
 
             @Override
-            public @NotNull TranslationArray<String, Translation<String>> translate(@Nullable Context context) {
-                return (TranslationArray<String, Translation<String>>) super.translate(context);
+            public @NotNull TranslationArray<String[], TranslationArray<String, Translation<String>>> translate(@Nullable Context context) {
+                return (TranslationArray<String[], TranslationArray<String, Translation<String>>>) super.translate(context);
             }
         }
-        return new StandaloneMessageArrayImpl();
+        return new StandaloneMessageArray2dImpl();
     }
 
     /**
-     * Creates a new {@link StandaloneMessageArray} with the given path, {@link Slams} and {@link PlaceholderResolver}.
+     * Creates a new {@link StandaloneMessageArray2d} with the given path, {@link Slams} and {@link PlaceholderResolver}.
      * Uses {@link PlaceholderStyle#ANGLE_BRACKETS}.
      *
      * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams               the language manager (slams instance) to use
      * @param placeholderResolver the tag resolver
-     * @return a new {@link StandaloneMessageArray}
+     * @return a new {@link StandaloneMessageArray2d}
      */
-    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderResolver placeholderResolver) {
         return of(path, slams, PlaceholderStyle.ANGLE_BRACKETS, placeholderResolver);
     }
 
     /**
-     * Creates a new {@link StandaloneMessageArray} with the given path. Uses {@link PlaceholderStyle#ANGLE_BRACKETS}.
+     * Creates a new {@link StandaloneMessageArray2d} with the given path. Uses {@link PlaceholderStyle#ANGLE_BRACKETS}.
      *
      * @param path  the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams the language manager (slams instance) to use
-     * @return a new {@link StandaloneMessageArray}
+     * @return a new {@link StandaloneMessageArray2d}
      */
-    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull Slams slams) {
+    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull Slams slams) {
         return of(path, slams, PlaceholderStyle.ANGLE_BRACKETS, PlaceholderResolver.empty());
     }
 
     /**
-     * Creates a new {@link StandaloneMessageArray} with the given path, {@link PlaceholderStyle}, {@link StandaloneSlams}
+     * Creates a new {@link StandaloneMessageArray2d} with the given path, {@link PlaceholderStyle}, {@link StandaloneSlams}
      * and {@link PlaceholderResolver}.  Uses {@link StandaloneSlams#style()}.
      *
      * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams               the language manager (slams instance) to use
      * @param placeholderResolver the tag resolver
-     * @return a new {@link StandaloneMessageArray}
+     * @return a new {@link StandaloneMessageArray2d}
      */
-    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull StandaloneSlams slams, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull StandaloneSlams slams, @NotNull PlaceholderResolver placeholderResolver) {
         return of(path, slams, slams.style(), placeholderResolver);
     }
 
     /**
-     * Creates a new {@link StandaloneMessageArray} with the given path, {@link PlaceholderStyle}, {@link StandaloneSlams}
+     * Creates a new {@link StandaloneMessageArray2d} with the given path, {@link PlaceholderStyle}, {@link StandaloneSlams}
      * and {@link PlaceholderResolver}. Uses {@link StandaloneSlams#style()}.
      *
      * @param path  the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams the language manager (slams instance) to use
-     * @return a new {@link StandaloneMessageArray}
+     * @return a new {@link StandaloneMessageArray2d}
      */
-    static @NotNull StandaloneMessageArray of(@NotNull String path, @NotNull StandaloneSlams slams) {
+    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull StandaloneSlams slams) {
         return of(path, slams, slams.style(), PlaceholderResolver.empty());
     }
 }

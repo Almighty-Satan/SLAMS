@@ -20,6 +20,7 @@
 
 package io.github.almightysatan.slams.standalone;
 
+import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.LanguageParser;
 import io.github.almightysatan.slams.impl.SlamsInternal;
@@ -63,7 +64,7 @@ public interface StandaloneSlams extends Slams {
             }
 
             @Override
-            public void register(@NotNull MessageImpl<?, ?, ?> entry) {
+            public void register(@NotNull MessageImpl<?> entry) {
                 ((SlamsInternal) slams).register(entry);
             }
 
@@ -100,6 +101,11 @@ public interface StandaloneSlams extends Slams {
             @Override
             public @NotNull Language defaultLanguage() {
                 return ((SlamsInternal) slams).defaultLanguage();
+            }
+
+            @Override
+            public @NotNull Language language(@Nullable Context context) {
+                return ((SlamsInternal) slams).language(context);
             }
         }
         return new StandaloneSlamsImpl();

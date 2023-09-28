@@ -18,28 +18,32 @@
  * USA
  */
 
-package io.github.almightysatan.slams.impl;
+package io.github.almightysatan.slams;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Slams;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
-
-import java.util.Set;
 
 /**
- * An extension of the {@link Slams} interface that contains methods that should only be used internally.
+ * Represents an array of {@link Translation Translations}.
+ *
+ * @param <T> the type of this translation
+ * @param <U> the {@link Translation Translations} in this array
  */
-public interface SlamsInternal extends Slams {
+public interface TranslationArray<T, U extends Translation<T>> extends Translation<T[]> {
 
-    void register(@NotNull MessageImpl<?> entry);
+    /**
+     * Returns the {@link Translation} at the specified index of the array.
+     *
+     * @param index the index
+     * @return the translation at the given index
+     * @throws ArrayIndexOutOfBoundsException if the index is either negative or greater than or equal to the size of
+     *                                        the array
+     */
+    @NotNull U get(int index);
 
-    @NotNull @Unmodifiable Set<@NotNull String> paths();
-
-    @Nullable Language language(@NotNull String identifier);
-
-    @NotNull Language defaultLanguage();
-
-    @NotNull Language language(@Nullable Context context);
+    /**
+     * Returns the size of the array.
+     *
+     * @return the size of the array
+     */
+    int size();
 }

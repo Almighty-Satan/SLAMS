@@ -18,28 +18,23 @@
  * USA
  */
 
-package io.github.almightysatan.slams.impl;
+package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Slams;
+import io.github.almightysatan.slams.Message;
+import io.github.almightysatan.slams.PlaceholderResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
-
-import java.util.Set;
 
 /**
- * An extension of the {@link Slams} interface that contains methods that should only be used internally.
+ * Represents a {@link Message} in standalone format.
+ *
+ * @param <T> the type of this message's value
  */
-public interface SlamsInternal extends Slams {
+public interface StandaloneGenericMessage<T> extends Message<T> {
 
-    void register(@NotNull MessageImpl<?> entry);
-
-    @NotNull @Unmodifiable Set<@NotNull String> paths();
-
-    @Nullable Language language(@NotNull String identifier);
-
-    @NotNull Language defaultLanguage();
-
-    @NotNull Language language(@Nullable Context context);
+    @Override
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
+        return this.translate(context).value(context, placeholderResolver);
+    }
 }

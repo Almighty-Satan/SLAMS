@@ -26,6 +26,8 @@ import io.github.almightysatan.slams.PlaceholderResolver;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -121,5 +123,44 @@ public class StandaloneTest {
         String[] components = entry.value();
         assertEquals("Hello", components[0]);
         assertEquals("World", components[1]);
+    }
+
+    @Test
+    public void testArray2d() throws IOException {
+        Slams langManager = Slams.create("0");
+        StandaloneMessageArray2d entry = StandaloneMessageArray2d.of("test", langManager, Placeholder.constant("test", "World"));
+
+        langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
+
+        String[][] components = entry.value();
+        assertEquals("Hello", components[0][0]);
+        assertEquals("World", components[0][1]);
+    }
+
+    @Test
+    public void testMap() throws IOException {
+        Slams langManager = Slams.create("0");
+        StandaloneMessageMap<Integer> entry = StandaloneMessageMap.of("test", langManager, Integer.class, Placeholder.constant("test", "World"));
+
+        Map<Integer, String> map = new HashMap<>();
+        map.put(5, "Hello");
+        map.put(99, "<test>");
+        langManager.load("0", values -> values.put("test", map));
+
+        Map<Integer, String> components = entry.value();
+        assertEquals("Hello", components.get(5));
+        assertEquals("World", components.get(99));
+    }
+
+    @Test
+    public void testMessageArrayValue() throws IOException {
+        Slams langManager = Slams.create("0");
+        StandaloneMessageArray2d entry = StandaloneMessageArray2d.of("test", langManager, Placeholder.constant("test", "World"));
+
+        langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
+
+        assertEquals(1, entry.translate(null).size());
+        assertEquals(2, entry.translate(null).get(0).size());
+        assertEquals("World", entry.translate(null).get(0).get(1).value());
     }
 }

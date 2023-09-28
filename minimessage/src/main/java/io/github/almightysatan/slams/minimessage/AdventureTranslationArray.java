@@ -18,28 +18,15 @@
  * USA
  */
 
-package io.github.almightysatan.slams.impl;
+package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Slams;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
-
-import java.util.Set;
+import io.github.almightysatan.slams.TranslationArray;
 
 /**
- * An extension of the {@link Slams} interface that contains methods that should only be used internally.
+ * Represents an array of {@link AdventureTranslation AdventureTranslations}.
+ *
+ * @param <T> the type of this translation
+ * @param <U> the {@link AdventureTranslation AdventureTranslations} in this array
  */
-public interface SlamsInternal extends Slams {
-
-    void register(@NotNull MessageImpl<?> entry);
-
-    @NotNull @Unmodifiable Set<@NotNull String> paths();
-
-    @Nullable Language language(@NotNull String identifier);
-
-    @NotNull Language defaultLanguage();
-
-    @NotNull Language language(@Nullable Context context);
+public interface AdventureTranslationArray<T, U extends AdventureTranslation<T>> extends TranslationArray<T, U>, AdventureTranslation<T[]> {
 }

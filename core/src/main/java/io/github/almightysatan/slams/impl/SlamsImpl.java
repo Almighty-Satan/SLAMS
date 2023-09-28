@@ -20,6 +20,7 @@
 
 package io.github.almightysatan.slams.impl;
 
+import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.LanguageParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +34,7 @@ import java.util.*;
  */
 public class SlamsImpl implements SlamsInternal {
 
-    private final Map<String, MessageImpl<?, ?, ?>> entries;
+    private final Map<String, MessageImpl<?>> entries;
     private final String defaultLanguageIdentifier;
     private Language defaultLanguage;
     private final Map<String, Language> languages;
@@ -45,7 +46,7 @@ public class SlamsImpl implements SlamsInternal {
     }
 
     @Override
-    public void register(@NotNull MessageImpl<?, ?, ?> entry) {
+    public void register(@NotNull MessageImpl<?> entry) {
         if (this.entries.containsKey(entry.path()))
             throw new IllegalArgumentException("Duplicate path: " + entry.path());
         this.entries.put(entry.path(), entry);
@@ -71,7 +72,7 @@ public class SlamsImpl implements SlamsInternal {
     public void reload() throws IOException {
         for (Language language : this.languages.values())
             language.load();
-        for (MessageImpl<?, ?, ?> entry : this.entries.values())
+        for (MessageImpl<?> entry : this.entries.values())
             entry.clearCache();
     }
 
@@ -102,5 +103,18 @@ public class SlamsImpl implements SlamsInternal {
         }
 
         return defaultLanguage;
+    }
+
+    @Override
+    public @NotNull Language language(@Nullable Context context) {
+        if (context != null) {
+            String languageIdentifier = context.language();
+            if (languageIdentifier != null) {
+                Language language = this.language(languageIdentifier);
+                if (language != null)
+                    return language;
+            }
+        }
+        return this.defaultLanguage();
     }
 }

@@ -21,67 +21,47 @@
 package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Message;
 import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.Translation;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 /**
- * Represents a MiniMessage {@link Message}.
+ * Represents a translation of a message in a specific language in MiniMessage format.
  *
- * @param <T> the type of this message's value
+ * @param <T> the type of this translation
  */
-public interface AdventureGenericMessage<T> extends Message<T> {
-
-    @Override
-    @NotNull
-    AdventureTranslation<T> translate(@Nullable Context context);
+public interface AdventureTranslation<T> extends Translation<T> {
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
+     * Replaces placeholders and returns the resulting value.
      *
      * @param context the context
      * @param tagResolver a {@link TagResolver}
      * @return the value
      */
-    default @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver) {
-        return this.translate(context).value(context, tagResolver);
-    }
+    @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver);
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
+     * Replaces placeholders and returns the resulting value.
      *
      * @param context the context
      * @param tagResolvers an array of {@link TagResolver TagResolvers}
      * @return the value
      */
     default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) {
-        Objects.requireNonNull(tagResolvers);
         return this.value(context, ContextTagResolver.of(tagResolvers));
     }
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the default language.
-     *
-     * @param tagResolver a {@link TagResolver}
-     * @return the value
-     */
-    default @NotNull T value(@NotNull TagResolver tagResolver) {
-        return this.value(null, tagResolver);
-    }
-
-    /**
-     * Replaces placeholders and returns the resulting value. Uses the default language.
+     * Replaces placeholders and returns the resulting value.
      *
      * @param tagResolvers an array of {@link TagResolver TagResolvers}
      * @return the value
      */
     default @NotNull T value(@NotNull TagResolver @NotNull ... tagResolvers) {
-        Objects.requireNonNull(tagResolvers);
-        return this.value(ContextTagResolver.of(tagResolvers));
+        return this.value(null, tagResolvers);
     }
 
     @Override

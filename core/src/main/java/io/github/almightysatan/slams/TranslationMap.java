@@ -18,28 +18,32 @@
  * USA
  */
 
-package io.github.almightysatan.slams.impl;
+package io.github.almightysatan.slams;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Slams;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Set;
+import java.util.Map;
 
 /**
- * An extension of the {@link Slams} interface that contains methods that should only be used internally.
+ * Represents a map of {@link Translation Translations}.
+ *
+ * @param <T> the type of this translation
+ * @param <U> the {@link Translation Translations} in this map
  */
-public interface SlamsInternal extends Slams {
+public interface TranslationMap<K, T, U extends Translation<T>> extends Translation<Map<K, T>> {
 
-    void register(@NotNull MessageImpl<?> entry);
+    /**
+     * Returns the {@link Translation} for the specified key
+     *
+     * @param key the key
+     * @return the translation for the given key or null if it does not exist
+     */
+    @Nullable U get(K key);
 
-    @NotNull @Unmodifiable Set<@NotNull String> paths();
-
-    @Nullable Language language(@NotNull String identifier);
-
-    @NotNull Language defaultLanguage();
-
-    @NotNull Language language(@Nullable Context context);
+    /**
+     * Returns the size of the map.
+     *
+     * @return the size of the map
+     */
+    int size();
 }

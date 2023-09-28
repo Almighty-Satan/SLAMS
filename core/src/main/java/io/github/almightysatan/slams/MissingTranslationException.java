@@ -18,28 +18,16 @@
  * USA
  */
 
-package io.github.almightysatan.slams.impl;
+package io.github.almightysatan.slams;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Slams;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
-
-import java.util.Set;
 
 /**
- * An extension of the {@link Slams} interface that contains methods that should only be used internally.
+ * Thrown if a translation is missing for a specific language.
  */
-public interface SlamsInternal extends Slams {
+public class MissingTranslationException extends RuntimeException {
 
-    void register(@NotNull MessageImpl<?> entry);
-
-    @NotNull @Unmodifiable Set<@NotNull String> paths();
-
-    @Nullable Language language(@NotNull String identifier);
-
-    @NotNull Language defaultLanguage();
-
-    @NotNull Language language(@Nullable Context context);
+    public MissingTranslationException(@NotNull String languageIdentifier, @NotNull String path) {
+        super(String.format("Missing translation: %s in language %s", path, languageIdentifier));
+    }
 }

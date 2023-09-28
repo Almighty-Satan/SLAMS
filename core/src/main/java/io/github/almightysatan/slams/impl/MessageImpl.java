@@ -20,10 +20,7 @@
 
 package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.Message;
-import io.github.almightysatan.slams.Slams;
+import io.github.almightysatan.slams.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,21 +31,16 @@ import java.util.Objects;
  * An abstract implementation of the {@link Message} interface.
  *
  * @param <T> the type of this message's value
- * @param <R> the type of this message's raw value (before placeholders are replaced)
- * @param <P> the format-dependent placeholder resolver type (does not have to extend
- *            {@link io.github.almightysatan.slams.PlaceholderResolver})
  */
-public abstract class MessageImpl<T, R, P> implements Message<T> {
+public abstract class MessageImpl<T> implements Message<T> {
 
     private final String path;
     private final SlamsInternal languageManager;
-    private final P implementationPlaceholderResolver;
-    private final IdentityHashMap<Language, R> cache = new IdentityHashMap<>();
+    private final IdentityHashMap<Language, Translation<T>> cache = new IdentityHashMap<>();
 
-    protected MessageImpl(@NotNull String path, @NotNull Slams slams, @NotNull P implementationPlaceholderResolver) {
+    protected MessageImpl(@NotNull String path, @NotNull Slams slams) {
         this.path = this.checkPath(path);
         this.languageManager = (SlamsInternal) Objects.requireNonNull(slams);
-        this.implementationPlaceholderResolver = Objects.requireNonNull(implementationPlaceholderResolver);
         this.languageManager.register(this);
     }
 
@@ -84,39 +76,23 @@ public abstract class MessageImpl<T, R, P> implements Message<T> {
         return this.path;
     }
 
-    protected abstract @NotNull R checkType(@Nullable Object value) throws InvalidTypeException;
-
-    protected @NotNull R rawValue(@Nullable Context context) {
-        Language language = this.resolveLanguage(context);
-        R value = this.cache.get(language);
+    @Override
+    public @NotNull Translation<T> translate(@Nullable Context context) {
+        Language language = this.languageManager.language(context);
+        Translation<T> value = this.cache.get(language);
         if (value == null) {
-            value = this.checkType(language.value(this.path));
+            Object rawValue = language.value(this.path);
+            if (rawValue == null)
+                throw new MissingTranslationException(language.identifier(), this.path);
+            value = this.toMessageValue(rawValue);
             cache.put(language, value);
         }
         return value;
     }
 
+    protected abstract @NotNull Translation<T> toMessageValue(@NotNull Object value);
+
     protected void clearCache() {
         this.cache.clear();
-    }
-
-    protected @NotNull SlamsInternal languageManager() {
-        return this.languageManager;
-    }
-
-    protected @NotNull Language resolveLanguage(@Nullable Context context) {
-        if (context != null) {
-            String languageIdentifier = context.language();
-            if (languageIdentifier != null) {
-                Language language = this.languageManager.language(languageIdentifier);
-                if (language != null)
-                    return language;
-            }
-        }
-        return this.languageManager().defaultLanguage();
-    }
-
-    protected @NotNull P placeholderResolver() {
-        return this.implementationPlaceholderResolver;
     }
 }

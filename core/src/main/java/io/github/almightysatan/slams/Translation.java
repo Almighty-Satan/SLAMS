@@ -23,78 +23,55 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 /**
- * Represents a message. The value of a message is not necessarily a {@link String}. It could be a multidimensional
- * array of Strings, some sort of Map, a MiniMessage Component or something completely different.
+ * Represents a translation of a message in a specific language.
  *
- * @param <T> the type of this message's value
+ * @param <T> the type of this translation
  */
-public interface Message<T> {
+public interface Translation<T> {
 
     /**
-     * The case-sensitive dotted path of this message. For example 'path.to.example.message'.
-     *
-     * @return the path of this message
-     */
-    @NotNull String path();
-
-    /**
-     * Returns a {@link Translation} of this message in the given {@link Context Context's} language.
+     * Replaces placeholders and returns the resulting value.
      *
      * @param context the context
-     * @return a translation of this message
-     */
-    @NotNull Translation<T> translate(@Nullable Context context);
-
-    /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
-     *
-     * @param context             the context
      * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
      * @return the value
      */
     @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver);
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
+     * Replaces placeholders and returns the resulting value.
      *
-     * @param context              the context
-     * @param placeholderResolvers an array of {@link PlaceholderResolver} with additional
-     *                             {@link Placeholder Placeholders}
+     * @param context the context
+     * @param placeholderResolvers an array of {@link PlaceholderResolver PlaceholderResolvers}
      * @return the value
      */
     default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
-        Objects.requireNonNull(placeholderResolvers);
         return this.value(context, PlaceholderResolver.of(placeholderResolvers));
     }
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the default language.
+     * Replaces placeholders and returns the resulting value.
      *
      * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
      * @return the value
      */
     default @NotNull T value(@NotNull PlaceholderResolver placeholderResolver) {
-        Objects.requireNonNull(placeholderResolver);
         return this.value(null, placeholderResolver);
     }
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the default language.
+     * Replaces placeholders and returns the resulting value.
      *
-     * @param placeholderResolvers an array of {@link PlaceholderResolver} with additional
-     *                             {@link Placeholder Placeholders}
+     * @param placeholderResolvers an array of {@link PlaceholderResolver PlaceholderResolvers}
      * @return the value
      */
     default @NotNull T value(@NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
-        Objects.requireNonNull(placeholderResolvers);
         return this.value(PlaceholderResolver.of(placeholderResolvers));
     }
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
+     * Replaces placeholders and returns the resulting value.
      *
      * @param context the context
      * @return the value
@@ -104,11 +81,11 @@ public interface Message<T> {
     }
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the default language.
+     * Replaces placeholders and returns the resulting value.
      *
      * @return the value
      */
     default @NotNull T value() {
-        return this.value((Context) null);
+        return this.value(null, PlaceholderResolver.empty());
     }
 }
