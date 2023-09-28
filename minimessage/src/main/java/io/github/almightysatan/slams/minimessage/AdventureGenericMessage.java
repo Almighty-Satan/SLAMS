@@ -32,7 +32,7 @@ import java.util.Objects;
 /**
  * Represents a MiniMessage {@link Message}.
  *
- * @param <T> the type of this messages value
+ * @param <T> the type of this message's value
  */
 public interface AdventureGenericMessage<T> extends Message<T> {
 

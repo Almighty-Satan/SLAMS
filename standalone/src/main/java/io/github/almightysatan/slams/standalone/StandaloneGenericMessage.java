@@ -26,6 +26,11 @@ import io.github.almightysatan.slams.PlaceholderResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a {@link Message} in standalone format.
+ *
+ * @param <T> the type of this message's value
+ */
 public interface StandaloneGenericMessage<T> extends Message<T> {
 
     @Override
