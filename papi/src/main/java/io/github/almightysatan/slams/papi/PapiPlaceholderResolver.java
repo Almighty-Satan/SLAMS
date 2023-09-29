@@ -39,7 +39,7 @@ public interface PapiPlaceholderResolver {
      * @return a {@link PapiPlaceholderResolver}
      */
     static @NotNull PlaceholderResolver create() {
-        return PlaceholderResolver.of(Placeholder.of("papi", (context, arguments) -> {
+        return Placeholder.of("papi", (context, arguments) -> {
             if (arguments.size() != 2)
                 return "INVALID_PAPI_FORMAT";
             String identifier = arguments.get(0).toLowerCase(Locale.ROOT);
@@ -51,6 +51,6 @@ public interface PapiPlaceholderResolver {
             if (value == null)
                 return "UNKNOWN_PAPI_PLACEHOLDER";
             return value;
-        }));
+        });
     }
 }
