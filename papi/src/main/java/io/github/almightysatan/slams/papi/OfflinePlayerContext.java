@@ -27,10 +27,24 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+/**
+ * A {@link Context} that has a {@link OfflinePlayer}.
+ */
 public interface OfflinePlayerContext extends Context {
 
+    /**
+     * Returns the player.
+     *
+     * @return the player
+     */
     @NotNull OfflinePlayer player();
 
+    /**
+     * Creates a new {@link OfflinePlayerContext} from the given player.
+     *
+     * @param offlinePlayer the player
+     * @return the context
+     */
     static @NotNull OfflinePlayerContext of(@NotNull OfflinePlayer offlinePlayer) {
         Objects.requireNonNull(offlinePlayer);
         return new OfflinePlayerContext() {

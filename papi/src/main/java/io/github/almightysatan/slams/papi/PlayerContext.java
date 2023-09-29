@@ -20,17 +20,28 @@
 
 package io.github.almightysatan.slams.papi;
 
+import io.github.almightysatan.slams.Context;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+/**
+ * A {@link Context} that has a {@link Player}.
+ */
 public interface PlayerContext extends OfflinePlayerContext {
 
     @Override
     @NotNull Player player();
 
+    /**
+     * Creates a new {@link PlayerContext} from the given player.
+     *
+     * @param player the player
+     * @return the context
+     */
     static @NotNull PlayerContext of(@NotNull Player player) {
         Objects.requireNonNull(player);
         return new PlayerContext() {

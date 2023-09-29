@@ -28,8 +28,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
+/**
+ * Contains a method to create a {@link PlaceholderResolver} that resolves PlaceholderAPI placeholders.
+ */
 public interface PapiPlaceholderResolver {
 
+    /**
+     * Returns a {@link PapiPlaceholderResolver}.
+     *
+     * @return a {@link PapiPlaceholderResolver}
+     */
     static @NotNull PlaceholderResolver create() {
         return PlaceholderResolver.of(Placeholder.of("papi", (context, arguments) -> {
             if (arguments.size() != 2)

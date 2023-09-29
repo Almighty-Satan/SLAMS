@@ -31,6 +31,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.Objects;
 
+/**
+ * A {@link PlaceholderExpansion} that makes SLAMS placeholders accessible via PlaceholderAPI.
+ */
 public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
 
     private final String identifier;
@@ -38,6 +41,14 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
     private final String version;
     private final PlaceholderResolver placeholderResolver;
 
+    /**
+     * Creates a new {@link SlamsPlaceholderExpansion}.
+     *
+     * @param identifier the identifier of this expansion
+     * @param author the author of this expansion
+     * @param version the version of this expansion
+     * @param placeholderResolver the {@link PlaceholderResolver}
+     */
     public SlamsPlaceholderExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version, @NotNull PlaceholderResolver placeholderResolver) {
         this.identifier = Objects.requireNonNull(identifier);
         this.author = Objects.requireNonNull(author);
