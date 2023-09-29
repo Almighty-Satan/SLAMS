@@ -122,15 +122,35 @@ context is invalid. If we want to avoid this we can provide our own fallback val
 Placeholder.contextual("name", User.class, User::getName, "Unknown User");
 ```
 
+### PlaceholderAPI
+[PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) is a [Spigot plugin](https://www.spigotmc.org/resources/placeholderapi.6245/)
+that allows a plugin to access placeholders from other plugins. SLAMS placeholders can be made available via
+PlaceholderAPI by using the `papi` module.
+```java
+PlaceholderResolver placeholders = ... // Your placeholders
+new SlamsPlaceholderExpansion(identifier, author, version, placeholders).register();
+```
+To use PlaceholderAPI placeholders in SLAMS messages you just have to add a `PapiPlaceholderResolver` to your
+PlaceholderResolver.
+```java
+PlaceholderResolver placeholderResolver = PlaceholderResolver.of(Placeholder.constant("something", "else"), PapiPlaceholderResolver.create());
+```
+If you are using MiniMessage or the standalone implementation with the default placeholder style, a PlaceholderAPI placeholder would
+look like this:
+```
+<papi:expansion_name:placeholder_name>
+```
+
 ### Modules
 
-| Module         | Description                                                                                                                                 |
-|----------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| core           | Contains common code. Can not be used on it's own.                                                                                          |
-| standalone     | A standalone implementation that does not rely on external dependencies.                                                                    |
-| minimessage    | An implementation that uses the [MiniMessage](https://docs.advntr.dev/minimessage/index.html) format.                                       |
-| parser-jaskl   | A [JASKL](https://github.com/Almighty-Satan/JASKL) based parser to load messages. Supports formats like YAML, HOCON, JSON, Ini and MongoDB. |
-| parser-jackson | A [Jackson](https://github.com/FasterXML/jackson) based parser to load message files. It supports formats like JSON and TOML.               |
+| Module         | Description                                                                                                                                                                    |
+|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| core           | Contains common code. Can not be used on it's own.                                                                                                                             |
+| standalone     | A standalone implementation that does not rely on external dependencies.                                                                                                       |
+| minimessage    | An implementation that uses the [MiniMessage](https://docs.advntr.dev/minimessage/index.html) format.                                                                          |
+| parser-jaskl   | A [JASKL](https://github.com/Almighty-Satan/JASKL) based parser to load messages. Supports formats like YAML, HOCON, JSON, Ini and MongoDB.                                    |
+| parser-jackson | A [Jackson](https://github.com/FasterXML/jackson) based parser to load message files. It supports formats like JSON and TOML.                                                  |
+| papi           | Allows [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) placeholders to be used in SLAMS messages and makes SLAMS placeholders available via PlaceholderAPI. |
 
 ### Building
 To build the project, open the terminal and type `./gradlew build`. All jars will be located at `<module>/build/libs/<module>-<version>.jar`.
