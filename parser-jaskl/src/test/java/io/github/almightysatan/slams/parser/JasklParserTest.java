@@ -20,15 +20,28 @@
 
 package io.github.almightysatan.slams.parser;
 
+import io.github.almightysatan.jaskl.hocon.HoconConfig;
+import io.github.almightysatan.jaskl.json.JsonConfig;
+import io.github.almightysatan.jaskl.yaml.YamlConfig;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-public class JacksonParserTest {
+public class JasklParserTest {
 
     @Test
-    public void testJsonParser() throws IOException {
-        ParserTest.testParser(JacksonParser.createJsonParser(new File("src/test/resources/test.json")));
+    public void testJasklYamlParser() throws IOException {
+        ParserTest.testParser(JasklParser.createParser(YamlConfig.of(new File("src/test/resources/test.yaml"))));
+    }
+
+    @Test
+    public void testJasklHoconParser() throws IOException {
+        ParserTest.testParser(JasklParser.createParser(HoconConfig.of(new File("src/test/resources/test.json"))));
+    }
+
+    @Test
+    public void testJasklJsonParser() throws IOException {
+        ParserTest.testParser(JasklParser.createParser(JsonConfig.of(new File("src/test/resources/test.json"))));
     }
 }
