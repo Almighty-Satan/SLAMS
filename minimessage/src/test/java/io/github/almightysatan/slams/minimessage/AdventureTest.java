@@ -33,7 +33,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MiniMessageTest {
+public class AdventureTest {
 
     @Test
     public void testBasic() throws IOException {
