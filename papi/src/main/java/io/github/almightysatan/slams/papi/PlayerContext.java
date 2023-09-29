@@ -21,7 +21,6 @@
 package io.github.almightysatan.slams.papi;
 
 import io.github.almightysatan.slams.Context;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
