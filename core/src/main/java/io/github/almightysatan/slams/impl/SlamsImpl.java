@@ -22,6 +22,7 @@ package io.github.almightysatan.slams.impl;
 
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.LanguageParser;
+import io.github.almightysatan.slams.UnknownLanguageException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -98,7 +99,7 @@ public class SlamsImpl implements SlamsInternal {
         if (defaultLanguage == null) {
             defaultLanguage = this.languages.get(this.defaultLanguageIdentifier);
             if (defaultLanguage == null)
-                throw new RuntimeException("Unknown default language: " + this.defaultLanguageIdentifier); // TODO improve error handling
+                throw new UnknownLanguageException(this.defaultLanguageIdentifier);
             this.defaultLanguage = defaultLanguage;
         }
 
@@ -107,14 +108,16 @@ public class SlamsImpl implements SlamsInternal {
 
     @Override
     public @NotNull Language language(@Nullable Context context) {
-        if (context != null) {
-            String languageIdentifier = context.language();
-            if (languageIdentifier != null) {
-                Language language = this.language(languageIdentifier);
-                if (language != null)
-                    return language;
-            }
-        }
-        return this.defaultLanguage();
+        if (context == null)
+            return this.defaultLanguage();
+
+        String languageIdentifier = context.language();
+        if (languageIdentifier == null)
+            return this.defaultLanguage();
+
+        Language language = this.language(languageIdentifier);
+        if (language == null)
+            throw new UnknownLanguageException(languageIdentifier);
+        return language;
     }
 }
