@@ -1,6 +1,6 @@
 /*
  * SLAMS - Simple Language And Message System
- * Copyright (C) 2023 Almighty-Satan, UeberallGebannt
+ * Copyright (C) 2023 Almighty-Satan, LeStegii
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
