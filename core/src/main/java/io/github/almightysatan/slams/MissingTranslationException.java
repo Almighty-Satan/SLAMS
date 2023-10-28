@@ -24,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Thrown if a translation is missing for a specific language.
+ * If you run into this exception and don't know why, make sure you registered your messages before loading languages.
+ * Otherwise, you have to call {@link Slams#reload()} after registering your messages.
  */
 public class MissingTranslationException extends RuntimeException {
 

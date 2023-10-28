@@ -24,6 +24,7 @@ import io.github.almightysatan.slams.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Objects;
 
@@ -78,22 +79,25 @@ public abstract class MessageImpl<T> implements Message<T> {
     }
 
     @Override
-    public @NotNull Translation<T> translate(@Nullable Context context) throws MissingTranslationException, UnknownLanguageException, InvalidTypeException {
+    public @NotNull Translation<T> translate(@Nullable Context context) throws MissingTranslationException, UnknownLanguageException {
         Language language = this.languageManager.language(context);
         Translation<T> value = this.cache.get(language);
-        if (value == null) {
-            Object rawValue = language.value(this.path);
-            if (rawValue == null)
-                throw new MissingTranslationException(language.identifier(), this.path);
-            value = this.toMessageValue(rawValue);
-            cache.put(language, value);
-        }
+        if (value == null)
+            throw new MissingTranslationException(language.identifier(), this.path);
         return value;
     }
 
     protected abstract @NotNull Translation<T> toMessageValue(@NotNull Object value) throws InvalidTypeException;
 
-    protected void clearCache() {
-        this.cache.clear();
+    protected void refreshTranslations(@NotNull Collection<@NotNull Language> languages, boolean clear) throws MissingTranslationException, InvalidTypeException {
+        if (clear)
+            this.cache.clear();
+
+        for (Language language : languages) {
+            Object rawValue = language.value(this.path);
+            if (rawValue == null)
+                throw new MissingTranslationException(language.identifier(), this.path);
+            this.cache.put(language, this.toMessageValue(rawValue));
+        }
     }
 }

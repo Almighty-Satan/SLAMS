@@ -28,6 +28,8 @@ import java.util.Collection;
 
 /**
  * The main SLAMS object.
+ *
+ * @see #create(String)
  */
 public interface Slams {
 
@@ -37,17 +39,23 @@ public interface Slams {
      * sequential order and can read or overwrite values loaded by previous parsers.
      *
      * @param identifier the new languages identifier
-     * @param parsers the {@link LanguageParser LanguageParsers} that should be used to load messages
-     * @throws IOException if a parser throws an exception
+     * @param parsers    the {@link LanguageParser LanguageParsers} that should be used to load messages
+     * @throws IOException                 if a parser throws an exception
+     * @throws MissingTranslationException if a translation is missing
+     * @throws InvalidTypeException        if a translation's type is invalid (e.g. an array is supplied for a message
+     *                                     of type String)
      */
-    void load(@NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException;
+    void load(@NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException, MissingTranslationException, InvalidTypeException;
 
     /**
      * Reloads all languages.
      *
-     * @throws IOException if a parser throws an exception
+     * @throws IOException                 if a parser throws an exception
+     * @throws MissingTranslationException if a translation is missing
+     * @throws InvalidTypeException        if a translation's type is invalid (e.g. an array is supplied for a message
+     *                                     of type String)
      */
-    void reload() throws IOException;
+    void reload() throws IOException, MissingTranslationException, InvalidTypeException;
 
     /**
      * Returns a {@link Collection} containing the identifiers of all registered languages.

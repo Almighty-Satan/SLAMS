@@ -20,9 +20,7 @@
 
 package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.LanguageParser;
-import io.github.almightysatan.slams.UnknownLanguageException;
+import io.github.almightysatan.slams.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -59,7 +57,7 @@ public class SlamsImpl implements SlamsInternal {
     }
 
     @Override
-    public void load(@NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException {
+    public void load(@NotNull String identifier, @NotNull LanguageParser @NotNull ... parsers) throws IOException, MissingTranslationException, InvalidTypeException {
         if (identifier.isEmpty())
             throw new IllegalArgumentException("Empty language identifier");
         if (this.languages.containsKey(identifier))
@@ -67,14 +65,18 @@ public class SlamsImpl implements SlamsInternal {
 
         Language language = new Language(this, identifier, parsers);
         this.languages.put(identifier, language);
+        Collection<Language> languageCollection = Collections.singleton(language);
+        for (MessageImpl<?> entry : this.entries.values())
+            entry.refreshTranslations(languageCollection, false);
     }
 
     @Override
-    public void reload() throws IOException {
-        for (Language language : this.languages.values())
+    public void reload() throws IOException, MissingTranslationException, InvalidTypeException {
+        Collection<Language> languages = Collections.unmodifiableCollection(this.languages.values());
+        for (Language language : languages)
             language.load();
         for (MessageImpl<?> entry : this.entries.values())
-            entry.clearCache();
+            entry.refreshTranslations(languages, true);
     }
 
     @Override
