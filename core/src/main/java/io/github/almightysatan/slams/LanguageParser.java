@@ -30,7 +30,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * Loads messages
+ * A LanguageParser loads translations for a language. It should be reusable, meaning {@link #load(Values)} might be
+ * called more than once.
  */
 public interface LanguageParser {
 
