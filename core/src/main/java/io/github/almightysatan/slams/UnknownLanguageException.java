@@ -23,7 +23,7 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Thrown if language identifier does not match any registered languages.
+ * Thrown if language identifier does not match any registered language.
  */
 public class UnknownLanguageException extends RuntimeException {
 

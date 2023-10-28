@@ -20,9 +20,7 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Message;
-import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public interface StandaloneGenericMessage<T> extends Message<T> {
 
     @Override
-    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) throws MissingTranslationException, UnknownLanguageException {
         return this.translate(context).value(context, placeholderResolver);
     }
 }

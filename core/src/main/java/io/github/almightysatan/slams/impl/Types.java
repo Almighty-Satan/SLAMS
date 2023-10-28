@@ -53,7 +53,7 @@ public class Types {
             throw new InvalidTypeException();
     }
 
-    public static <K, T, U extends Translation<T>> Map<K, U> checkMap(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
+    public static <K, T, U extends Translation<T>> Map<K, U> checkMap(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) throws InvalidTypeException {
         if (!(input instanceof Map))
             throw new InvalidTypeException();
         @SuppressWarnings("unchecked")

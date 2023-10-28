@@ -93,7 +93,7 @@ public class SlamsImpl implements SlamsInternal {
     }
 
     @Override
-    public @NotNull Language defaultLanguage() {
+    public @NotNull Language defaultLanguage() throws UnknownLanguageException {
         Language defaultLanguage = this.defaultLanguage;
 
         if (defaultLanguage == null) {
@@ -107,7 +107,7 @@ public class SlamsImpl implements SlamsInternal {
     }
 
     @Override
-    public @NotNull Language language(@Nullable Context context) {
+    public @NotNull Language language(@Nullable Context context) throws UnknownLanguageException {
         if (context == null)
             return this.defaultLanguage();
 

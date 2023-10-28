@@ -31,7 +31,7 @@ import java.util.function.IntFunction;
 
 class StandaloneTypes {
 
-    static Translation<String> messageValue(PlaceholderStyle style, PlaceholderResolver placeholderResolver, Object input) {
+    static Translation<String> messageValue(PlaceholderStyle style, PlaceholderResolver placeholderResolver, Object input) throws InvalidTypeException {
         Component component = new CompositeComponent(style, Types.checkString(input), placeholderResolver);
         return component::value;
     }
@@ -57,7 +57,7 @@ class StandaloneTypes {
         };
     }
 
-    static <K, T, U extends Translation<T>> TranslationMap<K, T, U> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
+    static <K, T, U extends Translation<T>> TranslationMap<K, T, U> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) throws InvalidTypeException {
         Map<K, U> values = Types.checkMap(input, keyClass, callback);
         return new TranslationMap<K, T, U>() {
             @Override

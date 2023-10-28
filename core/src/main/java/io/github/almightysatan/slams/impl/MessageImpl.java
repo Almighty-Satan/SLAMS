@@ -78,7 +78,7 @@ public abstract class MessageImpl<T> implements Message<T> {
     }
 
     @Override
-    public @NotNull Translation<T> translate(@Nullable Context context) {
+    public @NotNull Translation<T> translate(@Nullable Context context) throws MissingTranslationException, UnknownLanguageException, InvalidTypeException {
         Language language = this.languageManager.language(context);
         Translation<T> value = this.cache.get(language);
         if (value == null) {
@@ -91,7 +91,7 @@ public abstract class MessageImpl<T> implements Message<T> {
         return value;
     }
 
-    protected abstract @NotNull Translation<T> toMessageValue(@NotNull Object value);
+    protected abstract @NotNull Translation<T> toMessageValue(@NotNull Object value) throws InvalidTypeException;
 
     protected void clearCache() {
         this.cache.clear();

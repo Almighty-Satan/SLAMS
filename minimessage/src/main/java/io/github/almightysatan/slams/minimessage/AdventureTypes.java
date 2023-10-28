@@ -39,7 +39,7 @@ import java.util.function.IntFunction;
 
 class AdventureTypes {
 
-    static AdventureTranslation<Component> messageValue(TagResolver tagResolver, Object value) {
+    static AdventureTranslation<Component> messageValue(TagResolver tagResolver, Object value) throws InvalidTypeException {
         String string = Types.checkString(value);
         return (context, tagResolver0) -> MiniMessage.miniMessage().deserialize(string, new ContextTagResolverAdapter(context, ContextTagResolver.of(tagResolver, tagResolver0)));
     }
@@ -65,7 +65,7 @@ class AdventureTypes {
         };
     }
 
-    static <K, T, U extends AdventureTranslation<T>> AdventureTranslationMap<K, T, U> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) {
+    static <K, T, U extends AdventureTranslation<T>> AdventureTranslationMap<K, T, U> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) throws InvalidTypeException {
         Map<K, U> values = Types.checkMap(input, keyClass, callback);
         return new AdventureTranslationMap<K, T, U>() {
             @Override

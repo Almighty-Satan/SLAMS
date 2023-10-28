@@ -20,9 +20,7 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Message;
-import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.*;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,27 +36,31 @@ public interface AdventureGenericMessage<T> extends Message<T> {
 
     @Override
     @NotNull
-    AdventureTranslation<T> translate(@Nullable Context context);
+    AdventureTranslation<T> translate(@Nullable Context context) throws MissingTranslationException, UnknownLanguageException;
 
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
      *
-     * @param context the context
+     * @param context     the context
      * @param tagResolver a {@link TagResolver}
      * @return the value
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver) {
+    default @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver) throws MissingTranslationException, UnknownLanguageException {
         return this.translate(context).value(context, tagResolver);
     }
 
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
      *
-     * @param context the context
+     * @param context      the context
      * @param tagResolvers an array of {@link TagResolver TagResolvers}
      * @return the value
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) {
+    default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) throws MissingTranslationException, UnknownLanguageException {
         Objects.requireNonNull(tagResolvers);
         return this.value(context, ContextTagResolver.of(tagResolvers));
     }
@@ -68,8 +70,10 @@ public interface AdventureGenericMessage<T> extends Message<T> {
      *
      * @param tagResolver a {@link TagResolver}
      * @return the value
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value(@NotNull TagResolver tagResolver) {
+    default @NotNull T value(@NotNull TagResolver tagResolver) throws MissingTranslationException, UnknownLanguageException {
         return this.value(null, tagResolver);
     }
 
@@ -78,14 +82,16 @@ public interface AdventureGenericMessage<T> extends Message<T> {
      *
      * @param tagResolvers an array of {@link TagResolver TagResolvers}
      * @return the value
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value(@NotNull TagResolver @NotNull ... tagResolvers) {
+    default @NotNull T value(@NotNull TagResolver @NotNull ... tagResolvers) throws MissingTranslationException, UnknownLanguageException {
         Objects.requireNonNull(tagResolvers);
         return this.value(ContextTagResolver.of(tagResolvers));
     }
 
     @Override
-    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) throws MissingTranslationException, UnknownLanguageException {
         return this.value(context, ContextTagResolver.of(placeholderResolver));
     }
 }

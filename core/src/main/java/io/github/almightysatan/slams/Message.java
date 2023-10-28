@@ -45,8 +45,10 @@ public interface Message<T> {
      *
      * @param context the context
      * @return a translation of this message
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    @NotNull Translation<T> translate(@Nullable Context context);
+    @NotNull Translation<T> translate(@Nullable Context context) throws MissingTranslationException, UnknownLanguageException;
 
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
@@ -55,7 +57,7 @@ public interface Message<T> {
      * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
      * @return the value
      */
-    @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver);
+    @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) throws MissingTranslationException, UnknownLanguageException;
 
     /**
      * Replaces placeholders and returns the resulting value. Uses the given {@link Context Context's} language.
@@ -64,8 +66,10 @@ public interface Message<T> {
      * @param placeholderResolvers an array of {@link PlaceholderResolver} with additional
      *                             {@link Placeholder Placeholders}
      * @return the value
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
+    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) throws MissingTranslationException, UnknownLanguageException {
         Objects.requireNonNull(placeholderResolvers);
         return this.value(context, PlaceholderResolver.of(placeholderResolvers));
     }
@@ -75,8 +79,10 @@ public interface Message<T> {
      *
      * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
      * @return the value
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value(@NotNull PlaceholderResolver placeholderResolver) {
+    default @NotNull T value(@NotNull PlaceholderResolver placeholderResolver) throws MissingTranslationException, UnknownLanguageException {
         Objects.requireNonNull(placeholderResolver);
         return this.value(null, placeholderResolver);
     }
@@ -87,8 +93,10 @@ public interface Message<T> {
      * @param placeholderResolvers an array of {@link PlaceholderResolver} with additional
      *                             {@link Placeholder Placeholders}
      * @return the value
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value(@NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
+    default @NotNull T value(@NotNull PlaceholderResolver @NotNull ... placeholderResolvers) throws MissingTranslationException, UnknownLanguageException {
         Objects.requireNonNull(placeholderResolvers);
         return this.value(PlaceholderResolver.of(placeholderResolvers));
     }
@@ -98,8 +106,10 @@ public interface Message<T> {
      *
      * @param context the context
      * @return the value
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value(@Nullable Context context) {
+    default @NotNull T value(@Nullable Context context) throws MissingTranslationException, UnknownLanguageException {
         return this.value(context, PlaceholderResolver.empty());
     }
 
@@ -107,8 +117,10 @@ public interface Message<T> {
      * Replaces placeholders and returns the resulting value. Uses the default language.
      *
      * @return the value
+     * @throws UnknownLanguageException    if the language can not be found
+     * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value() {
+    default @NotNull T value() throws MissingTranslationException, UnknownLanguageException {
         return this.value((Context) null);
     }
 }
