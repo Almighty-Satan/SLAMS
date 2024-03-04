@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 
 /**
  * Represents a placeholder. Extends {@link PlaceholderResolver} as a placeholder can resolve itself.
@@ -218,6 +219,15 @@ public interface Placeholder extends PlaceholderResolver {
      */
     static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction) {
         return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction);
+    }
+
+    static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> valueFunction) {
+        Objects.requireNonNull(valueFunction);
+        return contextual(key, type, (context, arguments) -> {
+            if (arguments.size() != 2)
+                return "INVALID_CONDITIONAL";
+            return valueFunction.test(context) ? arguments.get(0) : arguments.get(1);
+        });
     }
 
     static @NotNull Placeholder conditional(@NotNull String key, @NotNull BooleanSupplier valueFunction) {
