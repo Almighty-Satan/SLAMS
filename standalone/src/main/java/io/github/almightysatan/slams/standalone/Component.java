@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 interface Component {
 
@@ -39,22 +40,26 @@ interface Component {
         return (context, placeholderResolver) -> value;
     }
 
-    static @NotNull Component placeholder(@NotNull String raw, @NotNull List<@NotNull String> arguments, @NotNull PlaceholderResolver placeholderResolver) {
-        String key = arguments.remove(0);
+    static @NotNull Component placeholder(@NotNull String raw, @NotNull List<@NotNull Component> arguments, @NotNull PlaceholderResolver placeholderResolver) {
+        String key = arguments.remove(0).value(null, PlaceholderResolver.EMPTY);
 
         if (key.isEmpty())
             return simple(raw);
 
         Placeholder placeholder = placeholderResolver.resolve(key);
         if (placeholder != null)
-            return ((context, placeholderResolver1) -> placeholder.value(context, Collections.unmodifiableList(arguments)));
+            return (context, placeholderResolver0) -> placeholder.value(context, toStringList(context, placeholderResolver0, arguments));
 
         return (context, placeholderResolver0) -> {
             Placeholder placeholder0 = placeholderResolver0.resolve(key);
             if (placeholder0 == null)
                 return raw;
             else
-                return placeholder0.value(context, Collections.unmodifiableList(arguments));
+                return placeholder0.value(context, toStringList(context, placeholderResolver0, arguments));
         };
+    }
+
+    static @NotNull List<@NotNull String> toStringList(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver, @NotNull List<@NotNull Component> arguments) {
+        return Collections.unmodifiableList(arguments.stream().map(component -> component.value(context, placeholderResolver)).collect(Collectors.toList()));
     }
 }

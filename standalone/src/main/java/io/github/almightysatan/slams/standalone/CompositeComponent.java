@@ -56,9 +56,9 @@ final class CompositeComponent implements Component {
 
         List<Component> components = new ArrayList<>();
         StringBuilder raw = new StringBuilder();
-        List<String> arguments = new ArrayList<>();
+        List<Component> arguments = new ArrayList<>();
         StringBuilder argument = new StringBuilder();
-        boolean placeholder = false;
+        int scope = 0;
         boolean escape = false;
         for (char c : input.toCharArray()) {
             if (c == '\\') {
@@ -70,33 +70,34 @@ final class CompositeComponent implements Component {
             if (escape) {
                 escape = false;
                 raw.append(c);
-                if (placeholder)
+                if (scope > 0)
                     argument.append(c);
                 continue;
             }
 
-            if (!placeholder) {
-                if (c == headChar) {
-                    placeholder = true;
-                    if (raw.length() > 0) {
-                        components.add(Component.simple(raw.toString()));
-                        raw.setLength(0);
-                    }
+            if (c == headChar && (tailChar != headChar || scope == 0) && ++scope == 1) {
+                if (raw.length() > 0) {
+                    components.add(Component.simple(raw.toString()));
+                    raw.setLength(0);
                 }
-
                 raw.append(c);
-            } else {
-                raw.append(c);
+                continue;
+            }
 
-                if (c == tailChar) {
-                    placeholder = false;
-                    arguments.add(argument.toString());
+            raw.append(c);
+
+            if (scope > 0) {
+                if (c == tailChar && --scope == 0) {
+                    arguments.add(new CompositeComponent(style, argument.toString(), placeholderResolver));
                     components.add(Component.placeholder(raw.toString(), arguments, placeholderResolver));
                     raw.setLength(0);
                     argument.setLength(0);
                     arguments = new ArrayList<>();
-                } else if (c == separatorChar) {
-                    arguments.add(argument.toString());
+                    continue;
+                }
+
+                if (scope == 1 && c == separatorChar) {
+                    arguments.add(new CompositeComponent(style, argument.toString(), placeholderResolver));
                     argument.setLength(0);
                 } else
                     argument.append(c);

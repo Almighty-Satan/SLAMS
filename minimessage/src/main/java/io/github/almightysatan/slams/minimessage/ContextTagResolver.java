@@ -23,7 +23,6 @@ package io.github.almightysatan.slams.minimessage;
 import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.TagPattern;
@@ -181,7 +180,7 @@ public interface ContextTagResolver extends TagResolver {
             @Override
             public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
                 Placeholder placeholder = placeholderResolver.resolve(name);
-                return placeholder == null ? null : Tag.selfClosingInserting(Component.text(placeholder.value(context, this.argumentQueueToList(arguments))));
+                return placeholder == null ? null : Tag.selfClosingInserting(ctx.deserialize(placeholder.value(context, this.argumentQueueToList(arguments))));
             }
 
             @Override
