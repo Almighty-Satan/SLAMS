@@ -221,22 +221,43 @@ public interface Placeholder extends PlaceholderResolver {
         return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction);
     }
 
-    static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> valueFunction) {
-        Objects.requireNonNull(valueFunction);
+    static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull ValueFunction fallbackValueFunctionArguments, @NotNull ValueFunction fallbackValueFunctionContext) {
+        Objects.requireNonNull(predicate);
+        Objects.requireNonNull(fallbackValueFunctionArguments);
         return contextual(key, type, (context, arguments) -> {
             if (arguments.size() != 2)
-                return "INVALID_CONDITIONAL";
-            return valueFunction.test(context) ? arguments.get(0) : arguments.get(1);
+                return fallbackValueFunctionArguments.value(context, arguments);
+            return predicate.test(context) ? arguments.get(0) : arguments.get(1);
+        }, fallbackValueFunctionContext);
+    }
+
+    static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull String fallbackValueArguments, @NotNull String fallbackValueContext) {
+        Objects.requireNonNull(fallbackValueArguments);
+        Objects.requireNonNull(fallbackValueContext);
+        return conditional(key, type, predicate, (context, arguments) -> fallbackValueArguments, (context, arguments) -> fallbackValueContext);
+    }
+
+    static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate) {
+        return conditional(key, type, predicate, "INVALID_CONDITIONAL", "INVALID_CONTEXT");
+    }
+
+    static @NotNull Placeholder conditional(@NotNull String key, @NotNull BooleanSupplier supplier, @NotNull ValueFunction fallbackValueFunction) {
+        Objects.requireNonNull(supplier);
+        Objects.requireNonNull(fallbackValueFunction);
+        return of(key, (context, arguments) -> {
+            if (arguments.size() != 2)
+                return fallbackValueFunction.value(context, arguments);
+            return supplier.getAsBoolean() ? arguments.get(0) : arguments.get(1);
         });
     }
 
-    static @NotNull Placeholder conditional(@NotNull String key, @NotNull BooleanSupplier valueFunction) {
-        Objects.requireNonNull(valueFunction);
-        return of(key, (context, arguments) -> {
-            if (arguments.size() != 2)
-                return "INVALID_CONDITIONAL";
-            return valueFunction.getAsBoolean() ? arguments.get(0) : arguments.get(1);
-        });
+    static @NotNull Placeholder conditional(@NotNull String key, @NotNull BooleanSupplier supplier, @NotNull String fallbackValue) {
+        Objects.requireNonNull(fallbackValue);
+        return conditional(key, supplier, (context, arguments) -> fallbackValue);
+    }
+
+    static @NotNull Placeholder conditional(@NotNull String key, @NotNull BooleanSupplier supplier) {
+        return conditional(key, supplier, "INVALID_CONDITIONAL");
     }
 
     @FunctionalInterface
