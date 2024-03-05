@@ -41,7 +41,7 @@ interface Component {
     }
 
     static @NotNull Component placeholder(@NotNull String raw, @NotNull List<@NotNull Component> arguments, @NotNull PlaceholderResolver placeholderResolver) {
-        String key = arguments.remove(0).value(null, PlaceholderResolver.EMPTY);
+        String key = arguments.remove(0).value(null, PlaceholderResolver.empty());
 
         if (key.isEmpty())
             return simple(raw);
