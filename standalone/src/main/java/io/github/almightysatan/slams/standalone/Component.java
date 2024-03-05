@@ -40,9 +40,25 @@ interface Component {
         return (context, placeholderResolver) -> value;
     }
 
-    static @NotNull Component placeholder(@NotNull String raw, @NotNull List<@NotNull Component> arguments, @NotNull PlaceholderResolver placeholderResolver) {
-        String key = arguments.remove(0).value(null, PlaceholderResolver.empty());
+    static @NotNull Component placeholder(@NotNull String raw, String key, @NotNull List<@NotNull String> arguments, @NotNull PlaceholderResolver placeholderResolver) {
+        if (key.isEmpty())
+            return simple(raw);
 
+        List<String> unmodifiableArguments = Collections.unmodifiableList(arguments);
+        Placeholder placeholder = placeholderResolver.resolve(key);
+        if (placeholder != null)
+            return (context, placeholderResolver0) -> placeholder.value(context, unmodifiableArguments);
+
+        return (context, placeholderResolver0) -> {
+            Placeholder placeholder0 = placeholderResolver0.resolve(key);
+            if (placeholder0 == null)
+                return raw;
+            else
+                return placeholder0.value(context, unmodifiableArguments);
+        };
+    }
+
+    static @NotNull Component nestedPlaceholder(@NotNull String raw, String key, @NotNull List<@NotNull Component> arguments, @NotNull PlaceholderResolver placeholderResolver) {
         if (key.isEmpty())
             return simple(raw);
 
