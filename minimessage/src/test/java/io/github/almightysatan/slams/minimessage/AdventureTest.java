@@ -126,7 +126,22 @@ public class AdventureTest {
         langManager.load("0", values -> values.put("test", "Hello <ifn:fail:'<abc>'>"));
 
         TextComponent component = (TextComponent) entry.value();
-        assertEquals("Hello World", component.content());
+        assertEquals("Hello <abc>", component.content());
+    }
+
+    @Test
+    public void testConditionalContextTagResolver() throws IOException {
+        Slams langManager = Slams.create("0");
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(
+                ContextTagResolver.ofUnsafe(Placeholder.conditional("ifn", () -> false)),
+                ContextTagResolver.of(Placeholder.constant("abc", "<def>")),
+                ContextTagResolver.of(Placeholder.constant("def", "World"))
+        ));
+
+        langManager.load("0", values -> values.put("test", "Hello <ifn:fail:'<abc>'>"));
+
+        TextComponent component = (TextComponent) entry.value();
+        assertEquals("Hello <def>", component.content());
     }
 
     @Test
