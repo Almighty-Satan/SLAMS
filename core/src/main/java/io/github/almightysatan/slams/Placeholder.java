@@ -221,6 +221,20 @@ public interface Placeholder extends PlaceholderResolver {
         return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction);
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
+     * argument as its value, otherwise the second argument is returned. If the {@link Context} is {@code null} or not
+     * of the given type, {@code fallbackValueFunction} will be used instead.
+     * Example format: {@code Hello <hasName:<name>:unknown user>!}
+     *
+     * @param key                   the placeholder's key
+     * @param type                  class of the context type
+     * @param predicate             takes in the current {@link Context} and is used to check whether the first or
+     *                              second argument should be returned as this placeholder's value
+     * @param fallbackValueFunction a function that evaluates this placeholder's value
+     * @param <T>                   the context type
+     * @return a new placeholder
+     */
     static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull ValueFunction fallbackValueFunction) {
         Objects.requireNonNull(predicate);
         return contextual(key, type, (context, arguments) -> {
@@ -231,15 +245,51 @@ public interface Placeholder extends PlaceholderResolver {
         }, fallbackValueFunction);
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
+     * argument as its value, otherwise the second argument is returned. If the {@link Context} is {@code null} or not
+     * of the given type, {@code fallbackValue} will be used instead.
+     * Example format: {@code Hello <hasName:<name>:unknown user>!}
+     *
+     * @param key                   the placeholder's key
+     * @param type                  class of the context type
+     * @param predicate             takes in the current {@link Context} and is used to check whether the first or
+     *                              second argument should be returned as this placeholder's value
+     * @param fallbackValue         the fallback value
+     * @param <T>                   the context type
+     * @return a new placeholder
+     */
     static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull String fallbackValue) {
         Objects.requireNonNull(fallbackValue);
         return conditional(key, type, predicate, (context, arguments) -> fallbackValue);
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
+     * argument as its value, otherwise the second argument is returned.
+     * Example format: {@code Hello <hasName:<name>:unknown user>!}
+     *
+     * @param key                   the placeholder's key
+     * @param type                  class of the context type
+     * @param predicate             takes in the current {@link Context} and is used to check whether the first or
+     *                              second argument should be returned as this placeholder's value
+     * @param <T>                   the context type
+     * @return a new placeholder
+     */
     static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate) {
         return conditional(key, type, predicate, "INVALID_CONTEXT");
     }
 
+    /**
+     * Returns a new {@link Placeholder}. If the supplier is {@code true} this placeholder will return the first
+     * argument as its value, otherwise the second argument is returned.
+     * Example format: {@code Hello <hasName:<name>:unknown user>!}
+     *
+     * @param key                   the placeholder's key
+     * @param supplier              used to check whether the first or second argument should be returned as this
+     *                              placeholder's value
+     * @return a new placeholder
+     */
     static @NotNull Placeholder conditional(@NotNull String key, @NotNull BooleanSupplier supplier) {
         Objects.requireNonNull(supplier);
         return of(key, (context, arguments) -> {
