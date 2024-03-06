@@ -44,7 +44,10 @@ public interface PlaceholderStyle {
 
     /**
      * Placeholders look like this: {@code %key:arg1:arg2%}
+     *
+     * @deprecated This style is incompatible with advanced placeholder features like conditionals
      */
+    @Deprecated
     PlaceholderStyle PERCENT = of('%', '%', ':');
 
     /**

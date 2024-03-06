@@ -122,6 +122,15 @@ context is invalid. If we want to avoid this we can provide our own fallback val
 Placeholder.contextual("name", User.class, User::getName, "Unknown User");
 ```
 
+### Conditional Placeholders
+Conditional placeholders function as if statements within messages.
+```java
+Placeholder.conditional("hasName", User.class, User::hasName());
+```
+An example of a message using the placeholder shown above would be: `Hello <hasName:<name>:unknown user>!`.
+Be aware that the Mini-Message implementation does by default not support parsing tags within the arguments of a
+placeholder. If you need this functionality consider using `ContextTagResolver#ofUnsafe`.
+
 ### PlaceholderAPI
 [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) is a [Spigot plugin](https://www.spigotmc.org/resources/placeholderapi.6245/)
 that allows a plugin to access placeholders from other plugins. SLAMS placeholders can be made available via

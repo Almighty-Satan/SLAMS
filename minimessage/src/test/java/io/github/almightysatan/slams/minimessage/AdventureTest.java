@@ -116,6 +116,35 @@ public class AdventureTest {
     }
 
     @Test
+    public void testConditionalPlaceholder() throws IOException {
+        Slams langManager = Slams.create("0");
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(PlaceholderResolver.of(
+                Placeholder.conditional("ifn", () -> false),
+                Placeholder.constant("abc", "World")
+        )));
+
+        langManager.load("0", values -> values.put("test", "Hello <ifn:fail:'<abc>'>"));
+
+        TextComponent component = (TextComponent) entry.value();
+        assertEquals("Hello <abc>", component.content());
+    }
+
+    @Test
+    public void testConditionalContextTagResolver() throws IOException {
+        Slams langManager = Slams.create("0");
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(
+                ContextTagResolver.ofUnsafe(Placeholder.conditional("ifn", () -> false)),
+                ContextTagResolver.of(Placeholder.constant("abc", "<def>")),
+                ContextTagResolver.of(Placeholder.constant("def", "World"))
+        ));
+
+        langManager.load("0", values -> values.put("test", "Hello <ifn:fail:'<abc>'>"));
+
+        TextComponent component = (TextComponent) entry.value();
+        assertEquals("Hello <def>", component.content());
+    }
+
+    @Test
     public void testArray() throws IOException {
         Slams langManager = Slams.create("0");
         AdventureMessageArray entry = AdventureMessageArray.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));

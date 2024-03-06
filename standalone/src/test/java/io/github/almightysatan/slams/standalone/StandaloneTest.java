@@ -70,6 +70,7 @@ public class StandaloneTest {
 
     @Test
     public void testLocalPlaceholder() throws IOException {
+        @SuppressWarnings("deprecation")
         StandaloneSlams langManager = StandaloneSlams.of(Slams.create("0"), PlaceholderStyle.PERCENT);
         StandaloneMessage entry = StandaloneMessage.of("test", langManager);
 

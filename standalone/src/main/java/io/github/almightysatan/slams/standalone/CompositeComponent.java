@@ -58,7 +58,8 @@ final class CompositeComponent implements Component {
         StringBuilder raw = new StringBuilder();
         List<String> arguments = new ArrayList<>();
         StringBuilder argument = new StringBuilder();
-        boolean placeholder = false;
+        int scope = 0;
+        boolean nested = false;
         boolean escape = false;
         for (char c : input.toCharArray()) {
             if (c == '\\') {
@@ -70,32 +71,45 @@ final class CompositeComponent implements Component {
             if (escape) {
                 escape = false;
                 raw.append(c);
-                if (placeholder)
+                if (scope > 0)
                     argument.append(c);
                 continue;
             }
 
-            if (!placeholder) {
-                if (c == headChar) {
-                    placeholder = true;
+            if (c == headChar && (tailChar != headChar || scope == 0)) {
+                if (++scope == 1) {
                     if (raw.length() > 0) {
                         components.add(Component.simple(raw.toString()));
                         raw.setLength(0);
                     }
-                }
+                    raw.append(c);
+                    continue;
+                } else
+                    nested = true;
+            }
 
-                raw.append(c);
-            } else {
-                raw.append(c);
+            raw.append(c);
 
-                if (c == tailChar) {
-                    placeholder = false;
+            if (scope > 0) {
+                if (c == tailChar && --scope == 0) {
                     arguments.add(argument.toString());
-                    components.add(Component.placeholder(raw.toString(), arguments, placeholderResolver));
+
+                    String key = arguments.remove(0);
+                    if (nested)
+                        components.add(Component.nestedPlaceholder(raw.toString(), key, arguments.stream()
+                                .map(arg -> new CompositeComponent(style, arg, placeholderResolver))
+                                .collect(Collectors.toList()), placeholderResolver));
+                    else
+                        components.add(Component.placeholder(raw.toString(), key, arguments, placeholderResolver));
+
+                    nested = false;
                     raw.setLength(0);
                     argument.setLength(0);
                     arguments = new ArrayList<>();
-                } else if (c == separatorChar) {
+                    continue;
+                }
+
+                if (scope == 1 && c == separatorChar) {
                     arguments.add(argument.toString());
                     argument.setLength(0);
                 } else

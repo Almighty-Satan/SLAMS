@@ -21,9 +21,7 @@
 package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.TagPattern;
@@ -32,8 +30,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -175,30 +171,18 @@ public interface ContextTagResolver extends TagResolver {
      * @return a new {@link ContextTagResolver}
      */
     static @NotNull ContextTagResolver of(@NotNull PlaceholderResolver placeholderResolver) {
-        Objects.requireNonNull(placeholderResolver);
-        return new ContextTagResolver() {
+        return ContextTagResolverImpl.ofPlaceholderResolver(placeholderResolver, false);
+    }
 
-            @Override
-            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
-                Placeholder placeholder = placeholderResolver.resolve(name);
-                return placeholder == null ? null : Tag.selfClosingInserting(Component.text(placeholder.value(context, this.argumentQueueToList(arguments))));
-            }
-
-            @Override
-            public boolean has(@NotNull String name) {
-                return placeholderResolver.resolve(name) != null;
-            }
-
-            private List<String> argumentQueueToList(ArgumentQueue argumentQueue) {
-                if (!argumentQueue.hasNext())
-                    return Collections.emptyList();
-
-                List<String> argumentList = new ArrayList<>();
-                while (argumentQueue.hasNext())
-                    argumentList.add(argumentQueue.pop().value());
-                return Collections.unmodifiableList(argumentList);
-            }
-        };
+    /**
+     * Creates a new {@link ContextTagResolver} from the given {@link PlaceholderResolver}. Any string returned by
+     * placeholders will be deserialized.
+     *
+     * @param placeholderResolver the {@link PlaceholderResolver}
+     * @return a new {@link ContextTagResolver}
+     */
+    static @NotNull ContextTagResolver ofUnsafe(@NotNull PlaceholderResolver placeholderResolver) {
+        return ContextTagResolverImpl.ofPlaceholderResolver(placeholderResolver, true);
     }
 
     // TODO add builder

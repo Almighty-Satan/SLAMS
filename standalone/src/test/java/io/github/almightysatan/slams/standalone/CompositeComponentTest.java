@@ -29,6 +29,7 @@ import java.util.function.Function;
 
 public class CompositeComponentTest {
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testBasicPercent() {
         Assertions.assertEquals("Hello World", new CompositeComponent(PlaceholderStyle.PERCENT, "Hello World", PlaceholderResolver.empty()).value());
@@ -99,7 +100,9 @@ public class CompositeComponentTest {
                 Placeholder.constant("abc", "def"),
                 Placeholder.constant("a<b", "c"),
                 Placeholder.constant("a>b", "d"),
-                Placeholder.withArgs("arg", args -> args.get(0)));
+                Placeholder.withArgs("arg", args -> args.get(0)),
+                Placeholder.conditional("if", () -> true),
+                Placeholder.conditional("ifn", () -> false));
         Function<String, String> eval = input -> new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, input, PlaceholderResolver.empty()).value(null, placeholderResolver);
 
         Assertions.assertEquals("", eval.apply(""));
@@ -127,13 +130,18 @@ public class CompositeComponentTest {
         Assertions.assertEquals("Hello \\def", eval.apply("Hello \\\\<abc>"));
         Assertions.assertEquals("Hello \\<abc>", eval.apply("Hello \\\\\\<abc>"));
         Assertions.assertEquals("Hello < def", eval.apply("Hello \\< <abc>"));
-        Assertions.assertEquals("Hello c ", eval.apply("Hello <a<b> "));
+        Assertions.assertEquals("Hello <a<b> ", eval.apply("Hello <a<b> "));
         Assertions.assertEquals("Hello c ", eval.apply("Hello <a\\<b> "));
         Assertions.assertEquals("Hello d ", eval.apply("Hello <a\\>b> "));
 
         // missing placeholder
         Assertions.assertEquals("Hello <test> World", eval.apply("Hello <test> World"));
         Assertions.assertEquals("Hello <test:abc:def> World", eval.apply("Hello <test:abc:def> World"));
+
+        // conditional
+        Assertions.assertEquals("Hello World", eval.apply("Hello <if:World:Earth>"));
+        Assertions.assertEquals("Hello Earth", eval.apply("Hello <ifn:World:Earth>"));
+        Assertions.assertEquals("Hello def", eval.apply("Hello <if:<abc>:fail>"));
     }
 
     @Test

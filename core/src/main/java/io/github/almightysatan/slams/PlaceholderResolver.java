@@ -24,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
 
 /**
  * Resolves {@link Placeholder Placeholders}.
@@ -315,6 +317,72 @@ public interface PlaceholderResolver {
          */
         default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextualValueFunction<T> contextValueFunction) {
             return this.add(Placeholder.contextual(key, type, contextValueFunction));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
+         * argument as its value, otherwise the second argument is returned. If the {@link Context} is {@code null} or not
+         * of the given type, {@code fallbackValueFunction} will be used instead.
+         * Example format: {@code Hello <hasName:<name>:unknown user>!}
+         *
+         * @param key                   the placeholder's key
+         * @param type                  class of the context type
+         * @param predicate             takes in the current {@link Context} and is used to check whether the first or
+         *                              second argument should be returned as this placeholder's value
+         * @param fallbackValueFunction a function that evaluates this placeholder's value
+         * @param <T>                   the context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
+            return this.add(Placeholder.conditional(key, type, predicate, fallbackValueFunction));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
+         * argument as its value, otherwise the second argument is returned. If the {@link Context} is {@code null} or not
+         * of the given type, {@code fallbackValue} will be used instead.
+         * Example format: {@code Hello <hasName:<name>:unknown user>!}
+         *
+         * @param key                   the placeholder's key
+         * @param type                  class of the context type
+         * @param predicate             takes in the current {@link Context} and is used to check whether the first or
+         *                              second argument should be returned as this placeholder's value
+         * @param fallbackValue         the fallback value
+         * @param <T>                   the context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull String fallbackValue) {
+            return this.add(Placeholder.conditional(key, type, predicate, fallbackValue));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
+         * argument as its value, otherwise the second argument is returned.
+         * Example format: {@code Hello <hasName:<name>:unknown user>!}
+         *
+         * @param key                   the placeholder's key
+         * @param type                  class of the context type
+         * @param predicate             takes in the current {@link Context} and is used to check whether the first or
+         *                              second argument should be returned as this placeholder's value
+         * @param <T>                   the context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate) {
+            return this.add(Placeholder.conditional(key, type, predicate));
+        }
+
+        /**
+         * Adds a new {@link Placeholder}. If the supplier is {@code true} this placeholder will return the first
+         * argument as its value, otherwise the second argument is returned.
+         * Example format: {@code Hello <hasName:<name>:unknown user>!}
+         *
+         * @param key                   the placeholder's key
+         * @param supplier              used to check whether the first or second argument should be returned as this
+         *                              placeholder's value
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder conditional(@NotNull String key, @NotNull BooleanSupplier supplier) {
+            return this.add(Placeholder.conditional(key, supplier));
         }
     }
 }
