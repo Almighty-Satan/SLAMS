@@ -23,7 +23,9 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
@@ -390,15 +392,24 @@ public interface PlaceholderResolver {
         }
 
         default @NotNull Builder builtIn() {
+            BiFunction<String, BiFunction<BigDecimal, BigDecimal, Boolean>, Placeholder> numberComparison = (key, fun) ->
+                    Placeholder.comparison(key, (arg0, arg1) -> {
+                        try {
+                            return fun.apply(new BigDecimal(arg0), new BigDecimal(arg1));
+                        } catch (NumberFormatException e) {
+                            return false;
+                        }
+                    });
+
             this.add(Placeholder.comparison("if_eq", String::equals));
             this.add(Placeholder.comparison("if_neq", (arg0, arg1) -> !arg0.equals(arg1)));
 
-            this.add(Placeholder.numberComparison("if_num_eq", (arg0, arg1) -> arg0.compareTo(arg1) == 0));
-            this.add(Placeholder.numberComparison("if_num_neq", (arg0, arg1) -> arg0.compareTo(arg1) != 0));
-            this.add(Placeholder.numberComparison("if_num_lt", (arg0, arg1) -> arg0.compareTo(arg1) < 0));
-            this.add(Placeholder.numberComparison("if_num_gt", (arg0, arg1) -> arg0.compareTo(arg1) > 0));
-            this.add(Placeholder.numberComparison("if_num_le", (arg0, arg1) -> arg0.compareTo(arg1) <= 0));
-            this.add(Placeholder.numberComparison("if_num_ge", (arg0, arg1) -> arg0.compareTo(arg1) >= 0));
+            this.add(numberComparison.apply("if_num_eq", (arg0, arg1) -> arg0.compareTo(arg1) == 0));
+            this.add(numberComparison.apply("if_num_neq", (arg0, arg1) -> arg0.compareTo(arg1) != 0));
+            this.add(numberComparison.apply("if_num_lt", (arg0, arg1) -> arg0.compareTo(arg1) < 0));
+            this.add(numberComparison.apply("if_num_gt", (arg0, arg1) -> arg0.compareTo(arg1) > 0));
+            this.add(numberComparison.apply("if_num_le", (arg0, arg1) -> arg0.compareTo(arg1) <= 0));
+            this.add(numberComparison.apply("if_num_ge", (arg0, arg1) -> arg0.compareTo(arg1) >= 0));
             return this;
         }
     }
