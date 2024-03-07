@@ -112,6 +112,21 @@ public interface PlaceholderResolver {
         return of(placeholderResolvers.toArray(new PlaceholderResolver[0]));
     }
 
+    /**
+     * Returns a {@link PlaceholderResolver} containing some built-in placeholders, including, but no limited to
+     * <ul>
+     *     <li>if_eq</li>
+     *     <li>if_neq</li>
+     *     <li>if_num_eq</li>
+     *     <li>if_num_neq</li>
+     *     <li>if_num_lt</li>
+     *     <li>if_num_gt</li>
+     *     <li>if_num_le</li>
+     *     <li>if_num_ge</li>
+     * </ul>
+     *
+     * @return a new {@link PlaceholderResolver}
+     */
     static @NotNull PlaceholderResolver builtInPlaceholders() {
         return builder().builtIn().build();
     }
@@ -391,6 +406,21 @@ public interface PlaceholderResolver {
             return this.add(Placeholder.conditional(key, supplier));
         }
 
+        /**
+         * Adds built-in placeholders, including, but no limited to
+         * <ul>
+         *     <li>if_eq</li>
+         *     <li>if_neq</li>
+         *     <li>if_num_eq</li>
+         *     <li>if_num_neq</li>
+         *     <li>if_num_lt</li>
+         *     <li>if_num_gt</li>
+         *     <li>if_num_le</li>
+         *     <li>if_num_ge</li>
+         * </ul>
+         *
+         * @return this {@link Builder}
+         */
         default @NotNull Builder builtIn() {
             BiFunction<String, BiFunction<BigDecimal, BigDecimal, Boolean>, Placeholder> numberComparison = (key, fun) ->
                     Placeholder.comparison(key, (arg0, arg1) -> {
