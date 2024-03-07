@@ -23,8 +23,10 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
@@ -297,6 +299,29 @@ public interface Placeholder extends PlaceholderResolver {
                 return !arguments.isEmpty() ? arguments.get(0) : "";
             else
                 return arguments.size() > 1 ? arguments.get(1) : "";
+        });
+    }
+
+    static @NotNull Placeholder comparison(@NotNull String key, @NotNull BiFunction<String, String, Boolean> fun) {
+        Objects.requireNonNull(fun);
+        return of(key, (context, arguments) -> {
+            if (arguments.size() < 2)
+                return "INVALID_COMPARISON";
+            if (fun.apply(arguments.get(0), arguments.get(1)))
+                return arguments.size() > 2 ? arguments.get(2) : "";
+            else
+                return arguments.size() > 3 ? arguments.get(3) : "";
+        });
+    }
+
+    static @NotNull Placeholder numberComparison(@NotNull String key, @NotNull BiFunction<BigDecimal, BigDecimal, Boolean> fun) {
+        Objects.requireNonNull(fun);
+        return comparison(key, (arg0, arg1) -> {
+            try {
+                return fun.apply(new BigDecimal(arg0), new BigDecimal(arg1));
+            } catch (NumberFormatException e) {
+                return false;
+            }
         });
     }
 

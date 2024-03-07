@@ -110,6 +110,10 @@ public interface PlaceholderResolver {
         return of(placeholderResolvers.toArray(new PlaceholderResolver[0]));
     }
 
+    static @NotNull PlaceholderResolver builtInPlaceholders() {
+        return builder().builtIn().build();
+    }
+
     /**
      * Returns a new {@link Builder Builder}.
      *
@@ -383,6 +387,19 @@ public interface PlaceholderResolver {
          */
         default @NotNull Builder conditional(@NotNull String key, @NotNull BooleanSupplier supplier) {
             return this.add(Placeholder.conditional(key, supplier));
+        }
+
+        default @NotNull Builder builtIn() {
+            this.add(Placeholder.comparison("if_eq", String::equals));
+            this.add(Placeholder.comparison("if_neq", (arg0, arg1) -> !arg0.equals(arg1)));
+
+            this.add(Placeholder.numberComparison("if_num_eq", (arg0, arg1) -> arg0.compareTo(arg1) == 0));
+            this.add(Placeholder.numberComparison("if_num_neq", (arg0, arg1) -> arg0.compareTo(arg1) != 0));
+            this.add(Placeholder.numberComparison("if_num_lt", (arg0, arg1) -> arg0.compareTo(arg1) < 0));
+            this.add(Placeholder.numberComparison("if_num_gt", (arg0, arg1) -> arg0.compareTo(arg1) > 0));
+            this.add(Placeholder.numberComparison("if_num_le", (arg0, arg1) -> arg0.compareTo(arg1) <= 0));
+            this.add(Placeholder.numberComparison("if_num_ge", (arg0, arg1) -> arg0.compareTo(arg1) >= 0));
+            return this;
         }
     }
 }
