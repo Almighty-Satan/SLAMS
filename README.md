@@ -157,7 +157,7 @@ look like this:
 | core           | Contains common code. Can not be used on it's own.                                                                                                                             |
 | standalone     | A standalone implementation that does not rely on external dependencies.                                                                                                       |
 | minimessage    | An implementation that uses the [MiniMessage](https://docs.advntr.dev/minimessage/index.html) format.                                                                          |
-| parser-jaskl   | A [JASKL](https://github.com/Almighty-Satan/JASKL) based parser to load messages. Supports formats like YAML, HOCON, JSON, Ini and MongoDB.                                    |
+| parser-jaskl   | A [JASKL](https://github.com/Almighty-Satan/JASKL) based parser to load messages. Supports formats like YAML, HOCON, JSON and MongoDB.                                         |
 | parser-jackson | A [Jackson](https://github.com/FasterXML/jackson) based parser to load message files. It supports formats like JSON and TOML.                                                  |
 | papi           | Allows [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) placeholders to be used in SLAMS messages and makes SLAMS placeholders available via PlaceholderAPI. |
 
