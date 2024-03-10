@@ -130,7 +130,7 @@ public class AdventureTest {
     }
 
     @Test
-    public void testConditionalContextTagResolver() throws IOException {
+    public void testConditionalUnsafePlaceholder() throws IOException {
         Slams langManager = Slams.create("0");
         AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(
                 ContextTagResolver.ofUnsafe(Placeholder.conditional("ifn", () -> false)),
@@ -142,6 +142,19 @@ public class AdventureTest {
 
         TextComponent component = (TextComponent) entry.value();
         assertEquals("Hello <def>", component.content());
+    }
+
+    @Test
+    public void testComparisonPlaceholder() throws IOException {
+        Slams langManager = Slams.create("0");
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.ofUnsafe(
+                PlaceholderResolver.builder().builtIn().constant("abc", "World").constant("number", "150").build()
+        ));
+
+        langManager.load("0", values -> values.put("test", "Hello <if_num_eq:'<number>':150:'<abc>':Earth>"));
+
+        TextComponent component = (TextComponent) entry.value();
+        assertEquals("Hello World", component.content());
     }
 
     @Test

@@ -23,7 +23,9 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
@@ -111,6 +113,25 @@ public interface PlaceholderResolver {
      */
     static @NotNull PlaceholderResolver of(@NotNull List<@NotNull PlaceholderResolver> placeholderResolvers) {
         return of(placeholderResolvers.toArray(new PlaceholderResolver[0]));
+    }
+
+    /**
+     * Returns a {@link PlaceholderResolver} containing some built-in placeholders, including, but no limited to
+     * <ul>
+     *     <li>if_eq</li>
+     *     <li>if_neq</li>
+     *     <li>if_num_eq</li>
+     *     <li>if_num_neq</li>
+     *     <li>if_num_lt</li>
+     *     <li>if_num_gt</li>
+     *     <li>if_num_le</li>
+     *     <li>if_num_ge</li>
+     * </ul>
+     *
+     * @return a new {@link PlaceholderResolver}
+     */
+    static @NotNull PlaceholderResolver builtInPlaceholders() {
+        return builder().builtIn().build();
     }
 
     /**
@@ -391,6 +412,43 @@ public interface PlaceholderResolver {
          */
         default @NotNull Builder conditional(@NotNull String key, @NotNull BooleanSupplier supplier) {
             return this.add(Placeholder.conditional(key, supplier));
+        }
+
+        /**
+         * Adds built-in placeholders, including, but no limited to
+         * <ul>
+         *     <li>if_eq</li>
+         *     <li>if_neq</li>
+         *     <li>if_num_eq</li>
+         *     <li>if_num_neq</li>
+         *     <li>if_num_lt</li>
+         *     <li>if_num_gt</li>
+         *     <li>if_num_le</li>
+         *     <li>if_num_ge</li>
+         * </ul>
+         *
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder builtIn() {
+            BiFunction<String, BiFunction<BigDecimal, BigDecimal, Boolean>, Placeholder> numberComparison = (key, fun) ->
+                    Placeholder.comparison(key, (arg0, arg1) -> {
+                        try {
+                            return fun.apply(new BigDecimal(arg0), new BigDecimal(arg1));
+                        } catch (NumberFormatException e) {
+                            return false;
+                        }
+                    });
+
+            this.add(Placeholder.comparison("if_eq", String::equals));
+            this.add(Placeholder.comparison("if_neq", (arg0, arg1) -> !arg0.equals(arg1)));
+
+            this.add(numberComparison.apply("if_num_eq", (arg0, arg1) -> arg0.compareTo(arg1) == 0));
+            this.add(numberComparison.apply("if_num_neq", (arg0, arg1) -> arg0.compareTo(arg1) != 0));
+            this.add(numberComparison.apply("if_num_lt", (arg0, arg1) -> arg0.compareTo(arg1) < 0));
+            this.add(numberComparison.apply("if_num_gt", (arg0, arg1) -> arg0.compareTo(arg1) > 0));
+            this.add(numberComparison.apply("if_num_le", (arg0, arg1) -> arg0.compareTo(arg1) <= 0));
+            this.add(numberComparison.apply("if_num_ge", (arg0, arg1) -> arg0.compareTo(arg1) >= 0));
+            return this;
         }
     }
 }
