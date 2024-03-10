@@ -118,10 +118,10 @@ public class AdventureTest {
     @Test
     public void testConditionalPlaceholder() throws IOException {
         Slams langManager = Slams.create("0");
-        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(PlaceholderResolver.of(
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.builder().add(
                 Placeholder.conditional("ifn", () -> false),
                 Placeholder.constant("abc", "World")
-        )));
+        ).build());
 
         langManager.load("0", values -> values.put("test", "Hello <ifn:fail:'<abc>'>"));
 

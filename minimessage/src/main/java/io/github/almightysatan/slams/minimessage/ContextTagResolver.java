@@ -30,6 +30,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -163,6 +164,7 @@ public interface ContextTagResolver extends TagResolver {
      * @param tagResolvers a {@link List} of {@link TagResolver TagResolvers}
      * @return a new {@link ContextTagResolver}
      */
+    @Deprecated
     static @NotNull ContextTagResolver of(@NotNull List<@NotNull TagResolver> tagResolvers) {
         return of(tagResolvers.toArray(new TagResolver[0]));
     }
@@ -188,5 +190,153 @@ public interface ContextTagResolver extends TagResolver {
         return ContextTagResolverImpl.ofPlaceholderResolver(placeholderResolver, true);
     }
 
-    // TODO add builder
+    /**
+     * Returns a new {@link Builder}.
+     *
+     * @return a new {@link Builder}
+     */
+    static @NotNull Builder builder() {
+        List<ContextTagResolver> contextTagResolvers = new ArrayList<>();
+
+        return new Builder() {
+            @Override
+            public @NotNull ContextTagResolver build() {
+                return of(contextTagResolvers.toArray(new ContextTagResolver[0]));
+            }
+
+            @Override
+            public @NotNull Builder add(@NotNull ContextTagResolver contextTagResolver) {
+                Objects.requireNonNull(contextTagResolver);
+                contextTagResolvers.add(contextTagResolver);
+                return this;
+            }
+
+            @Override
+            public @NotNull Builder add(@NotNull TagResolver tagResolver) {
+                Objects.requireNonNull(tagResolver);
+                if (tagResolver instanceof ContextTagResolver)
+                    return this.add((ContextTagResolver) tagResolver);
+                return this.add(new ContextTagResolver() {
+                    @Override
+                    public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+                        return tagResolver.resolve(name, arguments, ctx);
+                    }
+
+                    @Override
+                    public boolean has(@NotNull String name) {
+                        return tagResolver.has(name);
+                    }
+                });
+            }
+
+            @Override
+            public @NotNull Builder add(@NotNull PlaceholderResolver placeholderResolver) {
+                Objects.requireNonNull(placeholderResolver);
+                return this.add(of(placeholderResolver));
+            }
+
+            @Override
+            public @NotNull Builder addUnsafe(@NotNull PlaceholderResolver placeholderResolver) {
+                Objects.requireNonNull(placeholderResolver);
+                return this.add(ofUnsafe(placeholderResolver));
+            }
+        };
+    }
+
+    /**
+     * Can be used to build a {@link ContextTagResolver}.
+     */
+    static interface Builder {
+
+        /**
+         * Creates a new {@link ContextTagResolver} from this {@link Builder}.
+         *
+         * @return a new {@link ContextTagResolver}
+         */
+        @NotNull ContextTagResolver build();
+
+        /**
+         * Adds a {@link ContextTagResolver}.
+         *
+         * @param contextTagResolver the {@link ContextTagResolver}
+         * @return this {@link Builder}
+         */
+        @NotNull Builder add(@NotNull ContextTagResolver contextTagResolver);
+
+        /**
+         * Adds a {@link TagResolver}.
+         *
+         * @param tagResolver the {@link TagResolver}
+         * @return this {@link Builder}
+         */
+        @NotNull Builder add(@NotNull TagResolver tagResolver);
+
+        /**
+         * Adds a {@link PlaceholderResolver}.
+         *
+         * @param placeholderResolver the {@link PlaceholderResolver}
+         * @return this {@link Builder}
+         */
+        @NotNull Builder add(@NotNull PlaceholderResolver placeholderResolver);
+
+        /**
+         * Adds a {@link PlaceholderResolver}. All tags created from the given {@link PlaceholderResolver} will be
+         * pre-process tags and their value will therefore be parsed by MiniMessage. Do not use this method for
+         * placeholders that return user input!
+         *
+         * @param placeholderResolver the {@link PlaceholderResolver}
+         * @return this {@link Builder}
+         */
+        @NotNull Builder addUnsafe(@NotNull PlaceholderResolver placeholderResolver);
+
+        /**
+         * Adds multiple {@link ContextTagResolver ContextTagResolvers}.
+         *
+         * @param contextTagResolvers the {@link ContextTagResolver ContextTagResolvers}
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder add(@NotNull ContextTagResolver @NotNull ... contextTagResolvers) {
+            for (ContextTagResolver contextTagResolver : contextTagResolvers)
+                this.add(contextTagResolver);
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link TagResolver TagResolvers}.
+         *
+         * @param tagResolvers the {@link TagResolver TagResolvers}
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder add(@NotNull TagResolver @NotNull ... tagResolvers) {
+            for (TagResolver tagResolver : tagResolvers)
+                this.add(tagResolver);
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link PlaceholderResolver PlaceholderResolvers}.
+         *
+         * @param placeholderResolvers the {@link PlaceholderResolver PlaceholderResolvers}
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder add(@NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
+            for (PlaceholderResolver placeholderResolver : placeholderResolvers)
+                this.add(placeholderResolver);
+            return this;
+        }
+
+        /**
+         * Adds multiple {@link PlaceholderResolver PlaceholderResolvers}. All tags created from the given
+         * {@link PlaceholderResolver PlaceholderResolvers} will be pre-process tags and their value will therefore be
+         * parsed by MiniMessage. Do not use this method for placeholders that return user input!
+         *
+         * @param placeholderResolvers the {@link PlaceholderResolver PlaceholderResolvers}
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder addUnsafe(@NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
+            for (PlaceholderResolver placeholderResolver : placeholderResolvers)
+                this.addUnsafe(placeholderResolver);
+            return this;
+        }
+    }
 }
