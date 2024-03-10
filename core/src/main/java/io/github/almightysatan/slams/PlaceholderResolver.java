@@ -138,6 +138,11 @@ public interface PlaceholderResolver {
      */
     interface Builder {
 
+        /**
+         * Creates a new {@link PlaceholderResolver} from this {@link Builder}.
+         *
+         * @return a new {@link PlaceholderResolver}
+         */
         @NotNull PlaceholderResolver build();
 
         /**
