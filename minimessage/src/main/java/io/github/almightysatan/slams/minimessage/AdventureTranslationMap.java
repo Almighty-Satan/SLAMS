@@ -27,6 +27,7 @@ import java.util.Map;
 /**
  * Represents a map of {@link AdventureTranslation AdventureTranslations}.
  *
+ * @param <K> the type of the key
  * @param <T> the type of this translation
  * @param <U> the {@link AdventureTranslation AdventureTranslations} in this map
  */

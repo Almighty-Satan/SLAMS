@@ -27,6 +27,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class UnknownLanguageException extends RuntimeException {
 
+    /**
+     * Creates a new {@link UnknownLanguageException}.
+     *
+     * @param languageIdentifier the unknown identifier
+     */
     public UnknownLanguageException(@NotNull String languageIdentifier) {
         super(String.format("Unknown language: %s", languageIdentifier));
     }

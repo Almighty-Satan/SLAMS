@@ -33,6 +33,9 @@ import java.util.function.Predicate;
 @FunctionalInterface
 public interface PlaceholderResolver {
 
+    /**
+     * A {@link PlaceholderResolver} that always returns null (does not resolve any {@link Placeholder Placeholders}).
+     */
     PlaceholderResolver EMPTY = key -> null;
 
     /**

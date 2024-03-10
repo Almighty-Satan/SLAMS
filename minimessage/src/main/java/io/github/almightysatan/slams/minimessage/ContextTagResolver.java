@@ -38,6 +38,9 @@ import java.util.Objects;
  */
 public interface ContextTagResolver extends TagResolver {
 
+    /**
+     * A {@link ContextTagResolver} that does not resolve any tags.
+     */
     ContextTagResolver EMPTY = new ContextTagResolver() {
         @Override
         public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {

@@ -29,6 +29,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MissingTranslationException extends RuntimeException {
 
+    /**
+     * Creates a new {@link MissingTranslationException}.
+     *
+     * @param languageIdentifier the identifier of the language
+     * @param path               the path of the missing translation
+     */
     public MissingTranslationException(@NotNull String languageIdentifier, @NotNull String path) {
         super(String.format("Missing translation: %s in language %s", path, languageIdentifier));
     }

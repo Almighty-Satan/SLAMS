@@ -45,6 +45,9 @@ public interface LanguageParser {
      */
     void load(@NotNull Values values) throws IOException;
 
+    /**
+     * Contains values provided by one or multiple {@link LanguageParser LanguageParsers}.
+     */
     interface Values {
         /**
          * Returns a {@link Set} containing all valid paths.
