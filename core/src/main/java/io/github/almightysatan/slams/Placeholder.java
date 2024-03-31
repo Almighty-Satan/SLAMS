@@ -300,6 +300,28 @@ public interface Placeholder extends PlaceholderResolver {
         });
     }
 
+    /**
+     * Returns a new {@link Placeholder}. This placeholder compares its first two arguments using the given function. If
+     * the function evaluates to {@code true}, this placeholder will return the third argument as its value, otherwise
+     * the fourth argument is returned.
+     * Example format: {@code <if_eq:<time>:1:1 second:<time> seconds>}
+     *
+     * @param key                   the placeholder's key
+     * @param comparisonFunction    a function that compares the first two arguments of this placeholder
+     * @return a new placeholder
+     */
+    static @NotNull Placeholder comparison(@NotNull String key, @NotNull ComparisonFunction comparisonFunction) {
+        Objects.requireNonNull(comparisonFunction);
+        return of(key, (context, arguments) -> {
+            if (arguments.size() < 2)
+                return "INVALID_COMPARISON";
+            if (comparisonFunction.value(arguments.get(0), arguments.get(1)))
+                return arguments.size() > 2 ? arguments.get(2) : "";
+            else
+                return arguments.size() > 3 ? arguments.get(3) : "";
+        });
+    }
+
     @FunctionalInterface
     interface ValueFunction {
         @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments);
@@ -348,5 +370,10 @@ public interface Placeholder extends PlaceholderResolver {
         default @NotNull String value(@NotNull T context, @NotNull List<@NotNull String> arguments) {
             return this.value(context);
         }
+    }
+
+    @FunctionalInterface
+    interface ComparisonFunction {
+        boolean value(@NotNull String argument0, @NotNull String argument1);
     }
 }

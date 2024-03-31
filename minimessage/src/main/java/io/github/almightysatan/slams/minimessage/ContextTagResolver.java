@@ -180,8 +180,9 @@ public interface ContextTagResolver extends TagResolver {
     }
 
     /**
-     * Creates a new {@link ContextTagResolver} from the given {@link PlaceholderResolver}. Any string returned by
-     * placeholders will be deserialized.
+     * Creates a new {@link ContextTagResolver} from the given {@link PlaceholderResolver}. All tags returned by this
+     * {@link ContextTagResolver} will be pre-process tags and their value will therefore be parsed by MiniMessage. Do
+     * not use this method for placeholders that return user input!
      *
      * @param placeholderResolver the {@link PlaceholderResolver}
      * @return a new {@link ContextTagResolver}

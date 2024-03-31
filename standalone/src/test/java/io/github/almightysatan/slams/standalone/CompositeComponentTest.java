@@ -96,13 +96,14 @@ public class CompositeComponentTest {
 
     @Test
     public void testPlaceholders() {
-        PlaceholderResolver placeholderResolver = PlaceholderResolver.of(
-                Placeholder.constant("abc", "def"),
-                Placeholder.constant("a<b", "c"),
-                Placeholder.constant("a>b", "d"),
-                Placeholder.withArgs("arg", args -> args.get(0)),
-                Placeholder.conditional("if", () -> true),
-                Placeholder.conditional("ifn", () -> false));
+        PlaceholderResolver placeholderResolver = PlaceholderResolver.builder()
+                .constant("abc", "def")
+                .constant("a<b", "c")
+                .constant("a>b", "d")
+                .withArgs("arg", args -> args.get(0))
+                .conditional("if", () -> true)
+                .conditional("ifn", () -> false)
+                .builtIn().build();
         Function<String, String> eval = input -> new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, input, PlaceholderResolver.empty()).value(null, placeholderResolver);
 
         Assertions.assertEquals("", eval.apply(""));
@@ -142,6 +143,11 @@ public class CompositeComponentTest {
         Assertions.assertEquals("Hello World", eval.apply("Hello <if:World:Earth>"));
         Assertions.assertEquals("Hello Earth", eval.apply("Hello <ifn:World:Earth>"));
         Assertions.assertEquals("Hello def", eval.apply("Hello <if:<abc>:fail>"));
+
+        // built-in
+        Assertions.assertEquals("Hello World", eval.apply("Hello <if_eq:abc:abc:World:Earth>"));
+        Assertions.assertEquals("Hello World", eval.apply("Hello <if_num_eq:150:150:World:Earth>"));
+        Assertions.assertEquals("Hello Earth", eval.apply("Hello <if_num_eq:100:150:World:Earth>"));
     }
 
     @Test

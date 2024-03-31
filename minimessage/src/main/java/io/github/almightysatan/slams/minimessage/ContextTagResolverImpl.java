@@ -48,7 +48,7 @@ class ContextTagResolverImpl {
                 if (placeholder == null)
                     return null;
                 String value = placeholder.value(context, this.argumentQueueToList(arguments));
-                return Tag.selfClosingInserting(eval ? ctx.deserialize(value) : Component.text(value));
+                return eval ? Tag.preProcessParsed(value) : Tag.selfClosingInserting(Component.text(value));
             }
 
             @Override
