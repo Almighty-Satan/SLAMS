@@ -18,5 +18,5 @@ dependencies {
         exclude("org.yaml")
         exclude("net.md-5")
     }
-    implementation("me.clip:placeholderapi:2.11.5")
+    implementation("me.clip:placeholderapi:2.11.6")
 }
