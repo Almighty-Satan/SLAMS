@@ -20,7 +20,7 @@ checkstyle {
 }
 
 group = "io.github.almighty-satan.slams"
-version = "1.1.0"
+version = "1.1.1"
 
 repositories {
     mavenCentral()
