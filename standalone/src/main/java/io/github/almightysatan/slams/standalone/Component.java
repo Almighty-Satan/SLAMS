@@ -25,7 +25,9 @@ import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.AbstractList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -64,18 +66,32 @@ interface Component {
 
         Placeholder placeholder = placeholderResolver.resolve(key);
         if (placeholder != null)
-            return (context, placeholderResolver0) -> placeholder.value(context, toStringList(context, placeholderResolver0, arguments));
+            return (context, placeholderResolver0) -> placeholder.value(context, lazyEvalList(context, placeholderResolver0, arguments));
 
         return (context, placeholderResolver0) -> {
             Placeholder placeholder0 = placeholderResolver0.resolve(key);
             if (placeholder0 == null)
                 return raw;
             else
-                return placeholder0.value(context, toStringList(context, placeholderResolver0, arguments));
+                return placeholder0.value(context, lazyEvalList(context, placeholderResolver0, arguments));
         };
     }
 
-    static @NotNull List<@NotNull String> toStringList(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver, @NotNull List<@NotNull Component> arguments) {
-        return Collections.unmodifiableList(arguments.stream().map(component -> component.value(context, placeholderResolver)).collect(Collectors.toList()));
+    static @Unmodifiable @NotNull List<@NotNull String> lazyEvalList(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver, @NotNull List<@NotNull Component> arguments) {
+        String[] values = new String[arguments.size()];
+        return Collections.unmodifiableList(new AbstractList<String>() {
+
+            @Override
+            public int size() {
+                return arguments.size();
+            }
+
+            @Override
+            public String get(int index) {
+                if (values[index] != null)
+                    return values[index];
+                return values[index] = arguments.get(index).value(context, placeholderResolver);
+            }
+        });
     }
 }

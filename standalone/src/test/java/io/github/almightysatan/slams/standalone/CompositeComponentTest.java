@@ -103,6 +103,10 @@ public class CompositeComponentTest {
                 .withArgs("arg", args -> args.get(0))
                 .conditional("if", () -> true)
                 .conditional("ifn", () -> false)
+                .variable("fail", () -> {
+                    Assertions.fail();
+                    return "fail";
+                })
                 .builtIn().build();
         Function<String, String> eval = input -> new CompositeComponent(PlaceholderStyle.ANGLE_BRACKETS, input, PlaceholderResolver.empty()).value(null, placeholderResolver);
 
@@ -143,6 +147,7 @@ public class CompositeComponentTest {
         Assertions.assertEquals("Hello World", eval.apply("Hello <if:World:Earth>"));
         Assertions.assertEquals("Hello Earth", eval.apply("Hello <ifn:World:Earth>"));
         Assertions.assertEquals("Hello def", eval.apply("Hello <if:<abc>:fail>"));
+        Assertions.assertEquals("Hello def", eval.apply("Hello <if:<abc>:<fail>>"));
 
         // built-in
         Assertions.assertEquals("Hello World", eval.apply("Hello <if_eq:abc:abc:World:Earth>"));
