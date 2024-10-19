@@ -42,7 +42,7 @@ interface Component {
         return (context, placeholderResolver) -> value;
     }
 
-    static @NotNull Component placeholder(@NotNull String raw, String key, @NotNull List<@NotNull String> arguments, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull Component placeholder(@NotNull String raw, @NotNull String key, @NotNull List<@NotNull String> arguments, @NotNull PlaceholderResolver placeholderResolver) {
         if (key.isEmpty())
             return simple(raw);
 
@@ -60,7 +60,7 @@ interface Component {
         };
     }
 
-    static @NotNull Component nestedPlaceholder(@NotNull String raw, String key, @NotNull List<@NotNull Component> arguments, @NotNull PlaceholderResolver placeholderResolver) {
+    static @NotNull Component nestedPlaceholder(@NotNull String raw, @NotNull String key, @NotNull List<@NotNull Component> arguments, @NotNull PlaceholderResolver placeholderResolver) {
         if (key.isEmpty())
             return simple(raw);
 
