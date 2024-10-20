@@ -79,7 +79,7 @@ interface Component {
 
     static @Unmodifiable @NotNull List<@NotNull String> lazyEvalList(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver, @NotNull List<@NotNull Component> arguments) {
         String[] values = new String[arguments.size()];
-        return Collections.unmodifiableList(new AbstractList<String>() {
+        return new AbstractList<String>() {
 
             @Override
             public int size() {
@@ -92,6 +92,6 @@ interface Component {
                     return values[index];
                 return values[index] = arguments.get(index).value(context, placeholderResolver);
             }
-        });
+        };
     }
 }
