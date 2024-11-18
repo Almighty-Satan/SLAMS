@@ -20,9 +20,7 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.PlaceholderResolver;
-import io.github.almightysatan.slams.Slams;
-import io.github.almightysatan.slams.Placeholder;
+import io.github.almightysatan.slams.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.junit.jupiter.api.Test;

@@ -20,9 +20,7 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.Slams;
-import io.github.almightysatan.slams.Placeholder;
-import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

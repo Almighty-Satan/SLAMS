@@ -18,9 +18,8 @@
  * USA
  */
 
-package io.github.almightysatan.slams.minimessage;
+package io.github.almightysatan.slams;
 
-import io.github.almightysatan.slams.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

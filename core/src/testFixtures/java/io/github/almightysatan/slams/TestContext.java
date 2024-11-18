@@ -18,18 +18,17 @@
  * USA
  */
 
-package io.github.almightysatan.slams.standalone;
+package io.github.almightysatan.slams;
 
-import io.github.almightysatan.slams.Context;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TestContext2 implements Context {
+public class TestContext implements Context {
 
     private final String language;
     private final String name;
 
-    public TestContext2(@Nullable String language, @NotNull String name) {
+    public TestContext(@Nullable String language, @NotNull String name) {
         this.language = language;
         this.name = name;
     }
