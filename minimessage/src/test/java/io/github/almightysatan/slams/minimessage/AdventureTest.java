@@ -96,12 +96,23 @@ public class AdventureTest {
     public void testContextPlaceholder() throws IOException {
         Slams langManager = Slams.create("0");
         TestContext context = new TestContext(null, "World");
-        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(PlaceholderResolver.builder().contextual("test", TestContext.class, TestContext::getName).build()));
+        PlaceholderResolver placeholder = PlaceholderResolver.builder()
+                .contextual("test", TestContext.class, TestContext::getName)
+                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.language(), ctx.getName()), builder -> {
+                    builder.contextual("test", TestContext2.class, TestContext2::getName);
+                }).build();
+        AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(placeholder));
+        AdventureMessage entry2 = AdventureMessage.of("test2", langManager, ContextTagResolver.of(placeholder));
 
-        langManager.load("0", values -> values.put("test", "Hello <test>"));
+        langManager.load("0", values -> {
+            values.put("test", "Hello <test>");
+            values.put("test2", "Hello <abc-test>");
+        });
 
         TextComponent component = (TextComponent) entry.value(context);
         assertEquals("Hello World", component.content());
+        TextComponent component2 = (TextComponent) entry.value(context);
+        assertEquals("Hello World", component2.content());
     }
 
     @Test

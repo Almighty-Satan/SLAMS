@@ -25,9 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * Resolves {@link Placeholder Placeholders}.
@@ -349,6 +347,61 @@ public interface PlaceholderResolver {
         }
 
         /**
+         * @param prefix                the prefix
+         * @param type                  class of the current context
+         * @param conversion            a conversion to a new context
+         * @param namespace             a {@link Consumer} that consumes a {@link Builder}. Calling {@link Builder#build()}
+         *                              on this {@link Builder} results in a {@link UnsupportedOperationException}
+         * @param fallbackValueFunction a function that evaluates this placeholder's value
+         * @param <T>                   the current context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
+            final Builder this0 = this;
+            namespace.accept(new Builder() {
+                @Override
+                public @NotNull PlaceholderResolver build() {
+                    throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public @NotNull Builder add(@NotNull Placeholder placeholder) {
+                    String key = prefix != null ? prefix + placeholder.key() : placeholder.key();
+                    this0.contextual(key, type, (context, arguments) -> placeholder.value(conversion.apply(context), arguments), fallbackValueFunction);
+                    return this;
+                }
+            });
+            return this;
+        }
+
+        /**
+         * @param prefix        the prefix
+         * @param type          class of the current context
+         * @param conversion    a conversion to a new context
+         * @param namespace     a {@link Consumer} that consumes a {@link Builder}. Calling {@link Builder#build()}
+         *                      on this {@link Builder} results in a {@link UnsupportedOperationException}
+         * @param fallbackValue the fallback value
+         * @param <T>           the current context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace, @NotNull String fallbackValue) {
+            return namespace(prefix, type, conversion, namespace, (context, arguments) -> fallbackValue);
+        }
+
+        /**
+         * @param prefix     the prefix
+         * @param type       class of the current context
+         * @param conversion a conversion to a new context
+         * @param namespace  a {@link Consumer} that consumes a {@link Builder}. Calling {@link Builder#build()}
+         *                   on this {@link Builder} results in a {@link UnsupportedOperationException}
+         * @param <T>        the current context type
+         * @return this {@link Builder}
+         */
+        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace) {
+            return namespace(prefix, type, conversion, namespace, "INVALID_CONTEXT");
+        }
+
+        /**
          * Adds a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
          * argument as its value, otherwise the second argument is returned. If the {@link Context} is {@code null} or not
          * of the given type, {@code fallbackValueFunction} will be used instead.
@@ -372,12 +425,12 @@ public interface PlaceholderResolver {
          * of the given type, {@code fallbackValue} will be used instead.
          * Example format: {@code Hello <hasName:<name>:unknown user>!}
          *
-         * @param key                   the placeholder's key
-         * @param type                  class of the context type
-         * @param predicate             takes in the current {@link Context} and is used to check whether the first or
-         *                              second argument should be returned as this placeholder's value
-         * @param fallbackValue         the fallback value
-         * @param <T>                   the context type
+         * @param key           the placeholder's key
+         * @param type          class of the context type
+         * @param predicate     takes in the current {@link Context} and is used to check whether the first or
+         *                      second argument should be returned as this placeholder's value
+         * @param fallbackValue the fallback value
+         * @param <T>           the context type
          * @return this {@link Builder}
          */
         default <T extends Context> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull String fallbackValue) {
@@ -389,11 +442,11 @@ public interface PlaceholderResolver {
          * argument as its value, otherwise the second argument is returned.
          * Example format: {@code Hello <hasName:<name>:unknown user>!}
          *
-         * @param key                   the placeholder's key
-         * @param type                  class of the context type
-         * @param predicate             takes in the current {@link Context} and is used to check whether the first or
-         *                              second argument should be returned as this placeholder's value
-         * @param <T>                   the context type
+         * @param key       the placeholder's key
+         * @param type      class of the context type
+         * @param predicate takes in the current {@link Context} and is used to check whether the first or
+         *                  second argument should be returned as this placeholder's value
+         * @param <T>       the context type
          * @return this {@link Builder}
          */
         default <T extends Context> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate) {
@@ -405,9 +458,9 @@ public interface PlaceholderResolver {
          * argument as its value, otherwise the second argument is returned.
          * Example format: {@code Hello <hasName:<name>:unknown user>!}
          *
-         * @param key                   the placeholder's key
-         * @param supplier              used to check whether the first or second argument should be returned as this
-         *                              placeholder's value
+         * @param key      the placeholder's key
+         * @param supplier used to check whether the first or second argument should be returned as this
+         *                 placeholder's value
          * @return this {@link Builder}
          */
         default @NotNull Builder conditional(@NotNull String key, @NotNull BooleanSupplier supplier) {

@@ -95,12 +95,23 @@ public class StandaloneTest {
     public void testContextPlaceholder() throws IOException {
         Slams langManager = Slams.create("0");
         TestContext context = new TestContext(null, "World");
-        StandaloneMessage entry = StandaloneMessage.of("test", langManager, Placeholder.contextual("test", TestContext.class, TestContext::getName));
+        PlaceholderResolver placeholder = PlaceholderResolver.builder()
+                .contextual("test", TestContext.class, TestContext::getName)
+                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.language(), ctx.getName()), builder -> {
+                    builder.contextual("test", TestContext2.class, TestContext2::getName);
+                }).build();
+        StandaloneMessage entry = StandaloneMessage.of("test", langManager, placeholder);
+        StandaloneMessage entry2 = StandaloneMessage.of("test2", langManager, placeholder);
 
-        langManager.load("0", values -> values.put("test", "Hello <test>"));
+        langManager.load("0", values -> {
+            values.put("test", "Hello <test>");
+            values.put("test2", "Hello <abc-test>");
+        });
 
         String value = entry.value(context);
         assertEquals("Hello World", value);
+        String value2 = entry.value(context);
+        assertEquals("Hello World", value2);
     }
 
     @Test
