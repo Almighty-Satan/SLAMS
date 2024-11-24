@@ -471,8 +471,10 @@ public interface PlaceholderResolver {
          * Adds built-in placeholders, including, but no limited to
          * <ul>
          *     <li>if_eq</li>
+         *     <li>if_ne</li>
          *     <li>if_neq</li>
          *     <li>if_num_eq</li>
+         *     <li>if_num_ne</li>
          *     <li>if_num_neq</li>
          *     <li>if_num_lt</li>
          *     <li>if_num_gt</li>
@@ -493,9 +495,11 @@ public interface PlaceholderResolver {
                     });
 
             this.add(Placeholder.comparison("if_eq", String::equals));
+            this.add(Placeholder.comparison("if_ne", (arg0, arg1) -> !arg0.equals(arg1)));
             this.add(Placeholder.comparison("if_neq", (arg0, arg1) -> !arg0.equals(arg1)));
 
             this.add(numberComparison.apply("if_num_eq", (arg0, arg1) -> arg0.compareTo(arg1) == 0));
+            this.add(numberComparison.apply("if_num_ne", (arg0, arg1) -> arg0.compareTo(arg1) != 0));
             this.add(numberComparison.apply("if_num_neq", (arg0, arg1) -> arg0.compareTo(arg1) != 0));
             this.add(numberComparison.apply("if_num_lt", (arg0, arg1) -> arg0.compareTo(arg1) < 0));
             this.add(numberComparison.apply("if_num_gt", (arg0, arg1) -> arg0.compareTo(arg1) > 0));
