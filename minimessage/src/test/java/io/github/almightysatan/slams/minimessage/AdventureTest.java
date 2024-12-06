@@ -179,6 +179,18 @@ public class AdventureTest {
     }
 
     @Test
+    public void testArrayContext() throws IOException {
+        Slams langManager = Slams.create("0");
+        AdventureMessageArray entry = AdventureMessageArray.of("test", langManager, ContextTagResolver.of(Placeholder.contextual("test", TestContext.class, TestContext::getName)));
+
+        langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
+
+        Component[] components = entry.value(new TestContext(null, "World"));
+        assertEquals("Hello", ((TextComponent) components[0]).content());
+        assertEquals("World", ((TextComponent) components[1]).content());
+    }
+
+    @Test
     public void testArray2d() throws IOException {
         Slams langManager = Slams.create("0");
         AdventureMessageArray2d entry = AdventureMessageArray2d.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
@@ -186,6 +198,18 @@ public class AdventureTest {
         langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
 
         Component[][] components = entry.value();
+        assertEquals("Hello", ((TextComponent) components[0][0]).content());
+        assertEquals("World", ((TextComponent) components[0][1]).content());
+    }
+
+    @Test
+    public void testArray2dContext() throws IOException {
+        Slams langManager = Slams.create("0");
+        AdventureMessageArray2d entry = AdventureMessageArray2d.of("test", langManager, ContextTagResolver.of(Placeholder.contextual("test", TestContext.class, TestContext::getName)));
+
+        langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
+
+        Component[][] components = entry.value(new TestContext(null, "World"));
         assertEquals("Hello", ((TextComponent) components[0][0]).content());
         assertEquals("World", ((TextComponent) components[0][1]).content());
     }

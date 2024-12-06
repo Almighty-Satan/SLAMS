@@ -52,7 +52,7 @@ class StandaloneTypes {
 
             @Override
             public T @NotNull [] value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
-                return Arrays.stream(values).map(Translation::value).toArray(arrayFun);
+                return Arrays.stream(values).map(translation -> translation.value(context, placeholderResolver)).toArray(arrayFun);
             }
         };
     }

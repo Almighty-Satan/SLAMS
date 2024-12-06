@@ -60,7 +60,7 @@ class AdventureTypes {
 
             @Override
             public T @NotNull [] value(@Nullable Context context, @NotNull TagResolver tagResolver) {
-                return Arrays.stream(values).map(Translation::value).toArray(arrayFun);
+                return Arrays.stream(values).map(translation -> ((U) translation).value(context, tagResolver)).toArray(arrayFun);
             }
         };
     }
