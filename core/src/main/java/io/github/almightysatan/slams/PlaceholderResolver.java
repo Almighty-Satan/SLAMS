@@ -347,16 +347,20 @@ public interface PlaceholderResolver {
         }
 
         /**
+         * Creates a new placeholder namespace. The prefix is added to all placeholders in the namespace. The conversion
+         * is applied if the context is of the given type and the number of arguments is greater than or equal to the
+         * required amount.
+         *
          * @param prefix                the prefix
          * @param type                  class of the current context
+         * @param numArgs               the number of arguments
          * @param conversion            a conversion to a new context
          * @param namespace             a {@link Consumer} that consumes a {@link Builder}. Calling {@link Builder#build()}
          *                              on this {@link Builder} results in a {@link UnsupportedOperationException}
-         * @param fallbackValueFunction a function that evaluates this placeholder's value
          * @param <T>                   the current context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
+        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, int numArgs, @NotNull BiFunction<@NotNull T, @NotNull List<@NotNull String>, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace) {
             final Builder this0 = this;
             namespace.accept(new Builder() {
                 @Override
@@ -367,7 +371,8 @@ public interface PlaceholderResolver {
                 @Override
                 public @NotNull Builder add(@NotNull Placeholder placeholder) {
                     String key = prefix != null ? prefix + placeholder.key() : placeholder.key();
-                    this0.contextual(key, type, (context, arguments) -> placeholder.value(conversion.apply(context), arguments), fallbackValueFunction);
+                    this0.add(key, (context, arguments) ->
+                            placeholder.value(arguments.size() >= numArgs && context != null && type.isAssignableFrom(context.getClass()) ? conversion.apply((T) context, arguments) : context, arguments));
                     return this;
                 }
             });
@@ -375,6 +380,27 @@ public interface PlaceholderResolver {
         }
 
         /**
+         * Creates a new placeholder namespace. The prefix is added to all placeholders in the namespace. The conversion
+         * is applied if the context is of the given type.
+         * @param prefix                the prefix
+         * @param type                  class of the current context
+         * @param conversion            a conversion to a new context
+         * @param namespace             a {@link Consumer} that consumes a {@link Builder}. Calling {@link Builder#build()}
+         *                              on this {@link Builder} results in a {@link UnsupportedOperationException}
+         * @param fallbackValueFunction a function that evaluates this placeholder's value
+         * @param <T>                   the current context type
+         * @return this {@link Builder}
+         * @deprecated Use {@link Builder#namespace(String, Class, Function, Consumer)} instead
+         */
+        @Deprecated
+        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
+            return namespace(prefix, type, conversion, namespace);
+        }
+
+        /**
+         * Creates a new placeholder namespace. The prefix is added to all placeholders in the namespace. The conversion
+         * is applied if the context is of the given type.
+         *
          * @param prefix        the prefix
          * @param type          class of the current context
          * @param conversion    a conversion to a new context
@@ -383,12 +409,17 @@ public interface PlaceholderResolver {
          * @param fallbackValue the fallback value
          * @param <T>           the current context type
          * @return this {@link Builder}
+         * @deprecated Use {@link Builder#namespace(String, Class, Function, Consumer)} instead
          */
+        @Deprecated
         default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace, @NotNull String fallbackValue) {
-            return namespace(prefix, type, conversion, namespace, (context, arguments) -> fallbackValue);
+            return namespace(prefix, type, conversion, namespace);
         }
 
         /**
+         * Creates a new placeholder namespace. The prefix is added to all placeholders in the namespace. The conversion
+         * is applied if the context is of the given type.
+         *
          * @param prefix     the prefix
          * @param type       class of the current context
          * @param conversion a conversion to a new context
@@ -398,7 +429,7 @@ public interface PlaceholderResolver {
          * @return this {@link Builder}
          */
         default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace) {
-            return namespace(prefix, type, conversion, namespace, "INVALID_CONTEXT");
+            return namespace(prefix, type, 0, (context, arguments) -> conversion.apply(context), namespace);
         }
 
         /**
