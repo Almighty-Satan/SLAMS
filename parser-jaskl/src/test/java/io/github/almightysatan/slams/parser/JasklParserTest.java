@@ -23,25 +23,59 @@ package io.github.almightysatan.slams.parser;
 import io.github.almightysatan.jaskl.hocon.HoconConfig;
 import io.github.almightysatan.jaskl.json.JsonConfig;
 import io.github.almightysatan.jaskl.yaml.YamlConfig;
+import io.github.almightysatan.slams.LanguageParser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public class JasklParserTest {
 
     @Test
     public void testJasklYamlParser() throws IOException {
-        ParserTest.testParser(JasklParser.createParser(YamlConfig.of(new File("src/test/resources/test.yaml"))));
+        ParserTest.testRead(JasklParser.createReadParser(YamlConfig.of(new File("src/test/resources/test.yaml"))));
     }
 
     @Test
     public void testJasklHoconParser() throws IOException {
-        ParserTest.testParser(JasklParser.createParser(HoconConfig.of(new File("src/test/resources/test.json"))));
+        ParserTest.testRead(JasklParser.createReadParser(HoconConfig.of(new File("src/test/resources/test.json"))));
     }
 
     @Test
     public void testJasklJsonParser() throws IOException {
-        ParserTest.testParser(JasklParser.createParser(JsonConfig.of(new File("src/test/resources/test.json"))));
+        ParserTest.testRead(JasklParser.createReadParser(JsonConfig.of(new File("src/test/resources/test.json"))));
+    }
+
+    @Test
+    public void testJasklYamlParserWrite() throws IOException {
+        File file = new File("build/test/test.yaml");
+        file.getParentFile().mkdirs();
+        Files.copy(new File("src/test/resources/test.yaml").toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        LanguageParser parser = JasklParser.createReadWriteParser(YamlConfig.of(file));
+        ParserTest.testWrite(parser);
+    }
+
+    @Test
+    public void testJasklHoconParserWrite() throws IOException {
+        File file = new File("build/test/test.hocon");
+        file.getParentFile().mkdirs();
+        Files.copy(new File("src/test/resources/test.json").toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        LanguageParser parser = JasklParser.createReadWriteParser(HoconConfig.of(file));
+        ParserTest.testWrite(parser);
+    }
+
+    @Test
+    public void testJasklJsonParserWrite() throws IOException {
+        File file = new File("build/test/test.json");
+        file.getParentFile().mkdirs();
+        Files.copy(new File("src/test/resources/test.json").toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        LanguageParser parser = JasklParser.createReadWriteParser(JsonConfig.of(file));
+        ParserTest.testWrite(parser);
     }
 }

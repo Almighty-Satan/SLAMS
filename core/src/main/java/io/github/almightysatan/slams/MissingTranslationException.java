@@ -38,4 +38,13 @@ public class MissingTranslationException extends RuntimeException {
     public MissingTranslationException(@NotNull String languageIdentifier, @NotNull String path) {
         super(String.format("Missing translation: %s in language %s", path, languageIdentifier));
     }
+
+    /**
+     * Creates a new {@link MissingTranslationException}.
+     *
+     * @param path the path of the missing translation
+     */
+    public MissingTranslationException(@NotNull String path) {
+        super(String.format("Missing translation: %s", path));
+    }
 }

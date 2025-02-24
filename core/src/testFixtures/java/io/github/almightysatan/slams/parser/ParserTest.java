@@ -31,7 +31,7 @@ import java.util.*;
 
 public class ParserTest {
 
-    public static void testParser(@NotNull LanguageParser parser) throws IOException {
+    public static void testRead(@NotNull LanguageParser parser) throws IOException {
         Map<String, Object> expectedResult = new HashMap<>();
         expectedResult.put("hello", "world");
         expectedResult.put("0.1.2", "3");
@@ -70,6 +70,55 @@ public class ParserTest {
         Assertions.assertEquals(expectedResult, result);
 
         expectedResult.put("xxx", "yyy");
+
+        parser.load(values);
+        Assertions.assertEquals(expectedResult, result);
+    }
+
+    public static void testWrite(@NotNull LanguageParser parser) throws IOException {
+        Map<String, Object> expectedResult = new HashMap<>();
+        expectedResult.put("hello", "world");
+        expectedResult.put("0.1.2", "3");
+        expectedResult.put("abc", Arrays.asList("a", "b", "c"));
+        Map<String, String> innerMap = new HashMap<>();
+        innerMap.put("0", "1");
+        innerMap.put("2", "3");
+        expectedResult.put("def", innerMap);
+        expectedResult.put("ghi", "jkl");
+        expectedResult.put("mno", "pqr");
+
+        Map<String, Object> result = new HashMap<>();
+        // Let's pretend these values were loaded by another parser
+        result.put("hello", "This value should be ignored");
+        result.put("ghi", "jkl");
+        result.put("mno", "pqr");
+
+        LanguageParser.Values values = new LanguageParser.Values() {
+            @Override
+            public @NotNull @Unmodifiable Set<@NotNull String> paths() {
+                return Collections.unmodifiableSet(expectedResult.keySet());
+            }
+
+            @Override
+            public @Nullable Object get(@NotNull String key) {
+                return result.get(key);
+            }
+
+            @Override
+            public void put(@NotNull String key, @NotNull Object value) {
+                if (!expectedResult.containsKey(key))
+                    Assertions.fail();
+                result.put(key, value);
+            }
+        };
+
+        parser.load(values);
+        Assertions.assertEquals(expectedResult, result);
+
+        result.put("xxx", "abcd");
+        expectedResult.put("xxx", "abcd");
+
+        result.put("mno", "something else");
 
         parser.load(values);
         Assertions.assertEquals(expectedResult, result);

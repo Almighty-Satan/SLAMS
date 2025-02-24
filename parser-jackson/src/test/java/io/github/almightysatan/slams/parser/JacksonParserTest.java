@@ -29,6 +29,6 @@ public class JacksonParserTest {
 
     @Test
     public void testJsonParser() throws IOException {
-        ParserTest.testParser(JacksonParser.createJsonParser(new File("src/test/resources/test.json")));
+        ParserTest.testRead(JacksonParser.createJsonParser(new File("src/test/resources/test.json")));
     }
 }

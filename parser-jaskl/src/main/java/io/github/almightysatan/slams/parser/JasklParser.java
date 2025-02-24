@@ -22,6 +22,7 @@ package io.github.almightysatan.slams.parser;
 
 import io.github.almightysatan.jaskl.*;
 import io.github.almightysatan.slams.LanguageParser;
+import io.github.almightysatan.slams.MissingTranslationException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -46,15 +47,17 @@ public class JasklParser implements LanguageParser {
 
         @Override
         public @NotNull Object toWritable(@NotNull Optional<?> value, @NotNull Function<@NotNull Object, @NotNull Object> keyPreprocessor) throws InvalidTypeException {
-            throw new UnsupportedOperationException();
+            return value.get();
         }
     };
 
     private final Config config;
+    private final boolean enableWrite;
     private final Map<String, ConfigEntry<Optional<?>>> entries = new HashMap<>();
 
-    protected JasklParser(@NotNull Config config) {
+    protected JasklParser(@NotNull Config config, boolean enableWrite) {
         this.config = Objects.requireNonNull(config);
+        this.enableWrite = enableWrite;
     }
 
     @Override
@@ -68,12 +71,24 @@ public class JasklParser implements LanguageParser {
                     entry.setValue(Optional.empty());
             }
 
-            config.load();
+            this.config.load();
 
             for (String path : values.paths()) {
                 ConfigEntry<Optional<?>> entry = this.entries.get(path);
                 Optional<?> value = entry.getValue();
                 value.ifPresent(val -> values.put(path, val));
+                if (this.enableWrite && !value.isPresent()) {
+                    Object currentValue = values.get(path);
+                    if (currentValue != null)
+                        entry.setValue(Optional.of(currentValue));
+                    else
+                        throw new MissingTranslationException("path");
+                }
+            }
+
+            if (this.enableWrite) {
+                this.config.write();
+                this.config.prune();
             }
         } catch (Throwable t) {
             throw new IOException(t);
@@ -88,7 +103,31 @@ public class JasklParser implements LanguageParser {
      * @param config the {@link Config}
      * @return a new {@link LanguageParser}
      */
+    public static @NotNull LanguageParser createReadParser(@NotNull Config config) {
+        return new JasklParser(config, false);
+    }
+
+    /**
+     * Creates a new {@link LanguageParser} that uses a JASKL {@link Config} to load messages. This parser updates the
+     * config to add missing messages and remove unused values. The parser does not change the value of existing
+     * messages in the config.
+     *
+     * @param config the {@link Config}
+     * @return a new {@link LanguageParser}
+     */
+    public static @NotNull LanguageParser createReadWriteParser(@NotNull Config config) {
+        return new JasklParser(config, true);
+    }
+
+    /**
+     * Creates a new {@link LanguageParser} that uses a JASKL {@link Config} to load messages.
+     *
+     * @param config the {@link Config}
+     * @return a new {@link LanguageParser}
+     * @deprecated Use {@link JasklParser#createReadParser} instead
+     */
+    @Deprecated
     public static @NotNull LanguageParser createParser(@NotNull Config config) {
-        return new JasklParser(config);
+        return createReadParser(config);
     }
 }
