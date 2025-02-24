@@ -153,6 +153,10 @@ public class CompositeComponentTest {
         Assertions.assertEquals("Hello World", eval.apply("Hello <if_eq:abc:abc:World:Earth>"));
         Assertions.assertEquals("Hello World", eval.apply("Hello <if_num_eq:150:150:World:Earth>"));
         Assertions.assertEquals("Hello Earth", eval.apply("Hello <if_num_eq:100:150:World:Earth>"));
+        Assertions.assertEquals("Hello 3", eval.apply("Hello <add:1:2>"));
+        Assertions.assertEquals("Hello -1", eval.apply("Hello <sub:1:2>"));
+        Assertions.assertEquals("Hello 2", eval.apply("Hello <mul:1:2>"));
+        Assertions.assertEquals("Hello 0.5", eval.apply("Hello <div:1:2>"));
     }
 
     @Test
