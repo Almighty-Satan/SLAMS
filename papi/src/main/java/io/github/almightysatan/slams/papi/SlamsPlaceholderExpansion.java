@@ -20,6 +20,7 @@
 
 package io.github.almightysatan.slams.papi;
 
+import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * A {@link PlaceholderExpansion} that makes SLAMS placeholders accessible via PlaceholderAPI.
@@ -40,6 +42,34 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
     private final String author;
     private final String version;
     private final PlaceholderResolver placeholderResolver;
+    private final Function<@Nullable OfflinePlayer, @Nullable Context> contextFunction;
+
+    /**
+     * Creates a new {@link SlamsPlaceholderExpansion}.
+     *
+     * @param identifier the identifier of this expansion
+     * @param author the author of this expansion
+     * @param version the version of this expansion
+     * @param placeholderResolver the {@link PlaceholderResolver}
+     */
+    public SlamsPlaceholderExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version,
+            @NotNull PlaceholderResolver placeholderResolver, @Nullable Function<@Nullable OfflinePlayer, @Nullable Context> contextFunction) {
+        this.identifier = Objects.requireNonNull(identifier);
+        this.author = Objects.requireNonNull(author);
+        this.version = Objects.requireNonNull(version);
+        this.placeholderResolver = Objects.requireNonNull(placeholderResolver);
+
+        if (contextFunction != null)
+            this.contextFunction = contextFunction;
+        else
+            this.contextFunction = player -> {
+                if (player == null)
+                    return null;
+                if (player.isOnline())
+                    return PlayerContext.of((Player) player);
+                return OfflinePlayerContext.of(player);
+            };
+    }
 
     /**
      * Creates a new {@link SlamsPlaceholderExpansion}.
@@ -50,10 +80,7 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
      * @param placeholderResolver the {@link PlaceholderResolver}
      */
     public SlamsPlaceholderExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version, @NotNull PlaceholderResolver placeholderResolver) {
-        this.identifier = Objects.requireNonNull(identifier);
-        this.author = Objects.requireNonNull(author);
-        this.version = Objects.requireNonNull(version);
-        this.placeholderResolver = Objects.requireNonNull(placeholderResolver);
+        this(identifier, author, version, placeholderResolver, null);
     }
 
     @Override
@@ -76,10 +103,6 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
         Placeholder placeholder = this.placeholderResolver.resolve(params);
         if (placeholder == null)
             return null;
-        if (player == null)
-            return placeholder.value(null, Collections.emptyList());
-        if (!player.isOnline())
-            return placeholder.value(OfflinePlayerContext.of(player), Collections.emptyList());
-        return placeholder.value(PlayerContext.of((Player) player), Collections.emptyList());
+        return placeholder.value(this.contextFunction.apply(player), Collections.emptyList());
     }
 }

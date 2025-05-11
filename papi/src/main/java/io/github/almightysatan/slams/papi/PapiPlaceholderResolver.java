@@ -22,6 +22,7 @@ package io.github.almightysatan.slams.papi;
 
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.jetbrains.annotations.NotNull;
@@ -29,16 +30,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 
 /**
- * Contains a method to create a {@link PlaceholderResolver} that resolves PlaceholderAPI placeholders.
+ * Contains methods to create a placeholder named "papi" that can be used to access PlaceholderAPI placeholders.
  */
 public interface PapiPlaceholderResolver {
 
     /**
-     * Returns a {@link PapiPlaceholderResolver}.
+     * Returns a {@link Placeholder} named "papi".
      *
-     * @return a {@link PapiPlaceholderResolver}
+     * @return a {@link Placeholder}
      */
-    static @NotNull PlaceholderResolver create() {
+    static @NotNull Placeholder create() {
         return Placeholder.of("papi", (context, arguments) -> {
             if (arguments.size() != 2)
                 return "INVALID_PAPI_FORMAT";
@@ -52,5 +53,33 @@ public interface PapiPlaceholderResolver {
                 return "UNKNOWN_PAPI_PLACEHOLDER";
             return value;
         });
+    }
+
+    /**
+     * Returns a {@link PlaceholderResolver} that resolves a placeholder named "papi" if PlaceholderAPI is available.
+     * Otherwise an empty {@link PlaceholderResolver} is returned.
+     *
+     * @return a {@link PlaceholderResolver}
+     */
+    static @NotNull PlaceholderResolver createIfAvailable() {
+        try {
+            PlaceholderAPIPlugin.getInstance();
+            return create();
+        } catch (NoClassDefFoundError e) {
+            return PlaceholderResolver.empty();
+        }
+    }
+
+    /**
+     * Adds a {@link Placeholder} named "papi" to the given {@link PlaceholderResolver.Builder} if PlaceholderAPI is
+     * available.
+     */
+    static void addIfAvailable(@NotNull PlaceholderResolver.Builder builder) {
+        try {
+            PlaceholderAPIPlugin.getInstance();
+            builder.add(create());
+        } catch (NoClassDefFoundError e) {
+            // nop
+        }
     }
 }
