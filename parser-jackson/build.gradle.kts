@@ -4,6 +4,6 @@ plugins {
 
 dependencies {
     api(project(":core"))
-    api("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    api("com.fasterxml.jackson.core:jackson-databind:2.19.0")
     testImplementation(testFixtures(project(":core")))
 }
