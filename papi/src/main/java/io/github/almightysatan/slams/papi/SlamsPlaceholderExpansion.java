@@ -51,6 +51,7 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
      * @param author the author of this expansion
      * @param version the version of this expansion
      * @param placeholderResolver the {@link PlaceholderResolver}
+     * @param contextFunction a function that returns a new {@link Context}
      */
     public SlamsPlaceholderExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version,
             @NotNull PlaceholderResolver placeholderResolver, @Nullable Function<@Nullable OfflinePlayer, @Nullable Context> contextFunction) {
