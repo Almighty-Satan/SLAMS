@@ -82,7 +82,7 @@ public class JasklParser implements LanguageParser {
                     if (currentValue != null)
                         entry.setValue(Optional.of(currentValue));
                     else
-                        throw new MissingTranslationException("path");
+                        throw new MissingTranslationException(path);
                 }
             }
 
