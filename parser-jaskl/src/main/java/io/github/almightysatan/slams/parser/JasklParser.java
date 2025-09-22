@@ -55,6 +55,12 @@ public class JasklParser implements LanguageParser {
     private final boolean enableWrite;
     private final Map<String, ConfigEntry<Optional<?>>> entries = new HashMap<>();
 
+    /**
+     * Creates a new parser
+     *
+     * @param config      the {@link Config}
+     * @param enableWrite whether this parse should be able to write changes to the config
+     */
     protected JasklParser(@NotNull Config config, boolean enableWrite) {
         this.config = Objects.requireNonNull(config);
         this.enableWrite = enableWrite;

@@ -73,6 +73,8 @@ public interface PapiPlaceholderResolver {
     /**
      * Adds a {@link Placeholder} named "papi" to the given {@link PlaceholderResolver.Builder} if PlaceholderAPI is
      * available.
+     * 
+     * @param builder a {@link PlaceholderResolver.Builder}
      */
     static void addIfAvailable(@NotNull PlaceholderResolver.Builder builder) {
         try {
