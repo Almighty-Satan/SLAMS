@@ -3,7 +3,6 @@ plugins {
     id("checkstyle")
     id("java-test-fixtures")
     id("maven-publish")
-    id("signing")
 }
 
 java {
@@ -18,9 +17,6 @@ checkstyle {
     configDirectory.set(File("../checkstyle"))
     toolVersion = "9.3"
 }
-
-group = "io.github.almighty-satan.slams"
-version = "1.2.1"
 
 repositories {
     mavenCentral()
@@ -77,19 +73,8 @@ publishing {
         }
         repositories {
             maven {
-                setUrl("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
-                credentials {
-                    username = System.getenv("OSSRH_USER")
-                    password = System.getenv("OSSRH_PASSWORD")
-                }
+                setUrl(rootProject.layout.buildDirectory.dir("staging-deploy"))
             }
         }
     }
-}
-
-signing {
-    val signingKey = System.getenv("SIGNING_KEY")
-    val signingPassword = System.getenv("SIGNING_PASSWORD")
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications.getByName("release"))
 }
