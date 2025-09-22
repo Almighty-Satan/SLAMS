@@ -2,7 +2,7 @@ plugins {
     buildplugin
 }
 
-val jasklVersion = "1.6.1"
+val jasklVersion = "1.6.4"
 dependencies {
     api(project(":core"))
     testImplementation(testFixtures(project(":core")))

@@ -26,8 +26,8 @@ dependencies {
     implementation("org.jetbrains:annotations:26.0.2")
     testFixturesImplementation("org.jetbrains:annotations:26.0.2")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
-    testFixturesImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
+    testFixturesImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
