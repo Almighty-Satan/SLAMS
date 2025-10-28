@@ -118,13 +118,18 @@ public interface PlaceholderResolver {
      * Returns a {@link PlaceholderResolver} containing some built-in placeholders, including, but no limited to
      * <ul>
      *     <li>if_eq</li>
-     *     <li>if_neq</li>
+     *     <li>if_ne</li>
      *     <li>if_num_eq</li>
      *     <li>if_num_neq</li>
      *     <li>if_num_lt</li>
      *     <li>if_num_gt</li>
      *     <li>if_num_le</li>
      *     <li>if_num_ge</li>
+     *     <li>add</li>
+     *     <li>sub</li>
+     *     <li>mul</li>
+     *     <li>div</li>
+     *     <li>sdf</li>
      * </ul>
      *
      * @return a new {@link PlaceholderResolver}
@@ -504,14 +509,17 @@ public interface PlaceholderResolver {
          * <ul>
          *     <li>if_eq</li>
          *     <li>if_ne</li>
-         *     <li>if_neq</li>
          *     <li>if_num_eq</li>
          *     <li>if_num_ne</li>
-         *     <li>if_num_neq</li>
          *     <li>if_num_lt</li>
          *     <li>if_num_gt</li>
          *     <li>if_num_le</li>
          *     <li>if_num_ge</li>
+         *     <li>add</li>
+         *     <li>sub</li>
+         *     <li>mul</li>
+         *     <li>div</li>
+         *     <li>sdf</li>
          * </ul>
          *
          * @return this {@link Builder}

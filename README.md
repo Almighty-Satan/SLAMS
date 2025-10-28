@@ -131,6 +131,25 @@ An example of a message using the placeholder shown above would be: `Hello <hasN
 Be aware that the Mini-Message implementation does by default not support parsing tags within the arguments of a
 placeholder. If you need this functionality consider using `ContextTagResolver#ofUnsafe`.
 
+### Built-In Placeholders
+SLAMS provides built-in placeholders that can be enabled by calling `PlaceholderResolver.Builder#builtIn`
+
+| Placeholder | Description                                                                                                                                  | Example                                                               |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
+| `if_eq`     | Returns the third argument if the first argument is equal to the second argument. Otherwise the third argument is returned.                  | `<if_eq:<something>:x:X:not X>`                                       |
+| `if_ne`     | Returns the third argument if the first argument is **not** equal to the second argument. Otherwise the third argument is returned.          | `<if_ne:<something>:x:not X:X>`                                       |
+| `if_num_eq` | Returns the third argument if the first argument is a number equal to the second argument. Otherwise the third argument is returned.         | `<if_num_eq:<number>:1.5:1.5:not 1.5>`                                |
+| `if_num_ne` | Returns the third argument if the first argument is a number **not** equal to the second argument. Otherwise the third argument is returned. | `<if_num_ne:<number>:1.5:not 1.5:1.5>`                                |
+| `if_num_lt` | Returns the third argument if the first argument is less than the second argument. Otherwise the third argument is returned.                 | `<if_num_lt:<number>:1.5:less than 1.5:not less than 1.5>`            |
+| `if_num_gt` | Returns the third argument if the first argument is greater than the second argument. Otherwise the third argument is returned.              | `<if_num_gt:<number>:1.5:greater than 1.5:not greater than 1.5>`      |
+| `if_num_le` | Returns the third argument if the first argument is less than or equal to the second argument. Otherwise the third argument is returned.     | `<if_num_le:<number>:1.5:less than or equal to 1.5:greater than 1.5>` |
+| `if_num_ge` | Returns the third argument if the first argument is greater than or equal to the second argument. Otherwise the third argument is returned.  | `<if_num_ge:<number>:1.5:greater than or equal to 1.5:less than 1.5>` |
+| `add`       | Adds the first and second argument.                                                                                                          | `<add:1:5>`                                                           |
+| `sub`       | Substracts the second argument from the first.                                                                                               | `<sub:5:1>`                                                           |
+| `mul`       | Multiplies the first and second argument.                                                                                                    | `<mul:2:2>`                                                           |
+| `div`       | Divides the first argument by the second.                                                                                                    | `<div:4:2>`                                                           |
+| `sdf`       | Formats the current date with the given [SimpleDateFormat](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html).       | `<sdf:yyyy-MM-dd>`                                                    |
+
 ### PlaceholderAPI
 [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) is a [Spigot plugin](https://www.spigotmc.org/resources/placeholderapi.6245/)
 that allows a plugin to access placeholders from other plugins. SLAMS placeholders can be made available via
