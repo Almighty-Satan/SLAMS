@@ -23,5 +23,5 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jreleaser:org.jreleaser.gradle.plugin:1.20.0")
+    implementation(libs.jreleaser)
 }

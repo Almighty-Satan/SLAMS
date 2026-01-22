@@ -1,0 +1,25 @@
+[versions]
+annotations = "26.0.2"
+junit = "5.14.2"
+jreleaser = "1.22.0"
+
+minimessage = "4.26.1"
+spigot = "1.8.8-R0.1-SNAPSHOT"
+placeholderapi = "2.11.7"
+jackson = "2.21.0"
+jaskl = "1.9.0"
+
+[libraries]
+annotations = { module="org.jetbrains:annotations", version.ref="annotations" }
+junit = { module="org.junit.jupiter:junit-jupiter", version.ref="junit" }
+junitplatformlauncher = { module = "org.junit.platform:junit-platform-launcher" }
+jreleaser = { module="org.jreleaser:org.jreleaser.gradle.plugin", version.ref="jreleaser" }
+
+adventure-text-minimessage = { module="net.kyori:adventure-text-minimessage", version.ref="minimessage" }
+spigot = { module="org.spigotmc:spigot-api", version.ref="spigot" }
+placeholderapi = { module="me.clip:placeholderapi", version.ref="placeholderapi" }
+jackson-databind = { module="com.fasterxml.jackson.core:jackson-databind", version.ref="jackson" }
+jaskl-core = { module="io.github.almighty-satan.jaskl:jaskl-core", version.ref="jaskl" }
+jaskl-hocon = { module="io.github.almighty-satan.jaskl:jaskl-hocon", version.ref="jaskl" }
+jaskl-json = { module="io.github.almighty-satan.jaskl:jaskl-json", version.ref="jaskl" }
+jaskl-yaml = { module="io.github.almighty-satan.jaskl:jaskl-yaml", version.ref="jaskl" }

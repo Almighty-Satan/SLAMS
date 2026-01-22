@@ -22,13 +22,17 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation("org.jetbrains:annotations:26.0.2")
-    testFixturesImplementation("org.jetbrains:annotations:26.0.2")
+val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
-    testFixturesImplementation("org.junit.jupiter:junit-jupiter:5.13.4")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+dependencies {
+    val annotations = libs.findLibrary("annotations").get()
+    implementation(annotations)
+    testFixturesImplementation(annotations)
+
+    val junit = libs.findLibrary("junit").get()
+    testImplementation(junit)
+    testFixturesImplementation(junit)
+    testRuntimeOnly(libs.findLibrary("junitplatformlauncher").get())
 }
 
 tasks.getByName<Test>("test") {

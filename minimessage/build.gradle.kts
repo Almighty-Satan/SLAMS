@@ -4,6 +4,6 @@ plugins {
 
 dependencies {
     api(project(":core"))
-    implementation("net.kyori:adventure-text-minimessage:4.24.0")
+    implementation(libs.adventure.text.minimessage)
     testImplementation(testFixtures(project(":core")))
 }
