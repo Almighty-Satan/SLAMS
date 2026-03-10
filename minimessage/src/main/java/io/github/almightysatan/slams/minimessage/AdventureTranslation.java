@@ -20,7 +20,6 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import io.github.almightysatan.slams.Translation;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -37,22 +36,11 @@ public interface AdventureTranslation<T> extends Translation<T> {
     /**
      * Replaces placeholders and returns the resulting value.
      *
-     * @param context the context
      * @param tagResolver a {@link TagResolver}
+     * @param contexts    the contexts supplied to this message
      * @return the value
      */
-    @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver);
-
-    /**
-     * Replaces placeholders and returns the resulting value.
-     *
-     * @param context the context
-     * @param tagResolvers an array of {@link TagResolver TagResolvers}
-     * @return the value
-     */
-    default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) {
-        return this.value(context, ContextTagResolver.of(tagResolvers));
-    }
+    @NotNull T value(@NotNull TagResolver tagResolver, @NotNull Object @NotNull ... contexts);
 
     /**
      * Replaces placeholders and returns the resulting value.
@@ -61,11 +49,18 @@ public interface AdventureTranslation<T> extends Translation<T> {
      * @return the value
      */
     default @NotNull T value(@NotNull TagResolver @NotNull ... tagResolvers) {
-        return this.value(null, tagResolvers);
+        return this.value(ContextTagResolver.of(tagResolvers), new Object[0]);
     }
 
+    /**
+     * Replaces placeholders and returns the resulting value.
+     *
+     * @param placeholderResolver a {@link PlaceholderResolver}
+     * @param contexts            the contexts supplied to this message
+     * @return the value
+     */
     @Override
-    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) {
-        return this.value(context, ContextTagResolver.of(placeholderResolver));
+    default @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts) {
+        return this.value(ContextTagResolver.of(placeholderResolver), contexts);
     }
 }

@@ -18,41 +18,21 @@
  * USA
  */
 
-package io.github.almightysatan.slams.papi;
+package io.github.almightysatan.slams.standalone.impl;
 
-import io.github.almightysatan.slams.Context;
-import org.bukkit.entity.Player;
+import io.github.almightysatan.slams.InvalidTypeException;
+import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.Translation;
+import io.github.almightysatan.slams.impl.Types;
+import io.github.almightysatan.slams.standalone.StandaloneSlams;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+@ApiStatus.Internal
+public interface StandaloneTypes {
 
-/**
- * A {@link Context} that has a {@link Player}.
- */
-public interface PlayerContext extends OfflinePlayerContext {
-
-    @Override
-    @NotNull Player player();
-
-    /**
-     * Creates a new {@link PlayerContext} from the given player.
-     *
-     * @param player the player
-     * @return the context
-     */
-    static @NotNull PlayerContext of(@NotNull Player player) {
-        Objects.requireNonNull(player);
-        return new PlayerContext() {
-            @Override
-            public @NotNull Player player() {
-                return player;
-            }
-
-            @Override
-            public @Nullable String language() {
-                return null;
-            }
-        };
+    static @NotNull Translation<String> messageValue(@NotNull StandaloneSlams slams, @NotNull PlaceholderResolver placeholderResolver, @NotNull Object input) throws InvalidTypeException {
+        StandaloneCompositeComponent component = new StandaloneCompositeComponent(slams, Types.checkString(input), placeholderResolver);
+        return component::value;
     }
 }

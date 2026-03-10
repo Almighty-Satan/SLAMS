@@ -20,8 +20,8 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.Context;
 import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.TagPattern;
@@ -44,7 +44,7 @@ public interface ContextTagResolver extends TagResolver {
      */
     ContextTagResolver EMPTY = new ContextTagResolver() {
         @Override
-        public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+        public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx, @NotNull Object @NotNull ... contexts) throws ParsingException {
             return null;
         }
 
@@ -55,20 +55,20 @@ public interface ContextTagResolver extends TagResolver {
     };
 
     /**
-     * Gets a tag from this {@link ContextTagResolver} based on the given {@link Context}. The context may be null.
+     * Gets a tag from this {@link ContextTagResolver} based on the given contexts. The context may be null.
      *
      * @param name      the name of the tag
      * @param arguments the arguments
-     * @param ctx       the MiniMessage {@link net.kyori.adventure.text.minimessage.Context}
-     * @param context   the Slams {@link Context}
+     * @param ctx       the MiniMessage {@link Context}
+     * @param contexts  the contexts supplied to this message
      * @return a tag
      * @throws ParsingException if the arguments provided are invalid
      */
-    @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException;
+    @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx, @NotNull Object @NotNull ... contexts) throws ParsingException;
 
     @Override
-    default @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx) throws ParsingException {
-        return this.resolve(name, arguments, ctx, null);
+    default @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
+        return this.resolve(name, arguments, ctx, new Object[0]);
     }
 
     @Override
@@ -97,11 +97,11 @@ public interface ContextTagResolver extends TagResolver {
             return empty();
         return new ContextTagResolver() {
             @Override
-            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx, @NotNull Object @NotNull ... contexts) throws ParsingException {
                 for (TagResolver tagResolver : tagResolvers) {
                     Tag tag;
                     if (tagResolver instanceof ContextTagResolver)
-                        tag = ((ContextTagResolver) tagResolver).resolve(name, arguments, ctx, context);
+                        tag = ((ContextTagResolver) tagResolver).resolve(name, arguments, ctx, contexts);
                     else
                         tag = tagResolver.resolve(name, arguments, ctx);
 
@@ -135,9 +135,9 @@ public interface ContextTagResolver extends TagResolver {
             return empty();
         return new ContextTagResolver() {
             @Override
-            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx, @NotNull Object @NotNull ... contexts) throws ParsingException {
                 for (ContextTagResolver tagResolver : tagResolvers) {
-                    Tag tag = tagResolver.resolve(name, arguments, ctx, context);
+                    Tag tag = tagResolver.resolve(name, arguments, ctx, contexts);
 
                     if (tag != null)
                         return tag;
@@ -219,7 +219,7 @@ public interface ContextTagResolver extends TagResolver {
                     return this.add((ContextTagResolver) tagResolver);
                 return this.add(new ContextTagResolver() {
                     @Override
-                    public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+                    public @Nullable Tag resolve(@NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx, @NotNull Object @NotNull ... contexts) throws ParsingException {
                         return tagResolver.resolve(name, arguments, ctx);
                     }
 

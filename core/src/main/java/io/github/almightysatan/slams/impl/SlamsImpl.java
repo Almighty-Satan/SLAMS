@@ -20,7 +20,10 @@
 
 package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.*;
+import io.github.almightysatan.slams.InvalidTypeException;
+import io.github.almightysatan.slams.LanguageParser;
+import io.github.almightysatan.slams.MissingTranslationException;
+import io.github.almightysatan.slams.UnknownLanguageException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -85,8 +88,14 @@ public class SlamsImpl implements SlamsInternal {
     }
 
     @Override
-    public @Nullable Language language(@NotNull String identifier) {
-        return this.languages.get(identifier);
+    public @NotNull Language language(@Nullable String identifier) throws UnknownLanguageException {
+        if (identifier == null)
+            return this.defaultLanguage();
+
+        Language language = this.languages.get(identifier);
+        if (language == null)
+            throw new UnknownLanguageException(identifier);
+        return language;
     }
 
     @Override
@@ -106,20 +115,5 @@ public class SlamsImpl implements SlamsInternal {
         }
 
         return defaultLanguage;
-    }
-
-    @Override
-    public @NotNull Language language(@Nullable Context context) throws UnknownLanguageException {
-        if (context == null)
-            return this.defaultLanguage();
-
-        String languageIdentifier = context.language();
-        if (languageIdentifier == null)
-            return this.defaultLanguage();
-
-        Language language = this.language(languageIdentifier);
-        if (language == null)
-            throw new UnknownLanguageException(languageIdentifier);
-        return language;
     }
 }

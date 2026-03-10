@@ -20,9 +20,10 @@
 
 package io.github.almightysatan.slams.papi;
 
-import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.bukkit.OfflinePlayerContext;
+import io.github.almightysatan.slams.bukkit.PlayerContext;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -42,19 +43,19 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
     private final String author;
     private final String version;
     private final PlaceholderResolver placeholderResolver;
-    private final Function<@Nullable OfflinePlayer, @Nullable Context> contextFunction;
+    private final Function<@Nullable OfflinePlayer, @NotNull Object[]> contextFunction;
 
     /**
      * Creates a new {@link SlamsPlaceholderExpansion}.
      *
-     * @param identifier the identifier of this expansion
-     * @param author the author of this expansion
-     * @param version the version of this expansion
+     * @param identifier          the identifier of this expansion
+     * @param author              the author of this expansion
+     * @param version             the version of this expansion
      * @param placeholderResolver the {@link PlaceholderResolver}
-     * @param contextFunction a function that returns a new {@link Context}
+     * @param contextFunction     a function that returns contexts
      */
     public SlamsPlaceholderExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version,
-            @NotNull PlaceholderResolver placeholderResolver, @Nullable Function<@Nullable OfflinePlayer, @Nullable Context> contextFunction) {
+            @NotNull PlaceholderResolver placeholderResolver, @Nullable Function<@Nullable OfflinePlayer, @NotNull Object[]> contextFunction) {
         this.identifier = Objects.requireNonNull(identifier);
         this.author = Objects.requireNonNull(author);
         this.version = Objects.requireNonNull(version);
@@ -65,19 +66,19 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
         else
             this.contextFunction = player -> {
                 if (player == null)
-                    return null;
+                    return new Object[]{};
                 if (player.isOnline())
-                    return PlayerContext.of((Player) player);
-                return OfflinePlayerContext.of(player);
+                    return new Object[]{PlayerContext.of((Player) player)};
+                return new Object[]{OfflinePlayerContext.of(player)};
             };
     }
 
     /**
      * Creates a new {@link SlamsPlaceholderExpansion}.
      *
-     * @param identifier the identifier of this expansion
-     * @param author the author of this expansion
-     * @param version the version of this expansion
+     * @param identifier          the identifier of this expansion
+     * @param author              the author of this expansion
+     * @param version             the version of this expansion
      * @param placeholderResolver the {@link PlaceholderResolver}
      */
     public SlamsPlaceholderExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version, @NotNull PlaceholderResolver placeholderResolver) {
@@ -104,6 +105,6 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
         Placeholder placeholder = this.placeholderResolver.resolve(params);
         if (placeholder == null)
             return null;
-        return placeholder.value(this.contextFunction.apply(player), Collections.emptyList());
+        return placeholder.stringValue(new Object[]{this.contextFunction.apply(player)}, Collections.emptyList());
     }
 }

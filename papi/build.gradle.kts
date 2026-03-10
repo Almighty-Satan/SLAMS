@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     api(project(":core"))
+    api(project(":bukkit"))
     compileOnly(libs.spigot) {
         exclude("commons-lang")
         exclude("com.googlecode.json-simple")

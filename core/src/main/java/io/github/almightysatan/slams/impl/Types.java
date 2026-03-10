@@ -20,20 +20,19 @@
 
 package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.InvalidTypeException;
-import io.github.almightysatan.slams.Translation;
+import io.github.almightysatan.slams.*;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
+@ApiStatus.Internal
 public class Types {
 
     static final Map<Class<?>, Function<?, ?>> SIMPLE_TYPES = new HashMap<>();
@@ -44,7 +43,8 @@ public class Types {
         return (String) input;
     }
 
-    public static <T, U extends Translation<T>> Translation<?>[] checkArray(@Nullable Object input, @NotNull Function<Object, U> callback) throws InvalidTypeException {
+    public static <T, U extends Translation<T>> Translation<?>[] checkArray(@Nullable Object input,
+            @NotNull Function<Object, U> callback) throws InvalidTypeException {
         if (input instanceof Object[])
             return Arrays.stream((Object[]) input).map(callback).toArray(Translation[]::new);
         else if (input instanceof Collection)
@@ -53,7 +53,8 @@ public class Types {
             throw new InvalidTypeException();
     }
 
-    public static <K, T, U extends Translation<T>> Map<K, U> checkMap(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) throws InvalidTypeException {
+    public static <K, T, U extends Translation<T>> Map<K, U> checkMap(@Nullable Object input,
+            Class<K> keyClass, @NotNull Function<Object, U> callback) throws InvalidTypeException {
         if (!(input instanceof Map))
             throw new InvalidTypeException();
         @SuppressWarnings("unchecked")
@@ -64,6 +65,50 @@ public class Types {
         for (Entry<?, ?> entry : ((Map<?, ?>) input).entrySet())
             values.put(keyFunction.apply(entry.getKey()), callback.apply(entry.getValue()));
         return values;
+    }
+
+    public static <T, U extends Translation<T>> TranslationArray<T, U> messageArrayValue(@Nullable Object input, @NotNull IntFunction<T[]> arrayFun, @NotNull Function<Object, U> callback) throws InvalidTypeException {
+        Translation<T>[] values = (Translation<T>[]) Types.checkArray(input, callback);
+        return new TranslationArray<T, U>() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public @NotNull U get(int index) {
+                return (U) values[index];
+            }
+
+            @Override
+            public int size() {
+                return values.length;
+            }
+
+            @Override
+            public @NotNull T[] value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts) {
+                return Arrays.stream(values).map(translation -> translation.value(placeholderResolver, contexts)).toArray(arrayFun);
+            }
+        };
+    }
+
+    public static <K, T, U extends Translation<T>> TranslationMap<K, T, U> messageMapValue(@Nullable Object input, Class<K> keyClass, @NotNull Function<Object, U> callback) throws InvalidTypeException {
+        Map<K, U> values = Types.checkMap(input, keyClass, callback);
+        return new TranslationMap<K, T, U>() {
+            @Override
+            public @Nullable U get(K key) {
+                return values.get(key);
+            }
+
+            @Override
+            public int size() {
+                return values.size();
+            }
+
+            @Override
+            public @NotNull Map<K, T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts) {
+                Map<K, T> map = new HashMap<>();
+                for (Map.Entry<K, U> value : values.entrySet())
+                    map.put(value.getKey(), value.getValue().value(placeholderResolver, contexts));
+                return Collections.unmodifiableMap(map);
+            }
+        };
     }
 
     static {

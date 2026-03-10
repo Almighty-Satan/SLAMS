@@ -47,7 +47,7 @@ import java.util.Objects;
 public interface AdventureMessageMap<K> extends AdventureGenericMessage<Map<K, Component>> {
 
     @Override
-    @NotNull AdventureTranslationMap<K, Component, AdventureTranslation<Component>> translate(@Nullable Context context);
+    @NotNull AdventureTranslationMap<K, Component, AdventureTranslation<Component>> translate(@Nullable String language, @NotNull Object @NotNull ... contexts);
 
     /**
      * Creates a new {@link AdventureMessageMap} with the given path, {@link Slams} and {@link TagResolver}.
@@ -77,13 +77,13 @@ public interface AdventureMessageMap<K> extends AdventureGenericMessage<Map<K, C
             }
 
             @Override
-            protected @NotNull AdventureTranslationMap<K, Component, AdventureTranslation<Component>> toMessageValue(@NotNull Object value) {
+            protected @NotNull TranslationMap<K, Component, AdventureTranslation<Component>> toMessageValue(@NotNull Object value) {
                 return AdventureTypes.messageMapValue(value, keyType, element -> AdventureTypes.messageValue(tagResolver, element));
             }
 
             @Override
-            public @NotNull AdventureTranslationMap<K, Component, AdventureTranslation<Component>> translate(@Nullable Context context) {
-                return (AdventureTranslationMap<K, Component, AdventureTranslation<Component>>) super.translate(context);
+            public @NotNull AdventureTranslationMap<K, Component, AdventureTranslation<Component>> translate(@Nullable String language, @NotNull Object @NotNull ... contexts) {
+                return (AdventureTranslationMap<K, Component, AdventureTranslation<Component>>) super.translate(language, contexts);
             }
         }
         return new AdventureMessageMapImpl();
@@ -91,6 +91,7 @@ public interface AdventureMessageMap<K> extends AdventureGenericMessage<Map<K, C
 
     /**
      * Creates a new {@link AdventureMessageMap} with the given path.
+     * <p>Possible key types:</p>
      * <ul>
      *     <li>Boolean</li>
      *     <li>Double</li>

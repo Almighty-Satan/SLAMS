@@ -35,34 +35,25 @@ import java.util.Objects;
 public interface AdventureGenericMessage<T> extends Message<T> {
 
     @Override
-    @NotNull
-    AdventureTranslation<T> translate(@Nullable Context context) throws MissingTranslationException, UnknownLanguageException;
+    @NotNull AdventureTranslation<T> translate(@Nullable String language, @NotNull Object @NotNull ... contexts) throws MissingTranslationException, UnknownLanguageException;
 
-    /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
-     *
-     * @param context     the context
-     * @param tagResolver a {@link TagResolver}
-     * @return the value
-     * @throws UnknownLanguageException    if the language can not be found
-     * @throws MissingTranslationException if the language has no translation for this message
-     */
-    default @NotNull T value(@Nullable Context context, @NotNull TagResolver tagResolver) throws MissingTranslationException, UnknownLanguageException {
-        return this.translate(context).value(context, tagResolver);
+    @Override
+    default @NotNull T value(@Nullable String language, @NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts) throws MissingTranslationException, UnknownLanguageException {
+        return this.translate(language, contexts).value(ContextTagResolver.of(placeholderResolver), contexts);
     }
 
     /**
-     * Replaces placeholders and returns the resulting value. Uses the given {@link Context Contexts} language.
+     * Replaces placeholders and returns the resulting value. Uses the given language.
      *
-     * @param context      the context
-     * @param tagResolvers an array of {@link TagResolver TagResolvers}
+     * @param tagResolver a {@link TagResolver}
+     * @param language    the language identifier
+     * @param contexts    the contexts supplied to this message
      * @return the value
      * @throws UnknownLanguageException    if the language can not be found
      * @throws MissingTranslationException if the language has no translation for this message
      */
-    default @NotNull T value(@Nullable Context context, @NotNull TagResolver @NotNull ... tagResolvers) throws MissingTranslationException, UnknownLanguageException {
-        Objects.requireNonNull(tagResolvers);
-        return this.value(context, ContextTagResolver.of(tagResolvers));
+    default @NotNull T value(@NotNull TagResolver tagResolver, @Nullable String language, @NotNull Object @NotNull ... contexts) throws MissingTranslationException, UnknownLanguageException {
+        return this.translate(language, contexts).value(tagResolver, contexts);
     }
 
     /**
@@ -74,7 +65,7 @@ public interface AdventureGenericMessage<T> extends Message<T> {
      * @throws MissingTranslationException if the language has no translation for this message
      */
     default @NotNull T value(@NotNull TagResolver tagResolver) throws MissingTranslationException, UnknownLanguageException {
-        return this.value(null, tagResolver);
+        return this.value(tagResolver, null, new Object[0]);
     }
 
     /**
@@ -88,10 +79,5 @@ public interface AdventureGenericMessage<T> extends Message<T> {
     default @NotNull T value(@NotNull TagResolver @NotNull ... tagResolvers) throws MissingTranslationException, UnknownLanguageException {
         Objects.requireNonNull(tagResolvers);
         return this.value(ContextTagResolver.of(tagResolvers));
-    }
-
-    @Override
-    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) throws MissingTranslationException, UnknownLanguageException {
-        return this.value(context, ContextTagResolver.of(placeholderResolver));
     }
 }

@@ -79,11 +79,11 @@ public abstract class MessageImpl<T> implements Message<T> {
     }
 
     @Override
-    public @NotNull Translation<T> translate(@Nullable Context context) throws MissingTranslationException, UnknownLanguageException {
-        Language language = this.languageManager.language(context);
-        Translation<T> value = this.cache.get(language);
+    public @NotNull Translation<T> translate(@Nullable String language, @NotNull Object @NotNull ... contexts) throws MissingTranslationException, UnknownLanguageException {
+        Language lang = this.languageManager.language(language);
+        Translation<T> value = this.cache.get(lang);
         if (value == null)
-            throw new MissingTranslationException(language.identifier(), this.path);
+            throw new MissingTranslationException(language, this.path);
         return value;
     }
 

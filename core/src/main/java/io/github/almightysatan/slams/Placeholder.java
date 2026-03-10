@@ -20,8 +20,10 @@
 
 package io.github.almightysatan.slams;
 
+import io.github.almightysatan.slams.impl.LazyEvalList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +37,11 @@ import java.util.function.Predicate;
  */
 public interface Placeholder extends PlaceholderResolver {
 
+    public static final String INVALID_ARGUMENTS = "INVALID_ARGUMENTS";
+    public static final String INVALID_CONTEXT = "INVALID_CONTEXT";
+    public static final String INVALID_COMPARISON = "INVALID_COMPARISON";
+    public static final String INVALID_FORMAT = "INVALID_FORMAT";
+
     /**
      * The key of this placeholder. This should always return the same value. A key should not be null or empty.
      *
@@ -43,13 +50,36 @@ public interface Placeholder extends PlaceholderResolver {
     @NotNull String key();
 
     /**
-     * Evaluates the value of the placeholder using the given context and arguments.
+     * Returns {@code true} if this placeholder always returns the same value and does not depend on any context.
      *
-     * @param context   the context
-     * @param arguments the arguments
+     * @return {@code true} if this placeholder always returns the same value and does not depend on any context
+     */
+    boolean constexpr();
+
+    /**
+     * Evaluates the value of the placeholder using the given contexts and arguments.
+     *
+     * @param placeholderResolver the {@link PlaceholderResolver} provided to the message
+     * @param contexts            the contexts provided to the message
+     * @param arguments           the placeholder's arguments
+     * @param factory             a factory to create the result type
+     * @param <T>                 the result type (e.g. {@link String})
      * @return the value of this placeholder
      */
-    @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments);
+    <T> @NotNull T value(@NotNull PlaceholderResolver placeholderResolver,
+            @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments,
+            @NotNull Component.ValueFactory<T> factory);
+
+    /**
+     * Evaluates the value of the placeholder using the given contexts and arguments as a string.
+     *
+     * @param contexts  the contexts provided to the message
+     * @param arguments the placeholder's arguments
+     * @return the value of this placeholder as a string
+     */
+    default String stringValue(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull Component<String>> arguments) {
+        return this.value(PlaceholderResolver.empty(), contexts, arguments, s -> s);
+    }
 
     @Override
     default @Nullable Placeholder resolve(@NotNull String key) {
@@ -60,10 +90,11 @@ public interface Placeholder extends PlaceholderResolver {
      * Returns a new {@link Placeholder}.
      *
      * @param key           the placeholder's key
+     * @param constexpr     {@code true} if this placeholder always returns the same value and does not depend on any context
      * @param valueFunction a function that evaluates this placeholder's value
      * @return a new placeholder
      */
-    static @NotNull Placeholder of(@NotNull String key, @NotNull ValueFunction valueFunction) {
+    static @NotNull Placeholder of(@NotNull String key, boolean constexpr, @NotNull ValueFunction valueFunction) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(valueFunction);
         return new Placeholder() {
@@ -73,21 +104,39 @@ public interface Placeholder extends PlaceholderResolver {
             }
 
             @Override
-            public @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments) {
-                return valueFunction.value(context, arguments);
+            public boolean constexpr() {
+                return constexpr;
+            }
+
+            @Override
+            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+                List<String> list = new LazyEvalList<Component<T>, String>(c -> c.stringValue(placeholderResolver, contexts), arguments);
+                return factory.fromString(valueFunction.value(contexts, list));
             }
         };
     }
 
     /**
-     * Returns a new {@link Placeholder}. The {@link Context} is ignored when evaluating its value.
+     * Returns a new {@link Placeholder}. The contexts are ignored when evaluating its value.
+     *
+     * @param key           the placeholder's key
+     * @param constexpr     {@code true} if this placeholder always returns the same value and does not depend on any context
+     * @param valueFunction a function that evaluates this placeholder's value
+     * @return a new placeholder
+     */
+    static @NotNull Placeholder withArgs(@NotNull String key, boolean constexpr, @NotNull ContextIndependentValueFunction valueFunction) {
+        return of(key, constexpr, valueFunction);
+    }
+
+    /**
+     * Returns a new {@link Placeholder}. The contexts are ignored when evaluating its value.
      *
      * @param key           the placeholder's key
      * @param valueFunction a function that evaluates this placeholder's value
      * @return a new placeholder
      */
     static @NotNull Placeholder withArgs(@NotNull String key, @NotNull ContextIndependentValueFunction valueFunction) {
-        return of(key, valueFunction);
+        return withArgs(key, false, valueFunction);
     }
 
     /**
@@ -98,11 +147,11 @@ public interface Placeholder extends PlaceholderResolver {
      * @return a new placeholder
      */
     static @NotNull Placeholder withContext(@NotNull String key, @NotNull ArgumentIndependentValueFunction valueFunction) {
-        return of(key, valueFunction);
+        return of(key, false, valueFunction);
     }
 
     /**
-     * Returns a new {@link Placeholder}. Arguments and {@link Context} are ignored when evaluating its value.
+     * Returns a new {@link Placeholder}. Arguments and contexts are ignored when evaluating its value.
      *
      * @param key           the placeholder's key
      * @param valueFunction a function that evaluates this placeholder's value
@@ -110,7 +159,7 @@ public interface Placeholder extends PlaceholderResolver {
      */
     static @NotNull Placeholder variable(@NotNull String key, @NotNull ArgumentAndContextIndependentValueFunction valueFunction) {
         Objects.requireNonNull(valueFunction);
-        return of(key, valueFunction);
+        return of(key, false, valueFunction);
     }
 
     /**
@@ -122,12 +171,12 @@ public interface Placeholder extends PlaceholderResolver {
      */
     static @NotNull Placeholder constant(@NotNull String key, @NotNull String value) {
         Objects.requireNonNull(value);
-        return of(key, (context, arguments) -> value);
+        return of(key, true, (contexts, args) -> value);
     }
 
     /**
-     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
-     * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValueFunction} will be
+     * Returns a new {@link Placeholder}. If a context of the given type exists, {@code contextValueFunction} will be
+     * used to evaluate the value. Otherwise {@code fallbackValueFunction} will be
      * used.
      *
      * @param key                   the placeholder's key
@@ -137,17 +186,21 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                   the context type
      * @return a new placeholder
      */
-    @SuppressWarnings("unchecked")
-    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(contextValueFunction);
         Objects.requireNonNull(fallbackValueFunction);
-        return of(key, (context, arguments) -> context != null && type.isAssignableFrom(context.getClass()) ? contextValueFunction.value((T) context, arguments) : fallbackValueFunction.value(context, arguments));
+        return of(key, false, (contexts, arguments) -> {
+            for (Object c : contexts)
+                if (type.isAssignableFrom(c.getClass()))
+                    return contextValueFunction.value((T) c, arguments);
+            return fallbackValueFunction.value(contexts, arguments);
+        });
     }
 
     /**
-     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
-     * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValue} will be used.
+     * Returns a new {@link Placeholder}. If a context of the given type exists, {@code contextValueFunction} will be
+     * used to evaluate the value. Otherwise {@code fallbackValue} will be used.
      *
      * @param key                  the placeholder's key
      * @param type                 class of the context type
@@ -156,13 +209,13 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                  the context type
      * @return a new placeholder
      */
-    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
-        return contextual(key, type, contextValueFunction, (context, arguments) -> fallbackValue);
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+        return contextual(key, type, contextValueFunction, (contexts, arguments) -> fallbackValue);
     }
 
     /**
-     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
-     * {@code contextValueFunction} will be used to evaluate the value.
+     * Returns a new {@link Placeholder}. If a context of the given type exists, {@code contextValueFunction} will be
+     * used to evaluate the value.
      *
      * @param key                  the placeholder's key
      * @param type                 class of the context type
@@ -170,14 +223,14 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                  the context type
      * @return a new placeholder
      */
-    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextualValueFunction<T> contextValueFunction) {
-        return contextual(key, type, contextValueFunction, "INVALID_CONTEXT");
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextValueFunction<T> contextValueFunction) {
+        return contextual(key, type, contextValueFunction, INVALID_CONTEXT);
     }
 
     /**
-     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
-     * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValueFunction} will be
-     * used. Possible arguments passed to the placeholder are ignored.
+     * Returns a new {@link Placeholder}. If a context of the given type exists, {@code contextValueFunction} will be
+     * used to evaluate the value. Otherwise {@code fallbackValueFunction} will be used. Possible arguments passed to
+     * the placeholder are ignored.
      *
      * @param key                   the placeholder's key
      * @param type                  class of the context type
@@ -186,14 +239,14 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                   the context type
      * @return a new placeholder
      */
-    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
-        return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction, fallbackValueFunction);
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
+        return contextual(key, type, (ContextValueFunction<T>) contextValueFunction, fallbackValueFunction);
     }
 
     /**
-     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
-     * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValue} will be used.
-     * Possible arguments passed to the placeholder are ignored.
+     * Returns a new {@link Placeholder}. If a context of the given type exists, {@code contextValueFunction} will be
+     * used to evaluate the value. Otherwise {@code fallbackValue} will be used. Possible arguments passed to the
+     * placeholder are ignored.
      *
      * @param key                  the placeholder's key
      * @param type                 class of the context type
@@ -202,14 +255,13 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                  the context type
      * @return a new placeholder
      */
-    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
-        return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction, fallbackValue);
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+        return contextual(key, type, (ContextValueFunction<T>) contextValueFunction, fallbackValue);
     }
 
     /**
-     * Returns a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
-     * {@code contextValueFunction} will be used to evaluate the value. Possible arguments passed to the placeholder are
-     * ignored.
+     * Returns a new {@link Placeholder}. If a context of the given type exists, {@code contextValueFunction} will be
+     * used to evaluate the value. Possible arguments passed to the placeholder are ignored.
      *
      * @param key                  the placeholder's key
      * @param type                 class of the context type
@@ -217,51 +269,71 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                  the context type
      * @return a new placeholder
      */
-    static <T extends Context> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextualValueFunction<T> contextValueFunction) {
-        return contextual(key, type, (ContextualValueFunction<T>) contextValueFunction);
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextValueFunction<T> contextValueFunction) {
+        return contextual(key, type, (ContextValueFunction<T>) contextValueFunction);
     }
 
     /**
      * Returns a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
-     * argument as its value, otherwise the second argument is returned. If the {@link Context} is {@code null} or not
-     * of the given type, {@code fallbackValueFunction} will be used instead.
+     * argument as its value, otherwise the second argument is returned. If no context of the given type can be found,
+     * {@code fallbackValueFunction} will be used instead.
      * Example format: {@code Hello <hasName:<name>:unknown user>!}
      *
      * @param key                   the placeholder's key
      * @param type                  class of the context type
-     * @param predicate             takes in the current {@link Context} and is used to check whether the first or
+     * @param predicate             takes in a context if the given type and is used to check whether the first or
      *                              second argument should be returned as this placeholder's value
      * @param fallbackValueFunction a function that evaluates this placeholder's value
      * @param <T>                   the context type
      * @return a new placeholder
      */
-    static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull ValueFunction fallbackValueFunction) {
+    static <T> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull ValueFunction fallbackValueFunction) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(type);
         Objects.requireNonNull(predicate);
-        return contextual(key, type, (context, arguments) -> {
-            if (predicate.test(context))
-                return !arguments.isEmpty() ? arguments.get(0) : "";
-            else
-                return arguments.size() > 1 ? arguments.get(1) : "";
-        }, fallbackValueFunction);
+        Objects.requireNonNull(fallbackValueFunction);
+        return new Placeholder() {
+            @Override
+            public @NotNull String key() {
+                return key;
+            }
+
+            @Override
+            public boolean constexpr() {
+                return false;
+            }
+
+            @Override
+            public @NotNull <U> U value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<U>> arguments, Component.@NotNull ValueFactory<U> factory) {
+                for (Object context : contexts)
+                    if (type.isAssignableFrom(context.getClass())) {
+                        if (predicate.test((T) context))
+                            return !arguments.isEmpty() ? arguments.get(0).value(placeholderResolver, contexts) : factory.fromString("");
+                        return arguments.size() > 1 ? arguments.get(1).value(placeholderResolver, contexts) : factory.fromString("");
+                    }
+                List<String> list = new LazyEvalList<Component<U>, String>(c -> c.stringValue(placeholderResolver, contexts), arguments);
+                return factory.fromString(fallbackValueFunction.value(contexts, list));
+            }
+        };
     }
 
     /**
      * Returns a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
-     * argument as its value, otherwise the second argument is returned. If the {@link Context} is {@code null} or not
-     * of the given type, {@code fallbackValue} will be used instead.
+     * argument as its value, otherwise the second argument is returned. If no context of the given type can be found,
+     * {@code fallbackValue} will be used instead.
      * Example format: {@code Hello <hasName:<name>:unknown user>!}
      *
-     * @param key                   the placeholder's key
-     * @param type                  class of the context type
-     * @param predicate             takes in the current {@link Context} and is used to check whether the first or
-     *                              second argument should be returned as this placeholder's value
-     * @param fallbackValue         the fallback value
-     * @param <T>                   the context type
+     * @param key           the placeholder's key
+     * @param type          class of the context type
+     * @param predicate     takes in a context if the given type and is used to check whether the first or
+     *                      second argument should be returned as this placeholder's value
+     * @param fallbackValue the fallback value
+     * @param <T>           the context type
      * @return a new placeholder
      */
-    static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull String fallbackValue) {
+    static <T> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull String fallbackValue) {
         Objects.requireNonNull(fallbackValue);
-        return conditional(key, type, predicate, (context, arguments) -> fallbackValue);
+        return conditional(key, type, predicate, (contexts, arguments) -> fallbackValue);
     }
 
     /**
@@ -269,15 +341,15 @@ public interface Placeholder extends PlaceholderResolver {
      * argument as its value, otherwise the second argument is returned.
      * Example format: {@code Hello <hasName:<name>:unknown user>!}
      *
-     * @param key                   the placeholder's key
-     * @param type                  class of the context type
-     * @param predicate             takes in the current {@link Context} and is used to check whether the first or
-     *                              second argument should be returned as this placeholder's value
-     * @param <T>                   the context type
+     * @param key       the placeholder's key
+     * @param type      class of the context type
+     * @param predicate takes in a context if the given type and is used to check whether the first or
+     *                  second argument should be returned as this placeholder's value
+     * @param <T>       the context type
      * @return a new placeholder
      */
-    static <T extends Context> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate) {
-        return conditional(key, type, predicate, "INVALID_CONTEXT");
+    static <T> @NotNull Placeholder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate) {
+        return conditional(key, type, predicate, INVALID_CONTEXT);
     }
 
     /**
@@ -285,55 +357,82 @@ public interface Placeholder extends PlaceholderResolver {
      * argument as its value, otherwise the second argument is returned.
      * Example format: {@code Hello <hasName:<name>:unknown user>!}
      *
-     * @param key                   the placeholder's key
-     * @param supplier              used to check whether the first or second argument should be returned as this
-     *                              placeholder's value
+     * @param key      the placeholder's key
+     * @param supplier used to check whether the first or second argument should be returned as this
+     *                 placeholder's value
      * @return a new placeholder
      */
     static @NotNull Placeholder conditional(@NotNull String key, @NotNull BooleanSupplier supplier) {
+        Objects.requireNonNull(key);
         Objects.requireNonNull(supplier);
-        return of(key, (context, arguments) -> {
-            if (supplier.getAsBoolean())
-                return !arguments.isEmpty() ? arguments.get(0) : "";
-            else
-                return arguments.size() > 1 ? arguments.get(1) : "";
-        });
+        return new Placeholder() {
+            @Override
+            public @NotNull String key() {
+                return key;
+            }
+
+            @Override
+            public boolean constexpr() {
+                return false;
+            }
+
+            @Override
+            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+                if (supplier.getAsBoolean())
+                    return !arguments.isEmpty() ? arguments.get(0).value(placeholderResolver, contexts) : factory.fromString("");
+                return arguments.size() > 1 ? arguments.get(1).value(placeholderResolver, contexts) : factory.fromString("");
+            }
+        };
     }
 
     /**
      * Returns a new {@link Placeholder}. This placeholder compares its first two arguments using the given function. If
      * the function evaluates to {@code true}, this placeholder will return the third argument as its value, otherwise
-     * the fourth argument is returned.
+     * the fourth argument is returned. It is assumed, that the given function always returns the same result when
+     * provided with the same input.
      * Example format: {@code <if_eq:<time>:1:1 second:<time> seconds>}
      *
-     * @param key                   the placeholder's key
-     * @param comparisonFunction    a function that compares the first two arguments of this placeholder
+     * @param key                the placeholder's key
+     * @param comparisonFunction a function that compares the first two arguments of this placeholder
      * @return a new placeholder
      */
     static @NotNull Placeholder comparison(@NotNull String key, @NotNull ComparisonFunction comparisonFunction) {
+        Objects.requireNonNull(key);
         Objects.requireNonNull(comparisonFunction);
-        return of(key, (context, arguments) -> {
-            if (arguments.size() < 2)
-                return "INVALID_COMPARISON";
-            if (comparisonFunction.value(arguments.get(0), arguments.get(1)))
-                return arguments.size() > 2 ? arguments.get(2) : "";
-            else
-                return arguments.size() > 3 ? arguments.get(3) : "";
-        });
+        return new Placeholder() {
+            @Override
+            public @NotNull String key() {
+                return key;
+            }
+
+            @Override
+            public boolean constexpr() {
+                return true;
+            }
+
+            @Override
+            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+                if (arguments.size() < 2)
+                    return factory.fromString(INVALID_COMPARISON);
+                if (comparisonFunction.value(arguments.get(0).stringValue(placeholderResolver, contexts), arguments.get(1).stringValue(placeholderResolver, contexts)))
+                    return arguments.size() > 2 ? arguments.get(2).value(placeholderResolver, contexts) : factory.fromString("");
+                return arguments.size() > 3 ? arguments.get(3).value(placeholderResolver, contexts) : factory.fromString("");
+            }
+        };
     }
 
     @FunctionalInterface
     interface ValueFunction {
-        @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments);
+        @NotNull String value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments);
     }
 
     @FunctionalInterface
     interface ArgumentIndependentValueFunction extends ValueFunction {
-        @NotNull String value(@Nullable Context context);
+        @NotNull String value(@Nullable Object @NotNull [] contexts);
 
         @Override
-        default @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments) {
-            return this.value(context);
+        default @NotNull String value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments) {
+            return this.value(contexts);
         }
     }
 
@@ -342,7 +441,7 @@ public interface Placeholder extends PlaceholderResolver {
         @NotNull String value(@NotNull List<@NotNull String> arguments);
 
         @Override
-        default @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments) {
+        default @NotNull String value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments) {
             return this.value(arguments);
         }
     }
@@ -352,18 +451,18 @@ public interface Placeholder extends PlaceholderResolver {
         @NotNull String value();
 
         @Override
-        default @NotNull String value(@Nullable Context context, @NotNull List<@NotNull String> arguments) {
+        default @NotNull String value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments) {
             return this.value();
         }
     }
 
     @FunctionalInterface
-    interface ContextualValueFunction<T extends Context> {
+    interface ContextValueFunction<T> {
         @NotNull String value(@NotNull T context, @NotNull List<@NotNull String> arguments);
     }
 
     @FunctionalInterface
-    interface ArgumentIndependentContextualValueFunction<T extends Context> extends ContextualValueFunction<T> {
+    interface ArgumentIndependentContextValueFunction<T> extends ContextValueFunction<T> {
         @NotNull String value(@NotNull T context);
 
         @Override

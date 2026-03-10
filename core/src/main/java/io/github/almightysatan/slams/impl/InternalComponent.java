@@ -18,20 +18,25 @@
  * USA
  */
 
-package io.github.almightysatan.slams;
+package io.github.almightysatan.slams.impl;
 
+import io.github.almightysatan.slams.Component;
+import io.github.almightysatan.slams.PlaceholderResolver;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class TestContext2 {
+import java.util.function.Consumer;
 
-    private final String name;
+@ApiStatus.Internal
+public interface InternalComponent<T> extends Component<T> {
 
-    public TestContext2(@NotNull String name) {
-        this.name = name;
+    default void value(@NotNull PlaceholderResolver placeholderResolver,
+            @NotNull Object @NotNull [] contexts, @NotNull Consumer<T> consumer) {
+        consumer.accept(this.value(placeholderResolver, contexts));
     }
 
-    public @NotNull String getName() {
-        return this.name;
+    default void stringValue(@NotNull PlaceholderResolver placeholderResolver,
+            @NotNull Object @NotNull [] contexts, @NotNull Consumer<String> consumer) {
+        consumer.accept(this.stringValue(placeholderResolver, contexts));
     }
 }

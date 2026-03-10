@@ -29,7 +29,7 @@ import java.util.Collection;
 /**
  * The main SLAMS object.
  *
- * @see #create(String)
+ * @see #of(String)
  */
 public interface Slams {
 
@@ -77,7 +77,7 @@ public interface Slams {
      * @param defaultLanguageIdentifier the identifier of the default language
      * @return a new {@link Slams} instance
      */
-    static Slams create(@NotNull String defaultLanguageIdentifier) {
+    static Slams of(@NotNull String defaultLanguageIdentifier) {
         return new SlamsImpl(defaultLanguageIdentifier);
     }
 }

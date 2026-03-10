@@ -20,7 +20,6 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import net.kyori.adventure.text.Component;
@@ -43,11 +42,11 @@ class ContextTagResolverImpl {
         return new ContextTagResolver() {
 
             @Override
-            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @Nullable Context context) throws ParsingException {
+            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @NotNull Object @NotNull ... contexts) throws ParsingException {
                 Placeholder placeholder = placeholderResolver.resolve(name);
                 if (placeholder == null)
                     return null;
-                String value = placeholder.value(context, this.argumentQueueToList(arguments));
+                String value = placeholder.stringValue(contexts, this.argumentQueueToList(arguments));
                 return eval ? Tag.preProcessParsed(value) : Tag.selfClosingInserting(Component.text(value));
             }
 
@@ -56,13 +55,13 @@ class ContextTagResolverImpl {
                 return placeholderResolver.resolve(name) != null;
             }
 
-            private List<String> argumentQueueToList(ArgumentQueue argumentQueue) {
+            private List<io.github.almightysatan.slams.Component<String>> argumentQueueToList(ArgumentQueue argumentQueue) {
                 if (!argumentQueue.hasNext())
                     return Collections.emptyList();
 
-                List<String> argumentList = new ArrayList<>();
+                List<io.github.almightysatan.slams.Component<String>> argumentList = new ArrayList<>();
                 while (argumentQueue.hasNext())
-                    argumentList.add(argumentQueue.pop().value());
+                    argumentList.add(io.github.almightysatan.slams.Component.ofString(argumentQueue.pop().value()));
                 return Collections.unmodifiableList(argumentList);
             }
         };

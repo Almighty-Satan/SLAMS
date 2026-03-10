@@ -20,7 +20,6 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.impl.MessageImpl;
@@ -38,7 +37,7 @@ import java.util.Objects;
 public interface AdventureMessageArray2d extends AdventureGenericMessage<Component[][]> {
 
     @Override
-    @NotNull AdventureTranslationArray<Component[], AdventureTranslationArray<Component, AdventureTranslation<Component>>> translate(@Nullable Context context);
+    @NotNull AdventureTranslationArray<Component[], AdventureTranslationArray<Component, AdventureTranslation<Component>>> translate(@Nullable String language, @NotNull Object @NotNull ... contexts);
 
     /**
      * Creates a new {@link AdventureMessageArray2d} with the given path, {@link Slams} and {@link TagResolver}.
@@ -64,8 +63,8 @@ public interface AdventureMessageArray2d extends AdventureGenericMessage<Compone
             }
 
             @Override
-            public @NotNull AdventureTranslationArray<Component[], AdventureTranslationArray<Component, AdventureTranslation<Component>>> translate(@Nullable Context context) {
-                return (AdventureTranslationArray<Component[], AdventureTranslationArray<Component, AdventureTranslation<Component>>>) super.translate(context);
+            public @NotNull AdventureTranslationArray<Component[], AdventureTranslationArray<Component, AdventureTranslation<Component>>> translate(@Nullable String language, @NotNull Object @NotNull ... contexts) {
+                return (AdventureTranslationArray<Component[], AdventureTranslationArray<Component, AdventureTranslation<Component>>>) super.translate(language, contexts);
             }
         }
         return new AdventureMessageArray2dImpl();

@@ -20,7 +20,7 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
+import net.kyori.adventure.text.minimessage.Context;
 import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.TagPattern;
@@ -33,18 +33,18 @@ import java.util.Objects;
 
 class ContextTagResolverAdapter implements TagResolver {
 
-    private final Context context;
     private final TagResolver tagResolver;
+    private final Object[] contexts;
 
-    ContextTagResolverAdapter(@Nullable Context context, @NotNull TagResolver tagResolver) {
-        this.context = context;
+    ContextTagResolverAdapter(@NotNull TagResolver tagResolver, @NotNull Object @NotNull [] contexts) {
+        this.contexts = contexts;
         this.tagResolver = Objects.requireNonNull(tagResolver);
     }
 
     @Override
-    public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx) throws ParsingException {
+    public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, @NotNull Context ctx) throws ParsingException {
         if (tagResolver instanceof ContextTagResolver)
-            return ((ContextTagResolver) tagResolver).resolve(name, arguments, ctx, this.context);
+            return ((ContextTagResolver) tagResolver).resolve(name, arguments, ctx, this.contexts);
         else
             return tagResolver.resolve(name, arguments, ctx);
     }

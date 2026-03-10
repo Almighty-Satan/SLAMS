@@ -18,20 +18,22 @@
  * USA
  */
 
-package io.github.almightysatan.slams;
+package io.github.almightysatan.slams.bukkit.impl;
 
+import io.github.almightysatan.slams.InvalidTypeException;
+import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.Translation;
+import io.github.almightysatan.slams.bukkit.BukkitTranslation;
+import io.github.almightysatan.slams.impl.Types;
+import io.github.almightysatan.slams.standalone.StandaloneSlams;
+import net.md_5.bungee.api.chat.BaseComponent;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class TestContext2 {
+@ApiStatus.Internal
+public interface BukkitTypes {
 
-    private final String name;
-
-    public TestContext2(@NotNull String name) {
-        this.name = name;
-    }
-
-    public @NotNull String getName() {
-        return this.name;
+    static @NotNull BukkitTranslation messageValue(@NotNull StandaloneSlams slams, @NotNull PlaceholderResolver placeholderResolver, @NotNull Object input) throws InvalidTypeException {
+        return new BukkitCompositeComponent(slams, Types.checkString(input), placeholderResolver);
     }
 }

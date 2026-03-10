@@ -20,12 +20,11 @@
 
 package io.github.almightysatan.slams.standalone;
 
-import io.github.almightysatan.slams.Context;
-import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.LanguageParser;
-import io.github.almightysatan.slams.impl.SlamsInternal;
-import io.github.almightysatan.slams.impl.MessageImpl;
+import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.impl.Language;
+import io.github.almightysatan.slams.impl.MessageImpl;
+import io.github.almightysatan.slams.impl.SlamsInternal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -37,6 +36,8 @@ import java.util.Set;
 
 /**
  * An extension of the {@link Slams} interface that contains additional methods for the standalone format.
+ * 
+ * @see #of(Slams, PlaceholderStyle, boolean, boolean)
  */
 public interface StandaloneSlams extends Slams {
 
@@ -48,19 +49,51 @@ public interface StandaloneSlams extends Slams {
     @NotNull PlaceholderStyle style();
 
     /**
+     * Whether constant components (i.e. components/placeholders that do not depend on any contexts) should be evaluated
+     * when the message is loaded to avoid having to re-evaluate the value every time the message value is computed.
+     * {@code true} to enable. This should be treated as a suggestion, not a requirement.
+     * Some optimizations may still be performed, even if this setting is disabled.
+     *
+     * @return {@code true} to enable optimization
+     */
+    boolean enableConstexprEval();
+
+    /**
+     * Whether eligible components of the message should be inlined when loading. {@code true} to enable.
+     * This should be treated as a suggestion, not a requirement.
+     * Some optimizations may still be performed, even if this setting is disabled.
+     *
+     * @return {@code true} to enable optimization
+     */
+    boolean enableInline();
+
+    /**
      * Creates a new {@link StandaloneSlams} from the given {@link Slams} and {@link PlaceholderStyle}.
      *
      * @param slams the Slams instance
      * @param style the PlaceholderStyle
+     * @param enableConstexprEval {@code true} to enable optimization
+     * @param enableInline {@code true} to enable optimization
      * @return a new {@link StandaloneSlams} instance
      */
-    static @NotNull StandaloneSlams of(@NotNull Slams slams, @NotNull PlaceholderStyle style) {
+    static @NotNull StandaloneSlams of(@NotNull Slams slams, @NotNull PlaceholderStyle style,
+            boolean enableConstexprEval, boolean enableInline) {
         Objects.requireNonNull(slams);
         Objects.requireNonNull(style);
         class StandaloneSlamsImpl implements SlamsInternal, StandaloneSlams {
             @Override
             public @NotNull PlaceholderStyle style() {
                 return style;
+            }
+
+            @Override
+            public boolean enableConstexprEval() {
+                return enableConstexprEval;
+            }
+
+            @Override
+            public boolean enableInline() {
+                return enableInline;
             }
 
             @Override
@@ -102,12 +135,52 @@ public interface StandaloneSlams extends Slams {
             public @NotNull Language defaultLanguage() {
                 return ((SlamsInternal) slams).defaultLanguage();
             }
-
-            @Override
-            public @NotNull Language language(@Nullable Context context) {
-                return ((SlamsInternal) slams).language(context);
-            }
         }
         return new StandaloneSlamsImpl();
+    }
+
+    /**
+     * Creates a new {@link StandaloneSlams} from the given {@link Slams} and {@link PlaceholderStyle}.
+     *
+     * @param slams the Slams instance
+     * @param style the PlaceholderStyle
+     * @return a new {@link StandaloneSlams} instance
+     */
+    static @NotNull StandaloneSlams of(@NotNull Slams slams, @NotNull PlaceholderStyle style) {
+        return of(slams, style, true, true);
+    }
+
+    /**
+     * Creates a new {@link StandaloneSlams} instance.
+     *
+     * @param defaultLanguageIdentifier the identifier of the default language
+     * @param style the PlaceholderStyle
+     * @param enableConstexprEval {@code true} to enable optimization
+     * @param enableInline {@code true} to enable optimization
+     * @return a new {@link StandaloneSlams} instance
+     */
+    static @NotNull StandaloneSlams of(@NotNull String defaultLanguageIdentifier, @NotNull PlaceholderStyle style, boolean enableConstexprEval, boolean enableInline) {
+        return of(Slams.of(defaultLanguageIdentifier), style, enableConstexprEval, enableInline);
+    }
+
+    /**
+     * Creates a new {@link StandaloneSlams} from the given default language identifier and {@link PlaceholderStyle}.
+     *
+     * @param defaultLanguageIdentifier the identifier of the default language
+     * @param style the PlaceholderStyle
+     * @return a new {@link StandaloneSlams} instance
+     */
+    static @NotNull StandaloneSlams of(@NotNull String defaultLanguageIdentifier, @NotNull PlaceholderStyle style) {
+        return of(Slams.of(defaultLanguageIdentifier), style);
+    }
+
+    /**
+     * Creates a new {@link StandaloneSlams} from the given default language identifier.
+     *
+     * @param defaultLanguageIdentifier the identifier of the default language
+     * @return a new {@link StandaloneSlams} instance
+     */
+    static @NotNull StandaloneSlams of(@NotNull String defaultLanguageIdentifier) {
+        return of(defaultLanguageIdentifier, PlaceholderStyle.ANGLE_BRACKETS);
     }
 }

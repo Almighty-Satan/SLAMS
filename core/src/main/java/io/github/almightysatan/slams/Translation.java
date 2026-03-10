@@ -21,7 +21,6 @@
 package io.github.almightysatan.slams;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a translation of a message in a specific language.
@@ -33,22 +32,11 @@ public interface Translation<T> {
     /**
      * Replaces placeholders and returns the resulting value.
      *
-     * @param context the context
      * @param placeholderResolver a {@link PlaceholderResolver} with additional {@link Placeholder Placeholders}
+     * @param contexts            the contexts supplied to this message
      * @return the value
      */
-    @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver);
-
-    /**
-     * Replaces placeholders and returns the resulting value.
-     *
-     * @param context the context
-     * @param placeholderResolvers an array of {@link PlaceholderResolver PlaceholderResolvers}
-     * @return the value
-     */
-    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver @NotNull ... placeholderResolvers) {
-        return this.value(context, PlaceholderResolver.of(placeholderResolvers));
-    }
+    @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts);
 
     /**
      * Replaces placeholders and returns the resulting value.
@@ -57,7 +45,7 @@ public interface Translation<T> {
      * @return the value
      */
     default @NotNull T value(@NotNull PlaceholderResolver placeholderResolver) {
-        return this.value(null, placeholderResolver);
+        return this.value(placeholderResolver, new Object[0]);
     }
 
     /**
@@ -73,11 +61,11 @@ public interface Translation<T> {
     /**
      * Replaces placeholders and returns the resulting value.
      *
-     * @param context the context
+     * @param contexts the contexts supplied to this message
      * @return the value
      */
-    default @NotNull T value(@Nullable Context context) {
-        return this.value(context, PlaceholderResolver.empty());
+    default @NotNull T value(@NotNull Object @NotNull ... contexts) {
+        return this.value(PlaceholderResolver.empty(), contexts);
     }
 
     /**
@@ -86,6 +74,6 @@ public interface Translation<T> {
      * @return the value
      */
     default @NotNull T value() {
-        return this.value(null, PlaceholderResolver.empty());
+        return this.value(PlaceholderResolver.empty(), new Object[0]);
     }
 }

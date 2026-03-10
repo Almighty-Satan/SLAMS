@@ -18,44 +18,33 @@
  * USA
  */
 
-package io.github.almightysatan.slams.papi;
+package io.github.almightysatan.slams.bukkit;
 
-import io.github.almightysatan.slams.Context;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 /**
- * A {@link Context} that has a {@link OfflinePlayer}.
+ * A context that has a {@link Player}.
  */
-public interface OfflinePlayerContext extends Context {
+public interface PlayerContext extends OfflinePlayerContext {
+
+    @Override
+    @NotNull Player player();
 
     /**
-     * Returns the player.
+     * Creates a new {@link PlayerContext} from the given player.
      *
-     * @return the player
-     */
-    @NotNull OfflinePlayer player();
-
-    /**
-     * Creates a new {@link OfflinePlayerContext} from the given player.
-     *
-     * @param offlinePlayer the player
+     * @param player the player
      * @return the context
      */
-    static @NotNull OfflinePlayerContext of(@NotNull OfflinePlayer offlinePlayer) {
-        Objects.requireNonNull(offlinePlayer);
-        return new OfflinePlayerContext() {
+    static @NotNull PlayerContext of(@NotNull Player player) {
+        Objects.requireNonNull(player);
+        return new PlayerContext() {
             @Override
-            public @NotNull OfflinePlayer player() {
-                return offlinePlayer;
-            }
-
-            @Override
-            public @Nullable String language() {
-                return null;
+            public @NotNull Player player() {
+                return player;
             }
         };
     }

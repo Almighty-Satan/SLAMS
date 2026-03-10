@@ -35,7 +35,7 @@ public class AdventureTest {
 
     @Test
     public void testBasic() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessage entry = AdventureMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "1234"));
@@ -46,7 +46,7 @@ public class AdventureTest {
 
     @Test
     public void testDefaultLanguageSelection() throws IOException {
-        Slams langManager = Slams.create("1");
+        Slams langManager = Slams.of("1");
         AdventureMessage entry = AdventureMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "123"));
@@ -58,30 +58,30 @@ public class AdventureTest {
 
     @Test
     public void testContextLanguageSelection() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessage entry = AdventureMessage.of("test", langManager);
 
         langManager.load("0", values -> values.put("test", "123"));
         langManager.load("1", values -> values.put("test", "456"));
 
-        TextComponent component = (TextComponent) entry.value(new TestContext("1", "YXZ"));
+        TextComponent component = (TextComponent) entry.value("1", new TestContext("YXZ"));
         assertEquals("456", component.content());
     }
 
     @Test
     public void testLocalPlaceholder() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.empty());
 
         langManager.load("0", values -> values.put("test", "Hello <xxx>"));
 
-        TextComponent component = (TextComponent) entry.value(null, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("xxx", "World"));
+        TextComponent component = (TextComponent) entry.value(net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("xxx", "World"));
         assertEquals("Hello World", component.content());
     }
 
     @Test
     public void testPlaceholder() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(Placeholder.constant("test", "World")));
 
         langManager.load("0", values -> values.put("test", "Hello <test>"));
@@ -92,11 +92,11 @@ public class AdventureTest {
 
     @Test
     public void testContextPlaceholder() throws IOException {
-        Slams langManager = Slams.create("0");
-        TestContext context = new TestContext(null, "World");
+        Slams langManager = Slams.of("0");
+        TestContext context = new TestContext("World");
         PlaceholderResolver placeholder = PlaceholderResolver.builder()
                 .contextual("test", TestContext.class, TestContext::getName)
-                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.language(), ctx.getName()), builder -> {
+                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.getName()), builder -> {
                     builder.contextual("test", TestContext2.class, TestContext2::getName);
                 }).build();
         AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(placeholder));
@@ -115,7 +115,7 @@ public class AdventureTest {
 
     @Test
     public void testPlaceholderArgument() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
 
         langManager.load("0", values -> values.put("test", "Hello <test:some other argument:World>"));
@@ -126,7 +126,7 @@ public class AdventureTest {
 
     @Test
     public void testConditionalPlaceholder() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.builder().add(
                 Placeholder.conditional("ifn", () -> false),
                 Placeholder.constant("abc", "World")
@@ -140,7 +140,7 @@ public class AdventureTest {
 
     @Test
     public void testConditionalUnsafePlaceholder() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(
                 ContextTagResolver.ofUnsafe(Placeholder.conditional("ifn", () -> false)),
                 ContextTagResolver.of(Placeholder.constant("abc", "<def>")),
@@ -155,7 +155,7 @@ public class AdventureTest {
 
     @Test
     public void testComparisonPlaceholder() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.ofUnsafe(
                 PlaceholderResolver.builder().builtIn().constant("abc", "World").constant("number", "150").build()
         ));
@@ -168,7 +168,7 @@ public class AdventureTest {
 
     @Test
     public void testArray() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessageArray entry = AdventureMessageArray.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
 
         langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
@@ -180,19 +180,19 @@ public class AdventureTest {
 
     @Test
     public void testArrayContext() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessageArray entry = AdventureMessageArray.of("test", langManager, ContextTagResolver.of(Placeholder.contextual("test", TestContext.class, TestContext::getName)));
 
         langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
 
-        Component[] components = entry.value(new TestContext(null, "World"));
+        Component[] components = entry.value(new TestContext("World"));
         assertEquals("Hello", ((TextComponent) components[0]).content());
         assertEquals("World", ((TextComponent) components[1]).content());
     }
 
     @Test
     public void testArray2d() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessageArray2d entry = AdventureMessageArray2d.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
 
         langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
@@ -204,19 +204,19 @@ public class AdventureTest {
 
     @Test
     public void testArray2dContext() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessageArray2d entry = AdventureMessageArray2d.of("test", langManager, ContextTagResolver.of(Placeholder.contextual("test", TestContext.class, TestContext::getName)));
 
         langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
 
-        Component[][] components = entry.value(new TestContext(null, "World"));
+        Component[][] components = entry.value(new TestContext("World"));
         assertEquals("Hello", ((TextComponent) components[0][0]).content());
         assertEquals("World", ((TextComponent) components[0][1]).content());
     }
 
     @Test
     public void testMap() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessageMap<Integer> entry = AdventureMessageMap.of("test", langManager, Integer.class, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
 
         Map<Integer, String> map = new HashMap<>();
@@ -231,7 +231,7 @@ public class AdventureTest {
 
     @Test
     public void testMessageArrayValue() throws IOException {
-        Slams langManager = Slams.create("0");
+        Slams langManager = Slams.of("0");
         AdventureMessageArray2d entry = AdventureMessageArray2d.of("test", langManager, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("test", "World"));
 
         langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));

@@ -22,10 +22,10 @@ package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.*;
 import io.github.almightysatan.slams.impl.MessageImpl;
+import io.github.almightysatan.slams.impl.Types;
+import io.github.almightysatan.slams.standalone.impl.StandaloneTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 /**
  * Represents a {@link Message} in Standalone format. The value of this message is a two-dimensional array of Strings.
@@ -33,7 +33,7 @@ import java.util.Objects;
 public interface StandaloneMessageArray2d extends StandaloneGenericMessage<String[][]> {
 
     @Override
-    @NotNull TranslationArray<String[], TranslationArray<String, Translation<String>>> translate(@Nullable Context context);
+    @NotNull TranslationArray<String[], TranslationArray<String, Translation<String>>> translate(@Nullable String language, @NotNull Object @NotNull ... contexts);
 
     /**
      * Creates a new {@link StandaloneMessageArray2d} with the given path, {@link PlaceholderStyle}, {@link Slams} and
@@ -41,12 +41,10 @@ public interface StandaloneMessageArray2d extends StandaloneGenericMessage<Strin
      *
      * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
      * @param slams               the language manager (slams instance) to use
-     * @param style               the {@link PlaceholderStyle}
      * @param placeholderResolver the tag resolver
      * @return a new {@link StandaloneMessageArray2d}
      */
-    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderStyle style, @NotNull PlaceholderResolver placeholderResolver) {
-        Objects.requireNonNull(style);
+    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull StandaloneSlams slams, @NotNull PlaceholderResolver placeholderResolver) {
         class StandaloneMessageArray2dImpl extends MessageImpl<String[][]> implements StandaloneMessageArray2d {
 
             protected StandaloneMessageArray2dImpl() {
@@ -55,54 +53,17 @@ public interface StandaloneMessageArray2d extends StandaloneGenericMessage<Strin
 
             @Override
             protected @NotNull Translation<String[][]> toMessageValue(@NotNull Object value) {
-                return StandaloneTypes.messageArrayValue(value, String[][]::new, element0 ->
-                        StandaloneTypes.messageArrayValue(element0, String[]::new, element1 ->
-                                StandaloneTypes.messageValue(style, placeholderResolver, element1)));
+                return Types.messageArrayValue(value, String[][]::new, element0 ->
+                        Types.messageArrayValue(element0, String[]::new, element1 ->
+                                StandaloneTypes.messageValue(slams, placeholderResolver, element1)));
             }
 
             @Override
-            public @NotNull TranslationArray<String[], TranslationArray<String, Translation<String>>> translate(@Nullable Context context) {
-                return (TranslationArray<String[], TranslationArray<String, Translation<String>>>) super.translate(context);
+            public @NotNull TranslationArray<String[], TranslationArray<String, Translation<String>>> translate(@Nullable String language, @NotNull Object @NotNull ... contexts) {
+                return (TranslationArray<String[], TranslationArray<String, Translation<String>>>) super.translate(language, contexts);
             }
         }
         return new StandaloneMessageArray2dImpl();
-    }
-
-    /**
-     * Creates a new {@link StandaloneMessageArray2d} with the given path, {@link Slams} and {@link PlaceholderResolver}.
-     * Uses {@link PlaceholderStyle#ANGLE_BRACKETS}.
-     *
-     * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
-     * @param slams               the language manager (slams instance) to use
-     * @param placeholderResolver the tag resolver
-     * @return a new {@link StandaloneMessageArray2d}
-     */
-    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull Slams slams, @NotNull PlaceholderResolver placeholderResolver) {
-        return of(path, slams, PlaceholderStyle.ANGLE_BRACKETS, placeholderResolver);
-    }
-
-    /**
-     * Creates a new {@link StandaloneMessageArray2d} with the given path. Uses {@link PlaceholderStyle#ANGLE_BRACKETS}.
-     *
-     * @param path  the case-sensitive dotted path of this message. For example 'path.to.example.message'
-     * @param slams the language manager (slams instance) to use
-     * @return a new {@link StandaloneMessageArray2d}
-     */
-    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull Slams slams) {
-        return of(path, slams, PlaceholderStyle.ANGLE_BRACKETS, PlaceholderResolver.empty());
-    }
-
-    /**
-     * Creates a new {@link StandaloneMessageArray2d} with the given path, {@link PlaceholderStyle}, {@link StandaloneSlams}
-     * and {@link PlaceholderResolver}.  Uses {@link StandaloneSlams#style()}.
-     *
-     * @param path                the case-sensitive dotted path of this message. For example 'path.to.example.message'
-     * @param slams               the language manager (slams instance) to use
-     * @param placeholderResolver the tag resolver
-     * @return a new {@link StandaloneMessageArray2d}
-     */
-    static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull StandaloneSlams slams, @NotNull PlaceholderResolver placeholderResolver) {
-        return of(path, slams, slams.style(), placeholderResolver);
     }
 
     /**
@@ -114,6 +75,6 @@ public interface StandaloneMessageArray2d extends StandaloneGenericMessage<Strin
      * @return a new {@link StandaloneMessageArray2d}
      */
     static @NotNull StandaloneMessageArray2d of(@NotNull String path, @NotNull StandaloneSlams slams) {
-        return of(path, slams, slams.style(), PlaceholderResolver.empty());
+        return of(path, slams, PlaceholderResolver.empty());
     }
 }

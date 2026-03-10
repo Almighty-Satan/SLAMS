@@ -33,10 +33,10 @@ public class StandaloneTest {
 
     @Test
     public void testBasic() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessage entry = StandaloneMessage.of("test", langManager);
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", slams);
 
-        langManager.load("0", values -> values.put("test", "1234"));
+        slams.load("0", values -> values.put("test", "1234"));
 
         String value = entry.value();
         assertEquals("1234", value);
@@ -44,11 +44,11 @@ public class StandaloneTest {
 
     @Test
     public void testDefaultLanguageSelection() throws IOException {
-        Slams langManager = Slams.create("1");
-        StandaloneMessage entry = StandaloneMessage.of("test", langManager);
+        StandaloneSlams slams = StandaloneSlams.of("1");
+        StandaloneMessage entry = StandaloneMessage.of("test", slams);
 
-        langManager.load("0", values -> values.put("test", "123"));
-        langManager.load("1", values -> values.put("test", "456"));
+        slams.load("0", values -> values.put("test", "123"));
+        slams.load("1", values -> values.put("test", "456"));
 
         String value = entry.value();
         assertEquals("456", value);
@@ -56,34 +56,34 @@ public class StandaloneTest {
 
     @Test
     public void testContextLanguageSelection() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessage entry = StandaloneMessage.of("test", langManager);
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", slams);
 
-        langManager.load("0", values -> values.put("test", "123"));
-        langManager.load("1", values -> values.put("test", "456"));
+        slams.load("0", values -> values.put("test", "123"));
+        slams.load("1", values -> values.put("test", "456"));
 
-        String value = entry.value(new TestContext("1", "YXZ"));
+        String value = entry.value("1", new TestContext("YXZ"));
         assertEquals("456", value);
     }
 
     @Test
     public void testLocalPlaceholder() throws IOException {
         @SuppressWarnings("deprecation")
-        StandaloneSlams langManager = StandaloneSlams.of(Slams.create("0"), PlaceholderStyle.PERCENT);
-        StandaloneMessage entry = StandaloneMessage.of("test", langManager);
+        StandaloneSlams slams = StandaloneSlams.of(Slams.of("0"), PlaceholderStyle.PERCENT);
+        StandaloneMessage entry = StandaloneMessage.of("test", slams);
 
-        langManager.load("0", values -> values.put("test", "Hello %xxx%"));
+        slams.load("0", values -> values.put("test", "Hello %xxx%"));
 
-        String value = entry.value(null, Placeholder.constant("xxx", "World"));
+        String value = entry.value(Placeholder.constant("xxx", "World"));
         assertEquals("Hello World", value);
     }
 
     @Test
     public void testPlaceholder() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessage entry = StandaloneMessage.of("test", langManager, PlaceholderResolver.of(Placeholder.constant("test", "World")));
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", slams, PlaceholderResolver.of(Placeholder.constant("test", "World")));
 
-        langManager.load("0", values -> values.put("test", "Hello <test>"));
+        slams.load("0", values -> values.put("test", "Hello <test>"));
 
         String value = entry.value();
         assertEquals("Hello World", value);
@@ -91,33 +91,33 @@ public class StandaloneTest {
 
     @Test
     public void testContextPlaceholder() throws IOException {
-        Slams langManager = Slams.create("0");
-        TestContext context = new TestContext(null, "World");
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        TestContext context = new TestContext("World");
         PlaceholderResolver placeholder = PlaceholderResolver.builder()
                 .contextual("test", TestContext.class, TestContext::getName)
-                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.language(), ctx.getName()), builder -> {
+                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.getName()), builder -> {
                     builder.contextual("test", TestContext2.class, TestContext2::getName);
                 }).build();
-        StandaloneMessage entry = StandaloneMessage.of("test", langManager, placeholder);
-        StandaloneMessage entry2 = StandaloneMessage.of("test2", langManager, placeholder);
+        StandaloneMessage entry = StandaloneMessage.of("test", slams, placeholder);
+        StandaloneMessage entry2 = StandaloneMessage.of("test2", slams, placeholder);
 
-        langManager.load("0", values -> {
+        slams.load("0", values -> {
             values.put("test", "Hello <test>");
             values.put("test2", "Hello <abc-test>");
         });
 
         String value = entry.value(context);
         assertEquals("Hello World", value);
-        String value2 = entry.value(context);
+        String value2 = entry2.value(context);
         assertEquals("Hello World", value2);
     }
 
     @Test
     public void testPlaceholderArgument() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessage entry = StandaloneMessage.of("test", langManager, PlaceholderResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", slams, PlaceholderResolver.of(Placeholder.withArgs("test", (arguments) -> arguments.get(1))));
 
-        langManager.load("0", values -> values.put("test", "Hello <test:some other argument:World>"));
+        slams.load("0", values -> values.put("test", "Hello <test:some other argument:World>"));
 
         String value = entry.value();
         assertEquals("Hello World", value);
@@ -125,10 +125,10 @@ public class StandaloneTest {
 
     @Test
     public void testArray() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessageArray entry = StandaloneMessageArray.of("test", langManager, Placeholder.constant("test", "World"));
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessageArray entry = StandaloneMessageArray.of("test", slams, Placeholder.constant("test", "World"));
 
-        langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
+        slams.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
 
         String[] components = entry.value();
         assertEquals("Hello", components[0]);
@@ -137,22 +137,22 @@ public class StandaloneTest {
 
     @Test
     public void testArrayContext() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessageArray entry = StandaloneMessageArray.of("test", langManager, Placeholder.contextual("test", TestContext.class, TestContext::getName));
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessageArray entry = StandaloneMessageArray.of("test", slams, Placeholder.contextual("test", TestContext.class, TestContext::getName));
 
-        langManager.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
+        slams.load("0", values -> values.put("test", new String[]{"Hello", "<test>"}));
 
-        String[] components = entry.value(new TestContext(null, "World"));
+        String[] components = entry.value(new TestContext("World"));
         assertEquals("Hello", components[0]);
         assertEquals("World", components[1]);
     }
 
     @Test
     public void testArray2d() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessageArray2d entry = StandaloneMessageArray2d.of("test", langManager, Placeholder.constant("test", "World"));
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessageArray2d entry = StandaloneMessageArray2d.of("test", slams, Placeholder.constant("test", "World"));
 
-        langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
+        slams.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
 
         String[][] components = entry.value();
         assertEquals("Hello", components[0][0]);
@@ -161,25 +161,25 @@ public class StandaloneTest {
 
     @Test
     public void testArray2dContext() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessageArray2d entry = StandaloneMessageArray2d.of("test", langManager, Placeholder.contextual("test", TestContext.class, TestContext::getName));
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessageArray2d entry = StandaloneMessageArray2d.of("test", slams, Placeholder.contextual("test", TestContext.class, TestContext::getName));
 
-        langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
+        slams.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
 
-        String[][] components = entry.value(new TestContext(null, "World"));
+        String[][] components = entry.value(new TestContext("World"));
         assertEquals("Hello", components[0][0]);
         assertEquals("World", components[0][1]);
     }
 
     @Test
     public void testMap() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessageMap<Integer> entry = StandaloneMessageMap.of("test", langManager, Integer.class, Placeholder.constant("test", "World"));
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessageMap<Integer> entry = StandaloneMessageMap.of("test", slams, Integer.class, Placeholder.constant("test", "World"));
 
         Map<Integer, String> map = new HashMap<>();
         map.put(5, "Hello");
         map.put(99, "<test>");
-        langManager.load("0", values -> values.put("test", map));
+        slams.load("0", values -> values.put("test", map));
 
         Map<Integer, String> components = entry.value();
         assertEquals("Hello", components.get(5));
@@ -188,10 +188,10 @@ public class StandaloneTest {
 
     @Test
     public void testMessageArrayValue() throws IOException {
-        Slams langManager = Slams.create("0");
-        StandaloneMessageArray2d entry = StandaloneMessageArray2d.of("test", langManager, Placeholder.constant("test", "World"));
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessageArray2d entry = StandaloneMessageArray2d.of("test", slams, Placeholder.constant("test", "World"));
 
-        langManager.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
+        slams.load("0", values -> values.put("test", new String[][]{new String[]{"Hello", "<test>"}}));
 
         assertEquals(1, entry.translate(null).size());
         assertEquals(2, entry.translate(null).get(0).size());

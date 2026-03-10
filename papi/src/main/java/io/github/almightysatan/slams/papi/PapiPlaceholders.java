@@ -22,17 +22,19 @@ package io.github.almightysatan.slams.papi;
 
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import me.clip.placeholderapi.PlaceholderAPI;
+import io.github.almightysatan.slams.bukkit.OfflinePlayerContext;
 import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Contains methods to create a placeholder named "papi" that can be used to access PlaceholderAPI placeholders.
  */
-public interface PapiPlaceholderResolver {
+public interface PapiPlaceholders {
 
     /**
      * Returns a {@link Placeholder} named "papi".
@@ -40,7 +42,7 @@ public interface PapiPlaceholderResolver {
      * @return a {@link Placeholder}
      */
     static @NotNull Placeholder create() {
-        return Placeholder.of("papi", (context, arguments) -> {
+        return Placeholder.of("papi", false, (contexts, arguments) -> {
             if (arguments.size() != 2)
                 return "INVALID_PAPI_FORMAT";
             String identifier = arguments.get(0).toLowerCase(Locale.ROOT);
@@ -48,7 +50,8 @@ public interface PapiPlaceholderResolver {
             if (expansion == null)
                 return "UNKNOWN_PAPI_EXPANSION";
 
-            String value = expansion.onRequest(context instanceof OfflinePlayerContext ? ((OfflinePlayerContext) context).player() : null, arguments.get(1));
+            Optional<Object> context = Arrays.stream(contexts).filter(c -> c instanceof OfflinePlayerContext).findFirst();
+            String value = expansion.onRequest(context.isPresent() ? ((OfflinePlayerContext) context.get()).player() : null, arguments.get(1));
             if (value == null)
                 return "UNKNOWN_PAPI_PLACEHOLDER";
             return value;
@@ -73,7 +76,7 @@ public interface PapiPlaceholderResolver {
     /**
      * Adds a {@link Placeholder} named "papi" to the given {@link PlaceholderResolver.Builder} if PlaceholderAPI is
      * available.
-     * 
+     *
      * @param builder a {@link PlaceholderResolver.Builder}
      */
     static void addIfAvailable(@NotNull PlaceholderResolver.Builder builder) {

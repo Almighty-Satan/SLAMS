@@ -18,20 +18,38 @@
  * USA
  */
 
-package io.github.almightysatan.slams;
+package io.github.almightysatan.slams.bukkit;
 
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class TestContext2 {
+import java.util.Objects;
 
-    private final String name;
+/**
+ * A context that has a {@link OfflinePlayer}.
+ */
+public interface OfflinePlayerContext {
 
-    public TestContext2(@NotNull String name) {
-        this.name = name;
-    }
+    /**
+     * Returns the player.
+     *
+     * @return the player
+     */
+    @NotNull OfflinePlayer player();
 
-    public @NotNull String getName() {
-        return this.name;
+    /**
+     * Creates a new {@link OfflinePlayerContext} from the given player.
+     *
+     * @param offlinePlayer the player
+     * @return the context
+     */
+    static @NotNull OfflinePlayerContext of(@NotNull OfflinePlayer offlinePlayer) {
+        Objects.requireNonNull(offlinePlayer);
+        return new OfflinePlayerContext() {
+            @Override
+            public @NotNull OfflinePlayer player() {
+                return offlinePlayer;
+            }
+        };
     }
 }

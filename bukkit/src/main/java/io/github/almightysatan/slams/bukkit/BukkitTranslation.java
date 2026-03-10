@@ -18,20 +18,14 @@
  * USA
  */
 
-package io.github.almightysatan.slams;
+package io.github.almightysatan.slams.bukkit;
 
-import org.jetbrains.annotations.Nullable;
+import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.Translation;
+import net.md_5.bungee.api.chat.BaseComponent;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * Determines which language should be used and can be extended to provide additional context for placeholders.
- */
-public interface Context {
+public interface BukkitTranslation extends Translation<BaseComponent[]> {
 
-    /**
-     * Returns the identifier of the language that should be used for this context. The default language is used in case
-     * this returns {@code null}.
-     *
-     * @return the identifier of the language that should be used for this context
-     */
-    @Nullable String language();
+    @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts);
 }

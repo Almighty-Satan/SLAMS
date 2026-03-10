@@ -13,7 +13,7 @@ SLAMS has been created with support for Minecraft servers in mind and therefore 
 
 ### Standalone Example
 ```java
-Slams slams = Slams.create("English"); // Set English as the default language
+StandaloneSlams slams = StandaloneSlams.of("English"); // Set English as the default language
 
 StandaloneMessage test0 = StandaloneMessage.of("test0", slams); // Just a simple message
 StandaloneMessage test1 = StandaloneMessage.of("test1", slams, Placeholder.constant("hello", "world")); // Message with placeholder, "hello" will be replaced with "world"
@@ -21,7 +21,7 @@ StandaloneMessage test1 = StandaloneMessage.of("test1", slams, Placeholder.const
 slams.load("English", JacksonParser.createJsonParser("messages.json")); // Register language and load messages from JSON file
 
 System.out.println(test0.value()); // Print the message. No context is provided and therefore the default language will be used. See Context#language
-System.out.println(test1.value(null, Placeholder.constant("123", "456"))); // Print another message but add an additional placeholder
+System.out.println(test1.value(Placeholder.constant("123", "456"))); // Print another message but with an additional placeholder
 ```
 The style of placeholders can be changed by declaring a `PlaceholderStyle` or using a `StandaloneSlams` object when registering a message.  
 By default they look like this `<key:argument0:argument1:argument2>`
@@ -29,15 +29,15 @@ and can be escaped by using ``\``: `This does not contain a \<placeholder\>`
 
 ### Mini-Message Example
 ```java
-Slams slams = Slams.create("English"); // Set English as the default language
+Slams slams = Slams.of("English"); // Set English as the default language
 
 AdventureMessage test0 = AdventureMessage.of("test0", slams); // Just a simple message
-AdventureMessage test1 = AdventureMessage.of("test1", slams, ctx -> net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("hello", "world")); // Message with placeholder, "hello" will be replaced with "world"
+AdventureMessage test1 = AdventureMessage.of("test1", slams, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("hello", "world")); // Message with placeholder, "hello" will be replaced with "world"
 
 slams.load("English", JacksonParser.createJsonParser("messages.json")); // Register language and load messages from JSON file
 
 audience.sendMessage(test0.value()); // Send the message to an Adventure Audience. No context is provided and therefore the default language will be used. See Context#language
-audience.sendMessage(test1.value(null, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("123", "456"))); // Send another message but add an additional minimessage placeholder
+audience.sendMessage(test1.value(net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("123", "456"))); // Send another message but with an additional minimessage placeholder
 ```
 
 [MiniMessages](https://docs.advntr.dev/minimessage/index.html) is a user friendly message format for Minecraft servers integrated into [Adventure](https://github.com/KyoriPowered/adventure). Every server core [implementing the Adventure-API](https://docs.advntr.dev/platform/native.html) (e.g. [Paper](https://papermc.io/)) should be supported out of the box while some others (e.g. [Craftbukkit or Spigot](https://docs.advntr.dev/platform/bukkit.html)) may require additional adapters.
@@ -47,7 +47,7 @@ SLAMS supports using multiple languages. Which language is used is determined by
 that is passed when calling `Message#value`. SLAMS automatically uses the default language if either the
 context is `null` or `Context#language` returns `null`.
 ```java
-Slams slams = Slams.create("English"); // Set English as the default language
+StandaloneSlams slams = StandaloneSlams.of("English"); // Set English as the default language
 
 StandaloneMessage message = StandaloneMessage.of("example.greeting", slams); // Just a simple message
 
@@ -57,16 +57,8 @@ slams.load("German", JacksonParser.createJsonParser("german_messages.json"));
 slams.load("Spanish", JacksonParser.createJsonParser("spanish_messages.json"));
 
 System.out.println(message.value()); // This will use the default language (English)
-System.out.println(message.value(null)); // This also uses the default language
 
-Context context = new Context() { // You can extend this interface however you want
-    @Override
-    public @Nullable String language() {
-        return "Spanish";
-    }
-};
-
-System.out.println(message.value(context)); // This prints a Spanish message
+System.out.println(message.value("Spanish")); // This prints a Spanish message
 ```
 `english_messages.json` would look something like this:
 ```json
@@ -91,7 +83,7 @@ StandaloneMessage testMessage = StandaloneMessage.of("test", slams, Placeholder.
 ```
 or when calling `Message#value`
 ```java
-testMessage.value(context, Placeholder.constant("e", "3"));
+testMessage.value(Placeholder.constant("e", "3"));
 ```
 Using multiple placeholders is also possible:
 ```java
@@ -111,7 +103,7 @@ useless, but you might want wo use them to pass something like a `SimpleDateForm
 ```java
 Placeholder.withArgs("test", arguments -> arguments.isEmpty() ? "Empty" : arguments.get(0));
 ```
-Let's say we have a `User` that extends from `Context` and `User` has a method `getName`. We can now create a 
+Let's say we have a class `User` that has a method `getName`. We can now create a 
 placeholder that is replaced with the name of the user.
 ```java
 Placeholder.contextual("name", User.class, User::getName);
@@ -125,7 +117,7 @@ Placeholder.contextual("name", User.class, User::getName, "Unknown User");
 ### Conditional Placeholders
 Conditional placeholders function as if statements within messages.
 ```java
-Placeholder.conditional("hasName", User.class, User::hasName());
+Placeholder.conditional("hasName", User.class, User::hasName);
 ```
 An example of a message using the placeholder shown above would be: `Hello <hasName:<name>:unknown user>!`.
 Be aware that the Mini-Message implementation does by default not support parsing tags within the arguments of a
@@ -150,6 +142,20 @@ SLAMS provides built-in placeholders that can be enabled by calling `Placeholder
 | `div`       | Divides the first argument by the second.                                                                                                    | `<div:4:2>`                                                           |
 | `sdf`       | Formats the current date with the given [SimpleDateFormat](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html).       | `<sdf:yyyy-MM-dd>`                                                    |
 
+### Build-In Bukkit Placeholders
+The `bukkit` module also prodives some additional placeholders that can be enabled using `BukkitPlaceholders#addBuiltIn(PlaceholderResolver.Builder)`.
+
+| Placeholder              | Description                                                                                                                            | Example                                                                                             |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `click_open_url`         | Opens a URL when the message is clicked                                                                                                | `<click_open_url:http\://example.org:some text>`                                                    |
+| `click_run_command`      | Runs a command when the message is clicked                                                                                             | `<click_run_command:/say Hello World:some text>`                                                    |
+| `click_suggest_command`  | Suggests a command the the player when the message is clicked                                                                          | `<click_suggest_command:/say Hello World:some text>`                                                |
+| `click_change_page`      | Changes the page number in a book when the message is clicked                                                                          | `<click_change_page:5:some text>`                                                                   |
+| `hover_show_text`        | Shows text when a player hovers over the message                                                                                       | `<hover_show_text:Hello World:some text>`                                                           |
+| `hover_show_achievement` | Shows an achivement when a player hovers over the message                                                                              | `<hover_show_achievement:achievement.openInventory:some text>`                                                               |
+| `hover_show_item`        | Shows an item when the player hovers over the message. The format for the item may differ depending on the Minecraft version used.     | `<hover_show_item:{id\: 264}:some text>` (tested on 1.8.8)                                          |
+| `hover_show_entity`      | Shows information about an entity when a player hovers over the message. The fomat may differ depending on the Minecraft version used. | `<hover_show_entity:{name\: "<name>", type\: "Player", id\: "<uuid>"}:some text>` (tested on 1.8.8) |
+
 ### PlaceholderAPI
 [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) is a [Spigot plugin](https://www.spigotmc.org/resources/placeholderapi.6245/)
 that allows a plugin to access placeholders from other plugins. SLAMS placeholders can be made available via
@@ -158,10 +164,9 @@ PlaceholderAPI by using the `papi` module.
 PlaceholderResolver placeholders = ... // Your placeholders
 new SlamsPlaceholderExpansion(identifier, author, version, placeholders).register();
 ```
-To use PlaceholderAPI placeholders in SLAMS messages you just have to add a `PapiPlaceholderResolver` to your
-PlaceholderResolver.
+To use PlaceholderAPI placeholders in SLAMS messages you just have to add them to your PlaceholderResolver.
 ```java
-PlaceholderResolver placeholderResolver = PlaceholderResolver.of(Placeholder.constant("something", "else"), PapiPlaceholderResolver.create());
+PlaceholderResolver placeholderResolver = PlaceholderResolver.of(Placeholder.constant("something", "else"), PapiPlaceholders.createIfAvailable());
 ```
 If you are using MiniMessage or the standalone implementation with the default placeholder style, a PlaceholderAPI placeholder would
 look like this:
@@ -171,14 +176,15 @@ look like this:
 
 ### Modules
 
-| Module         | Description                                                                                                                                                                    |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| core           | Contains common code. Can not be used on it's own.                                                                                                                             |
-| standalone     | A standalone implementation that does not rely on external dependencies.                                                                                                       |
-| minimessage    | An implementation that uses the [MiniMessage](https://docs.advntr.dev/minimessage/index.html) format.                                                                          |
-| parser-jaskl   | A [JASKL](https://github.com/Almighty-Satan/JASKL) based parser to load messages. Supports formats like YAML, HOCON, JSON and MongoDB.                                         |
-| parser-jackson | A [Jackson](https://github.com/FasterXML/jackson) based parser to load message files. It supports formats like JSON and TOML.                                                  |
-| papi           | Allows [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) placeholders to be used in SLAMS messages and makes SLAMS placeholders available via PlaceholderAPI. |
+| Module         | Description                                                                                                                                                                               |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| core           | Contains common code. Can not be used on it's own.                                                                                                                                        |
+| standalone     | A standalone implementation that does not rely on external dependencies.                                                                                                                  |
+| minimessage    | An implementation that uses the [MiniMessage](https://docs.advntr.dev/minimessage/index.html) format.                                                                                     |
+| parser-jaskl   | A [JASKL](https://github.com/Almighty-Satan/JASKL) based parser to load messages. Supports formats like YAML, HOCON, JSON and MongoDB.                                                    |
+| parser-jackson | A [Jackson](https://github.com/FasterXML/jackson) based parser to load message files. It supports formats like JSON and TOML.                                                             |
+| bukkit         | An implementation that depends on the standalone module and is made specifically for Bukkit plugins. Features include clickable messages and helper methods to send messages to a player. |
+| papi           | Allows [PlaceholderAPI](https://github.com/PlaceholderAPI/PlaceholderAPI) placeholders to be used in SLAMS messages and makes SLAMS placeholders available via PlaceholderAPI.            |
 
 ### Building
 To build the project, open the terminal and type `./gradlew build`. All jars will be located at `<module>/build/libs/<module>-<version>.jar`.

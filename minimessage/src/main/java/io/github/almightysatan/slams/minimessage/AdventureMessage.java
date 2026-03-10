@@ -20,8 +20,10 @@
 
 package io.github.almightysatan.slams.minimessage;
 
-import io.github.almightysatan.slams.Context;
+import io.github.almightysatan.slams.MissingTranslationException;
 import io.github.almightysatan.slams.Slams;
+import io.github.almightysatan.slams.Translation;
+import io.github.almightysatan.slams.UnknownLanguageException;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -58,8 +60,8 @@ public interface AdventureMessage extends AdventureGenericMessage<Component> {
             }
 
             @Override
-            public @NotNull AdventureTranslation<Component> translate(@Nullable Context context) {
-                return (AdventureTranslation<Component>) super.translate(context);
+            public @NotNull AdventureTranslation<Component> translate(@Nullable String language, @NotNull Object @NotNull ... contexts) throws MissingTranslationException, UnknownLanguageException {
+                return (AdventureTranslation<Component>) super.translate(language, contexts);
             }
         }
         return new AdventureMessageImpl();

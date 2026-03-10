@@ -23,19 +23,12 @@ package io.github.almightysatan.slams;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TestContext implements Context {
+public class TestContext {
 
-    private final String language;
     private final String name;
 
-    public TestContext(@Nullable String language, @NotNull String name) {
-        this.language = language;
+    public TestContext(@NotNull String name) {
         this.name = name;
-    }
-
-    @Override
-    public @Nullable String language() {
-        return this.language;
     }
 
     public @NotNull String getName() {

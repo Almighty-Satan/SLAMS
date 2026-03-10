@@ -22,6 +22,7 @@ package io.github.almightysatan.slams;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -185,11 +186,12 @@ public interface PlaceholderResolver {
          * Adds a new {@link Placeholder}.
          *
          * @param key           the placeholder's key
+         * @param constexpr     {@code true} if this placeholder always returns the same value and does not depend on any context
          * @param valueFunction a function that evaluates this placeholder's value
          * @return this {@link Builder}
          */
-        default @NotNull Builder add(@NotNull String key, @NotNull Placeholder.ValueFunction valueFunction) {
-            return this.add(Placeholder.of(key, valueFunction));
+        default @NotNull Builder add(@NotNull String key, boolean constexpr, @NotNull Placeholder.ValueFunction valueFunction) {
+            return this.add(Placeholder.of(key, constexpr, valueFunction));
         }
 
         /**
@@ -217,7 +219,19 @@ public interface PlaceholderResolver {
         }
 
         /**
-         * Adds a new placeholder. The {@link Context} is ignored when evaluating its value.
+         * Adds a new placeholder. The context is ignored when evaluating its value.
+         *
+         * @param key           the placeholder's key
+         * @param constexpr     {@code true} if this placeholder always returns the same value and does not depend on any context
+         * @param valueFunction a function that evaluates this placeholder's value
+         * @return this {@link Builder}
+         */
+        default @NotNull Builder withArgs(@NotNull String key, boolean constexpr, @NotNull Placeholder.ContextIndependentValueFunction valueFunction) {
+            return this.add(Placeholder.withArgs(key, constexpr, valueFunction));
+        }
+
+        /**
+         * Adds a new placeholder. The context is ignored when evaluating its value.
          *
          * @param key           the placeholder's key
          * @param valueFunction a function that evaluates this placeholder's value
@@ -239,7 +253,7 @@ public interface PlaceholderResolver {
         }
 
         /**
-         * Adds a new placeholder. Arguments and {@link Context} are ignored when evaluating its value.
+         * Adds a new placeholder. Arguments and context are ignored when evaluating its value.
          *
          * @param key           the placeholder's key
          * @param valueFunction a function that evaluates this placeholder's value
@@ -261,7 +275,7 @@ public interface PlaceholderResolver {
         }
 
         /**
-         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * Adds a new {@link Placeholder}. If the context is not {@code null} and of the given type,
          * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValueFunction} will be
          * used.
          *
@@ -272,12 +286,12 @@ public interface PlaceholderResolver {
          * @param <T>                   the context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextualValueFunction<T> contextValueFunction, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
+        default <T> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextValueFunction<T> contextValueFunction, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
             return this.add(Placeholder.contextual(key, type, contextValueFunction, fallbackValueFunction));
         }
 
         /**
-         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * Adds a new {@link Placeholder}. If the context is not {@code null} and of the given type,
          * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValue} will be used.
          *
          * @param key                  the placeholder's key
@@ -287,12 +301,12 @@ public interface PlaceholderResolver {
          * @param <T>                  the context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+        default <T> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
             return this.add(Placeholder.contextual(key, type, contextValueFunction, fallbackValue));
         }
 
         /**
-         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * Adds a new {@link Placeholder}. If the context is not {@code null} and of the given type,
          * {@code contextValueFunction} will be used to evaluate the value.
          *
          * @param key                  the placeholder's key
@@ -301,12 +315,12 @@ public interface PlaceholderResolver {
          * @param <T>                  the context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextualValueFunction<T> contextValueFunction) {
+        default <T> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextValueFunction<T> contextValueFunction) {
             return this.add(Placeholder.contextual(key, type, contextValueFunction));
         }
 
         /**
-         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * Adds a new {@link Placeholder}. If the context is not {@code null} and of the given type,
          * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValueFunction} will be
          * used. Possible arguments passed to the placeholder are ignored.
          *
@@ -317,12 +331,12 @@ public interface PlaceholderResolver {
          * @param <T>                   the context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
+        default <T> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextValueFunction<T> contextValueFunction, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
             return this.add(Placeholder.contextual(key, type, contextValueFunction, fallbackValueFunction));
         }
 
         /**
-         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * Adds a new {@link Placeholder}. If the context is not {@code null} and of the given type,
          * {@code contextValueFunction} will be used to evaluate the value. Otherwise {@code fallbackValue} will be used.
          * Possible arguments passed to the placeholder are ignored.
          *
@@ -333,12 +347,12 @@ public interface PlaceholderResolver {
          * @param <T>                  the context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextualValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+        default <T> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
             return this.add(Placeholder.contextual(key, type, contextValueFunction, fallbackValue));
         }
 
         /**
-         * Adds a new {@link Placeholder}. If the {@link Context} is not {@code null} and of the given type,
+         * Adds a new {@link Placeholder}. If the context is not {@code null} and of the given type,
          * {@code contextValueFunction} will be used to evaluate the value. Possible arguments passed to the placeholder are
          * ignored.
          *
@@ -348,7 +362,7 @@ public interface PlaceholderResolver {
          * @param <T>                  the context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextualValueFunction<T> contextValueFunction) {
+        default <T> @NotNull Builder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextValueFunction<T> contextValueFunction) {
             return this.add(Placeholder.contextual(key, type, contextValueFunction));
         }
 
@@ -357,16 +371,17 @@ public interface PlaceholderResolver {
          * is applied if the context is of the given type and the number of arguments is greater than or equal to the
          * required amount.
          *
-         * @param prefix                the prefix
-         * @param type                  class of the current context
-         * @param numArgs               the number of arguments
-         * @param conversion            a conversion to a new context
-         * @param namespace             a {@link Consumer} that consumes a {@link Builder}. Calling {@link Builder#build()}
-         *                              on this {@link Builder} results in a {@link UnsupportedOperationException}
-         * @param <T>                   the current context type
+         * @param prefix     the prefix
+         * @param type       class of the current context
+         * @param numArgs    the number of arguments
+         * @param conversion a conversion to a new context
+         * @param namespace  a {@link Consumer} that consumes a {@link Builder}. Calling {@link Builder#build()}
+         *                   on this {@link Builder} results in a {@link UnsupportedOperationException}
+         * @param <T>        the current context type
+         * @param <U>        the component type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, int numArgs, @NotNull BiFunction<@NotNull T, @NotNull List<@NotNull String>, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace) {
+        default <T, U> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, int numArgs, @NotNull BiFunction<@NotNull T, @NotNull List<@NotNull Component<U>>, @NotNull ?> conversion, @NotNull Consumer<@NotNull Builder> namespace) {
             final Builder this0 = this;
             namespace.accept(new Builder() {
                 @Override
@@ -377,49 +392,32 @@ public interface PlaceholderResolver {
                 @Override
                 public @NotNull Builder add(@NotNull Placeholder placeholder) {
                     String key = prefix != null ? prefix + placeholder.key() : placeholder.key();
-                    this0.add(key, (context, arguments) ->
-                            placeholder.value(arguments.size() >= numArgs && context != null && type.isAssignableFrom(context.getClass()) ? conversion.apply((T) context, arguments) : context, arguments));
+                    this0.add(new Placeholder() {
+                        @Override
+                        public @NotNull String key() {
+                            return key;
+                        }
+
+                        @Override
+                        public boolean constexpr() {
+                            return false; // by definition namespaces are always dependent on context
+                        }
+
+                        @Override
+                        public @NotNull <V> V value(@NotNull PlaceholderResolver placeholderResolver,
+                                @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<V>> arguments,
+                                Component.@NotNull ValueFactory<V> factory) {
+                            if (arguments.size() >= numArgs)
+                                for (Object context : contexts)
+                                    if (type.isAssignableFrom(context.getClass()))
+                                        return placeholder.value(placeholderResolver, new Object[]{conversion.apply((T) context, (List<Component<U>>) (Object) arguments)}, arguments.subList(numArgs, arguments.size()), factory);
+                            return placeholder.value(placeholderResolver, new Object[0], arguments, factory);
+                        }
+                    });
                     return this;
                 }
             });
             return this;
-        }
-
-        /**
-         * Creates a new placeholder namespace. The prefix is added to all placeholders in the namespace. The conversion
-         * is applied if the context is of the given type.
-         * @param prefix                the prefix
-         * @param type                  class of the current context
-         * @param conversion            a conversion to a new context
-         * @param namespace             a {@link Consumer} that consumes a {@link Builder}. Calling {@link Builder#build()}
-         *                              on this {@link Builder} results in a {@link UnsupportedOperationException}
-         * @param fallbackValueFunction a function that evaluates this placeholder's value
-         * @param <T>                   the current context type
-         * @return this {@link Builder}
-         * @deprecated Use {@link Builder#namespace(String, Class, Function, Consumer)} instead
-         */
-        @Deprecated
-        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
-            return namespace(prefix, type, conversion, namespace);
-        }
-
-        /**
-         * Creates a new placeholder namespace. The prefix is added to all placeholders in the namespace. The conversion
-         * is applied if the context is of the given type.
-         *
-         * @param prefix        the prefix
-         * @param type          class of the current context
-         * @param conversion    a conversion to a new context
-         * @param namespace     a {@link Consumer} that consumes a {@link Builder}. Calling {@link Builder#build()}
-         *                      on this {@link Builder} results in a {@link UnsupportedOperationException}
-         * @param fallbackValue the fallback value
-         * @param <T>           the current context type
-         * @return this {@link Builder}
-         * @deprecated Use {@link Builder#namespace(String, Class, Function, Consumer)} instead
-         */
-        @Deprecated
-        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace, @NotNull String fallbackValue) {
-            return namespace(prefix, type, conversion, namespace);
         }
 
         /**
@@ -434,43 +432,43 @@ public interface PlaceholderResolver {
          * @param <T>        the current context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ? extends Context> conversion, @NotNull Consumer<@NotNull Builder> namespace) {
+        default <T> @NotNull Builder namespace(@Nullable String prefix, @NotNull Class<T> type, @NotNull Function<@NotNull T, @NotNull ?> conversion, @NotNull Consumer<@NotNull Builder> namespace) {
             return namespace(prefix, type, 0, (context, arguments) -> conversion.apply(context), namespace);
         }
 
         /**
          * Adds a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
-         * argument as its value, otherwise the second argument is returned. If the {@link Context} is {@code null} or not
+         * argument as its value, otherwise the second argument is returned. If the context is {@code null} or not
          * of the given type, {@code fallbackValueFunction} will be used instead.
          * Example format: {@code Hello <hasName:<name>:unknown user>!}
          *
          * @param key                   the placeholder's key
          * @param type                  class of the context type
-         * @param predicate             takes in the current {@link Context} and is used to check whether the first or
+         * @param predicate             takes in the current context and is used to check whether the first or
          *                              second argument should be returned as this placeholder's value
          * @param fallbackValueFunction a function that evaluates this placeholder's value
          * @param <T>                   the context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
+        default <T> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull Placeholder.ValueFunction fallbackValueFunction) {
             return this.add(Placeholder.conditional(key, type, predicate, fallbackValueFunction));
         }
 
         /**
          * Adds a new {@link Placeholder}. If the predicate is {@code true} this placeholder will return the first
-         * argument as its value, otherwise the second argument is returned. If the {@link Context} is {@code null} or not
+         * argument as its value, otherwise the second argument is returned. If the context is {@code null} or not
          * of the given type, {@code fallbackValue} will be used instead.
          * Example format: {@code Hello <hasName:<name>:unknown user>!}
          *
          * @param key           the placeholder's key
          * @param type          class of the context type
-         * @param predicate     takes in the current {@link Context} and is used to check whether the first or
+         * @param predicate     takes in the current context and is used to check whether the first or
          *                      second argument should be returned as this placeholder's value
          * @param fallbackValue the fallback value
          * @param <T>           the context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull String fallbackValue) {
+        default <T> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate, @NotNull String fallbackValue) {
             return this.add(Placeholder.conditional(key, type, predicate, fallbackValue));
         }
 
@@ -481,12 +479,12 @@ public interface PlaceholderResolver {
          *
          * @param key       the placeholder's key
          * @param type      class of the context type
-         * @param predicate takes in the current {@link Context} and is used to check whether the first or
+         * @param predicate takes in the current context and is used to check whether the first or
          *                  second argument should be returned as this placeholder's value
          * @param <T>       the context type
          * @return this {@link Builder}
          */
-        default <T extends Context> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate) {
+        default <T> @NotNull Builder conditional(@NotNull String key, @NotNull Class<T> type, @NotNull Predicate<@NotNull T> predicate) {
             return this.add(Placeholder.conditional(key, type, predicate));
         }
 
@@ -537,11 +535,11 @@ public interface PlaceholderResolver {
             BiFunction<String, BiFunction<BigDecimal, BigDecimal, BigDecimal>, Placeholder> numberOperation = (key, fun) ->
                     Placeholder.withArgs(key, arguments -> {
                         if (arguments.size() != 2)
-                            return "INVALID_ARGUMENTS";
+                            return Placeholder.INVALID_ARGUMENTS;
                         try {
                             return fun.apply(new BigDecimal(arguments.get(0)), new BigDecimal(arguments.get(1))).toPlainString();
                         } catch (NumberFormatException e) {
-                            return "INVALID_ARGUMENTS";
+                            return Placeholder.INVALID_ARGUMENTS;
                         }
                     });
 
@@ -564,11 +562,11 @@ public interface PlaceholderResolver {
 
             this.add(Placeholder.withArgs("sdf", args -> {
                 if (args.size() != 1)
-                    return "INVALID_FORMAT";
+                    return Placeholder.INVALID_FORMAT;
                 try {
                     return new SimpleDateFormat(args.get(0)).format(new Date());
                 } catch (IllegalArgumentException e) {
-                    return "INVALID_FORMAT";
+                    return Placeholder.INVALID_FORMAT;
                 }
             }));
             return this;

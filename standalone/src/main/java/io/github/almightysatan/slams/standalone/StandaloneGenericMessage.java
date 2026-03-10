@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public interface StandaloneGenericMessage<T> extends Message<T> {
 
     @Override
-    default @NotNull T value(@Nullable Context context, @NotNull PlaceholderResolver placeholderResolver) throws MissingTranslationException, UnknownLanguageException {
-        return this.translate(context).value(context, placeholderResolver);
+    default @NotNull T value(@Nullable String language, @NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts) throws MissingTranslationException, UnknownLanguageException {
+        return this.translate(language, contexts).value(placeholderResolver, contexts);
     }
 }

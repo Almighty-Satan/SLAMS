@@ -20,7 +20,6 @@
 
 package io.github.almightysatan.slams.impl;
 
-import io.github.almightysatan.slams.Context;
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.UnknownLanguageException;
 import org.jetbrains.annotations.NotNull;
@@ -38,9 +37,7 @@ public interface SlamsInternal extends Slams {
 
     @NotNull @Unmodifiable Set<@NotNull String> paths();
 
-    @Nullable Language language(@NotNull String identifier);
+    @NotNull Language language(@Nullable String identifier) throws UnknownLanguageException;
 
     @NotNull Language defaultLanguage() throws UnknownLanguageException;
-
-    @NotNull Language language(@Nullable Context context) throws UnknownLanguageException;
 }

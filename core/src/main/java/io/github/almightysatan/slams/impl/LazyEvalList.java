@@ -18,20 +18,38 @@
  * USA
  */
 
-package io.github.almightysatan.slams;
+package io.github.almightysatan.slams.impl;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class TestContext2 {
+import java.util.AbstractList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 
-    private final String name;
+@ApiStatus.Internal
+public class LazyEvalList<T, U> extends AbstractList<U> {
+    
+    private final Function<T, U> function;
+    private final List<T> raw;
+    private final Object[] values;
 
-    public TestContext2(@NotNull String name) {
-        this.name = name;
+    public LazyEvalList(@NotNull Function<T, U> function, @NotNull List<@NotNull T> raw) {
+        this.function = function;
+        this.raw = raw;
+        this.values = new Object[raw.size()];
     }
 
-    public @NotNull String getName() {
-        return this.name;
+    @Override
+    public U get(int index) {
+        if (this.values[index] != null)
+            return (U) this.values[index];
+        return (U) (this.values[index] = this.function.apply(this.raw.get(index)));
+    }
+
+    @Override
+    public int size() {
+        return this.values.length;
     }
 }
