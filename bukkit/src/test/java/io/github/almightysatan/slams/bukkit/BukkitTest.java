@@ -18,9 +18,7 @@
  * USA
  */
 
-import io.github.almightysatan.slams.*;
-import io.github.almightysatan.slams.bukkit.BukkitMessage;
-import io.github.almightysatan.slams.bukkit.BukkitPlaceholders;
+package io.github.almightysatan.slams.bukkit;import io.github.almightysatan.slams.*;
 import io.github.almightysatan.slams.bukkit.impl.BukkitCompositeComponent;
 import io.github.almightysatan.slams.standalone.PlaceholderStyle;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
