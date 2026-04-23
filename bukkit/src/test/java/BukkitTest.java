@@ -27,10 +27,13 @@ import io.github.almightysatan.slams.standalone.StandaloneSlams;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -167,17 +170,59 @@ public class BukkitTest {
     @Test
     public void testRepeat() throws IOException {
         StandaloneSlams slams = StandaloneSlams.of("0");
-        BukkitMessage entry = BukkitMessage.of("test", slams);
+        BukkitMessage entry0 = BukkitMessage.of("test0", slams);
+        BukkitMessage entry1 = BukkitMessage.of("test1", slams);
 
         slams.load("0", values -> {
-            values.put("test", "Hello <test>!");
+            values.put("test0", "Hello <test>!");
+            values.put("test1", "Hello <test:World>!");
         });
 
-        BaseComponent[] value = entry.value(Placeholder.constant("test", "§1World"));
-        assertEquals("§fHello §1World§1!", BaseComponent.toLegacyText(value));
+        BaseComponent[] value0_0 = entry0.value(Placeholder.constant("test", "§1World"));
+        assertEquals("§fHello §1World§1!", BaseComponent.toLegacyText(value0_0));
 
-        BaseComponent[] value2 = entry.value(Placeholder.constant("test", "World"));
-        assertEquals("§fHello §fWorld§f!", BaseComponent.toLegacyText(value2));
+        BaseComponent[] value0_1 = entry0.value(Placeholder.constant("test", "World"));
+        assertEquals("§fHello §fWorld§f!", BaseComponent.toLegacyText(value0_1));
+
+        BaseComponent[] value1_0 = entry1.value(new Placeholder() {
+            @Override
+            public @NotNull String key() {
+                return "test";
+            }
+
+            @Override
+            public boolean constexpr() {
+                return false;
+            }
+
+            @Override
+            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+                return (T) Arrays.stream((BaseComponent[]) arguments.get(0).value(placeholderResolver, contexts)).map(component -> {
+                    TextComponent copy = new TextComponent(component);
+                    copy.setColor(ChatColor.RED);
+                    return copy;
+                }).toArray(TextComponent[]::new);
+            }
+        });
+        assertEquals("§fHello §c§cWorld§c!", BaseComponent.toLegacyText(value1_0));
+
+        BaseComponent[] value1_1 = entry1.value(new Placeholder() {
+            @Override
+            public @NotNull String key() {
+                return "test";
+            }
+
+            @Override
+            public boolean constexpr() {
+                return false;
+            }
+
+            @Override
+            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+                return arguments.get(0).value(placeholderResolver, contexts);
+            }
+        });
+        assertEquals("§fHello §fWorld§f!", BaseComponent.toLegacyText(value1_1));
     }
 
     @Test

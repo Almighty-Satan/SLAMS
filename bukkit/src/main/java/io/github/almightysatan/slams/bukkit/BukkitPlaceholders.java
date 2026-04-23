@@ -23,9 +23,9 @@ package io.github.almightysatan.slams.bukkit;
 import io.github.almightysatan.slams.Component;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -79,12 +79,20 @@ public interface BukkitPlaceholders {
                 if (arguments.size() < 2)
                     return factory.fromString(Placeholder.INVALID_ARGUMENTS);
                 T content = arguments.get(1).value(placeholderResolver, contexts);
-                if (content instanceof BaseComponent[])
-                    this.setEvent(placeholderResolver, contexts, (BaseComponent[]) content, (Component<T>) arguments.get(0));
-                return content;
+                if (!(content instanceof TextComponent[]))
+                    return content;
+
+                // Copy because TextComponents might be immutable
+                TextComponent[] components = ((TextComponent[]) content);
+                TextComponent[] copy = new TextComponent[components.length];
+                for (int i = 0; i < copy.length; i++)
+                    copy[i] = new TextComponent(components[i]);
+
+                this.setEvent(placeholderResolver, contexts, copy, (Component<T>) arguments.get(0));
+                return (T) copy;
             }
 
-            protected abstract <T> void setEvent(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull BaseComponent[] content, @NotNull Component<T> value);
+            protected abstract <T> void setEvent(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull TextComponent[] content, @NotNull Component<T> value);
         }
 
         class ClickEventPlaceholder extends EventPlaceholder<ClickEvent.Action> {
@@ -93,10 +101,10 @@ public interface BukkitPlaceholders {
             }
 
             @Override
-            protected <T> void setEvent(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull BaseComponent[] content, @NotNull Component<T> value) {
+            protected <T> void setEvent(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull TextComponent[] content, @NotNull Component<T> value) {
                 String argument = value.stringValue(placeholderResolver, contexts);
                 if (!argument.isEmpty())
-                    for (BaseComponent component : content)
+                    for (TextComponent component : content)
                         component.setClickEvent(new ClickEvent(this.action, argument));
             }
         }
@@ -107,11 +115,11 @@ public interface BukkitPlaceholders {
             }
 
             @Override
-            protected <T> void setEvent(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull BaseComponent[] content, @NotNull Component<T> value) {
+            protected <T> void setEvent(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull TextComponent[] content, @NotNull Component<T> value) {
                 T argument = value.value(placeholderResolver, contexts);
-                if (argument instanceof BaseComponent[] && ((BaseComponent[]) argument).length > 0)
-                    for (BaseComponent component : content)
-                        component.setHoverEvent(new HoverEvent(this.action, (BaseComponent[]) argument));
+                if (argument instanceof TextComponent[] && ((TextComponent[]) argument).length > 0)
+                    for (TextComponent component : content)
+                        component.setHoverEvent(new HoverEvent(this.action, (TextComponent[]) argument));
             }
         }
 
