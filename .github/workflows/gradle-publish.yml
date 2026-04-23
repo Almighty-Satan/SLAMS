@@ -17,8 +17,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
       - name: Gradle publish
         env:
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.SIGNING_KEY }}
