@@ -22,9 +22,12 @@ package io.github.almightysatan.slams.standalone.impl;
 
 import io.github.almightysatan.slams.Component;
 import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.impl.InternalComponent;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 @ApiStatus.Internal
 public class StandaloneCompositeComponent extends CompositeComponent<String> {
@@ -50,5 +53,10 @@ public class StandaloneCompositeComponent extends CompositeComponent<String> {
     @Override
     protected @NotNull Component.ValueFactory<String> factory() {
         return FACTORY;
+    }
+
+    @Override
+    protected @NotNull String merge(@NotNull List<String> values) {
+        return String.join("", values);
     }
 }

@@ -66,6 +66,11 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
         return value(PlaceholderResolver.empty(), new Object[0]);
     }
 
+    @TestOnly
+    public int size() {
+        return this.components.length;
+    }
+
     @Override
     public @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -221,12 +226,34 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
             @NotNull PlaceholderResolver placeholderResolver);
 
     protected abstract @NotNull Component.ValueFactory<T> factory();
-    
+
+    protected abstract @NotNull T merge(@NotNull List<T> values);
+
     protected void inline(@NotNull StandaloneSlams slams, @NotNull List<InternalComponent<T>> components) {
-        if (!slams.enableInline() || components.size() <= 1)
+        if (!slams.enableInline() || !slams.enableConstexprEval() || components.size() <= 1)
             return;
-        
-        // TODO
+
+        List<InternalComponent<T>> original = new ArrayList(components);
+        List<T> values = new ArrayList();
+        List<String> stringValues = new ArrayList();
+
+        components.clear();
+        for (InternalComponent<T> component : original) {
+            if (!component.constexpr()) {
+                if (!values.isEmpty()) {
+                    components.add(this.constant(this.merge(values), String.join("", stringValues)));
+                    values.clear();
+                    stringValues.clear();
+                }
+                components.add(component);
+            } else {
+                values.add(component.value(PlaceholderResolver.empty(), new Object[0]));
+                stringValues.add(component.stringValue(PlaceholderResolver.empty(), new Object[0]));
+            }
+        }
+
+        if (!values.isEmpty())
+            components.add(this.constant(this.merge(values), String.join("", stringValues)));
     }
 
     protected @NotNull InternalComponent<T> @NotNull [] processString(@NotNull StandaloneSlams slams, @NotNull String input,

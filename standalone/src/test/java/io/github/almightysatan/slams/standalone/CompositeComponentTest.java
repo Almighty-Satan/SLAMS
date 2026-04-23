@@ -188,4 +188,22 @@ public class CompositeComponentTest {
         Assertions.assertEquals("world", component.value(placeholderResolver, new Object[0]));
         Assertions.assertEquals("world", component.value(placeholderResolver, new Object[0]));
     }
+
+    @Test
+    public void testInline() {
+        StandaloneSlams slams0 = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS, false, false);
+        StandaloneCompositeComponent component0 = new StandaloneCompositeComponent(slams0, "<hello><hello>", Placeholder.constant("hello", "world"));
+        Assertions.assertEquals("worldworld", component0.value(PlaceholderResolver.empty(), new Object[0]));
+        Assertions.assertEquals(2, component0.size());
+
+        StandaloneSlams slams1 = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS, true, false);
+        StandaloneCompositeComponent component1 = new StandaloneCompositeComponent(slams1, "<hello><hello>", Placeholder.constant("hello", "world"));
+        Assertions.assertEquals("worldworld", component1.value(PlaceholderResolver.empty(), new Object[0]));
+        Assertions.assertEquals(2, component1.size());
+
+        StandaloneSlams slams2 = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS, true, true);
+        StandaloneCompositeComponent component2 = new StandaloneCompositeComponent(slams2, "<hello><hello>", Placeholder.constant("hello", "world"));
+        Assertions.assertEquals("worldworld", component2.value(PlaceholderResolver.empty(), new Object[0]));
+        Assertions.assertEquals(1, component2.size());
+    }
 }

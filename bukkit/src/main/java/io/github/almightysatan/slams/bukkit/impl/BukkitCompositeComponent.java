@@ -23,6 +23,7 @@ package io.github.almightysatan.slams.bukkit.impl;
 import io.github.almightysatan.slams.Component;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import io.github.almightysatan.slams.bukkit.BukkitTranslation;
+import io.github.almightysatan.slams.impl.InternalComponent;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
 import io.github.almightysatan.slams.standalone.impl.CompositeComponent;
 import net.md_5.bungee.api.ChatColor;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ApiStatus.Internal
@@ -84,7 +86,12 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
     protected @NotNull Component.ValueFactory<TextComponent[]> factory() {
         return BukkitCompositeComponent::parse;
     }
-    
+
+    @Override
+    protected @NotNull TextComponent[] merge(@NotNull List<TextComponent[]> values) {
+        return values.stream().flatMap(Arrays::stream).toArray(TextComponent[]::new);
+    }
+
     private static void setColor(@NotNull TextComponent component, @NotNull ChatColor color) {
         switch (color) {
             case BOLD:

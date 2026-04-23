@@ -291,12 +291,12 @@ public class BukkitTest {
         assertEquals("Hello §1World!", entry3.stringValue());
     }
     
-    private void assertMessageEquals(BaseComponent[] expected, BaseComponent[] actual) {
+    public static void assertMessageEquals(BaseComponent[] expected, BaseComponent[] actual) {
         // Compares the result of toString as TextComponent does not implement an equals method
         assertArrayEquals(Arrays.stream(expected).map(BaseComponent::toString).toArray(String[]::new), Arrays.stream(actual).map(BaseComponent::toString).toArray(String[]::new));
     }
 
-    private void assertMessageEquals(String legacyText, BaseComponent[] actual) {
-        this.assertMessageEquals(TextComponent.fromLegacyText(legacyText), actual);
+    public static void assertMessageEquals(String legacyText, BaseComponent[] actual) {
+        assertMessageEquals(TextComponent.fromLegacyText(legacyText), actual);
     }
 }
