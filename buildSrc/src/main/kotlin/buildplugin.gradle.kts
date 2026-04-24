@@ -13,6 +13,10 @@ java {
     withJavadocJar()
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs = listOf("-Xlint:-options")
+}
+
 checkstyle {
     configDirectory.set(File("../checkstyle"))
     toolVersion = "9.3"
