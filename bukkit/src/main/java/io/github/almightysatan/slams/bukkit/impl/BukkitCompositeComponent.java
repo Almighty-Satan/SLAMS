@@ -23,7 +23,6 @@ package io.github.almightysatan.slams.bukkit.impl;
 import io.github.almightysatan.slams.Component;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import io.github.almightysatan.slams.bukkit.BukkitTranslation;
-import io.github.almightysatan.slams.impl.InternalComponent;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
 import io.github.almightysatan.slams.standalone.impl.CompositeComponent;
 import net.md_5.bungee.api.ChatColor;

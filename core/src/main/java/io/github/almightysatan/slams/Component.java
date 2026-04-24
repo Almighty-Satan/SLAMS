@@ -20,11 +20,12 @@
 
 package io.github.almightysatan.slams;
 
-import io.github.almightysatan.slams.impl.InternalComponent;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Represents some part of a message, might be a constant, a placeholder, ...
@@ -44,6 +45,12 @@ public interface Component<T> {
      */
     @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts);
 
+    @ApiStatus.Internal
+    default void value(@NotNull PlaceholderResolver placeholderResolver,
+            @NotNull Object @NotNull [] contexts, @NotNull Consumer<T> consumer) {
+        consumer.accept(this.value(placeholderResolver, contexts));
+    }
+
     /**
      * Evaluates the value of this {@link Component} as a string
      *
@@ -53,6 +60,12 @@ public interface Component<T> {
      */
     @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver,
             @NotNull Object @NotNull [] contexts);
+
+    @ApiStatus.Internal
+    default void stringValue(@NotNull PlaceholderResolver placeholderResolver,
+            @NotNull Object @NotNull [] contexts, @NotNull Consumer<String> consumer) {
+        consumer.accept(this.stringValue(placeholderResolver, contexts));
+    }
 
     /**
      * Creates a new {@link Component} of type string with the same value as {@link #stringValue(PlaceholderResolver, Object[])}
@@ -97,7 +110,7 @@ public interface Component<T> {
     static <T> @NotNull Component<T> of(@NotNull T value, @NotNull String stringValue, @Nullable Object rawValue) {
         Objects.requireNonNull(value);
         Objects.requireNonNull(stringValue);
-        return new InternalComponent<T>() {
+        return new Component<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
                 return value;

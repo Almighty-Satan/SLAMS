@@ -23,7 +23,6 @@ package io.github.almightysatan.slams.standalone.impl;
 import io.github.almightysatan.slams.Component;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import io.github.almightysatan.slams.impl.InternalComponent;
 import io.github.almightysatan.slams.impl.LazyEvalList;
 import io.github.almightysatan.slams.standalone.PlaceholderStyle;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
@@ -34,9 +33,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @ApiStatus.Internal
-public abstract class CompositeComponent<T> implements InternalComponent<T> {
+public abstract class CompositeComponent<T> implements Component<T> {
 
-    protected final InternalComponent<T>[] components;
+    protected final Component<T>[] components;
     protected final boolean constexpr;
 
     protected CompositeComponent(@NotNull StandaloneSlams slams, @NotNull String raw, @NotNull PlaceholderResolver placeholderResolver) {
@@ -49,7 +48,7 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
 
     @Override
     public void value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull Consumer<T> consumer) {
-        for (InternalComponent<T> component : this.components) {
+        for (Component<T> component : this.components) {
             component.value(placeholderResolver, contexts, value -> consumer.accept(value));
         }
     }
@@ -77,7 +76,7 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
 
     @Override
     public void stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull Consumer<String> consumer) {
-        for (InternalComponent<T> component : this.components)
+        for (Component<T> component : this.components)
             component.stringValue(placeholderResolver, contexts, consumer);
     }
 
@@ -86,10 +85,10 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
         return this.constexpr;
     }
 
-    protected @NotNull InternalComponent<T> constant(@NotNull T value, @NotNull String stringValue) {
+    protected @NotNull Component<T> constant(@NotNull T value, @NotNull String stringValue) {
         Objects.requireNonNull(value);
         Objects.requireNonNull(stringValue);
-        return new InternalComponent<T>() {
+        return new Component<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
                 return value;
@@ -107,13 +106,13 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
         };
     }
 
-    protected @NotNull InternalComponent<T> simple(@NotNull String value) {
+    protected @NotNull Component<T> simple(@NotNull String value) {
         Objects.requireNonNull(value);
         T element = this.factory().fromString(value);
         return this.constant(element, value);
     }
 
-    protected final @NotNull InternalComponent<T> evalConstExpression(@NotNull InternalComponent<T> component, @NotNull StandaloneSlams slams) {
+    protected final @NotNull Component<T> evalConstExpression(@NotNull Component<T> component, @NotNull StandaloneSlams slams) {
         if (!component.constexpr() || !slams.enableConstexprEval())
             return component;
 
@@ -124,10 +123,10 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
         return this.constant(value, stringValue);
     }
 
-    protected <T> @NotNull InternalComponent<T> placeholder(@NotNull Placeholder placeholder,
+    protected <T> @NotNull Component<T> placeholder(@NotNull Placeholder placeholder,
             @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
         boolean constexpr = placeholder.constexpr() && arguments.stream().allMatch(Component::constexpr);
-        return new InternalComponent<T>() {
+        return new Component<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
                 return placeholder.value(placeholderResolver, contexts, arguments, factory).value(placeholderResolver, contexts);
@@ -150,7 +149,7 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
         };
     }
 
-    protected @NotNull InternalComponent<T> placeholder(@NotNull String raw, @NotNull String key,
+    protected @NotNull Component<T> placeholder(@NotNull String raw, @NotNull String key,
             @Unmodifiable @NotNull List<@NotNull String> arguments, @NotNull PlaceholderResolver placeholderResolver,
             @NotNull StandaloneSlams slams) {
         if (key.isEmpty())
@@ -162,7 +161,7 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
             return this.evalConstExpression(this.placeholder(globalPlaceholder, list, this.factory()), slams);
 
         // Local placeholders
-        return new InternalComponent<T>() {
+        return new Component<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
@@ -194,7 +193,7 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
         };
     }
 
-    protected @NotNull InternalComponent<T> nestedPlaceholder(@NotNull String raw, @NotNull String key,
+    protected @NotNull Component<T> nestedPlaceholder(@NotNull String raw, @NotNull String key,
             @NotNull List<@NotNull Component<T>> arguments, @NotNull PlaceholderResolver placeholderResolver,
             @NotNull StandaloneSlams slams) {
         if (key.isEmpty())
@@ -205,7 +204,7 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
             return this.evalConstExpression(this.placeholder(globalPlaceholder, arguments, this.factory()), slams);
 
         // Local placeholders
-        return new InternalComponent<T>() {
+        return new Component<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
@@ -244,16 +243,16 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
 
     protected abstract @NotNull T merge(@NotNull List<T> values);
 
-    protected void inline(@NotNull StandaloneSlams slams, @NotNull List<InternalComponent<T>> components) {
+    protected void inline(@NotNull StandaloneSlams slams, @NotNull List<Component<T>> components) {
         if (!slams.enableInline() || !slams.enableConstexprEval() || components.size() <= 1)
             return;
 
-        List<InternalComponent<T>> original = new ArrayList(components);
+        List<Component<T>> original = new ArrayList(components);
         List<T> values = new ArrayList();
         List<String> stringValues = new ArrayList();
 
         components.clear();
-        for (InternalComponent<T> component : original) {
+        for (Component<T> component : original) {
             if (!component.constexpr()) {
                 if (!values.isEmpty()) {
                     components.add(this.constant(this.merge(values), String.join("", stringValues)));
@@ -271,14 +270,14 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
             components.add(this.constant(this.merge(values), String.join("", stringValues)));
     }
 
-    protected @NotNull InternalComponent<T> @NotNull [] processString(@NotNull StandaloneSlams slams, @NotNull String input,
+    protected @NotNull Component<T> @NotNull [] processString(@NotNull StandaloneSlams slams, @NotNull String input,
             @NotNull PlaceholderResolver placeholderResolver) {
         PlaceholderStyle style = slams.style();
         char headChar = style.head();
         char tailChar = style.tail();
         char separatorChar = style.separator();
 
-        List<InternalComponent<T>> components = new ArrayList<>();
+        List<Component<T>> components = new ArrayList<>();
         StringBuilder raw = new StringBuilder(input.length());
         List<String> arguments = new ArrayList<>();
         StringBuilder argument = new StringBuilder();
@@ -346,6 +345,6 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
 
         this.inline(slams, components);
         
-        return (InternalComponent<T>[]) components.toArray(new InternalComponent[0]);
+        return (Component<T>[]) components.toArray(new Component[0]);
     }
 }

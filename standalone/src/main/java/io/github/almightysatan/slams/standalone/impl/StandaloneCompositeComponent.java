@@ -22,7 +22,6 @@ package io.github.almightysatan.slams.standalone.impl;
 
 import io.github.almightysatan.slams.Component;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import io.github.almightysatan.slams.impl.InternalComponent;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
