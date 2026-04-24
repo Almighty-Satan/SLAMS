@@ -22,11 +22,9 @@ package io.github.almightysatan.slams.bukkit.impl;
 
 import io.github.almightysatan.slams.InvalidTypeException;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.bukkit.BukkitTranslation;
 import io.github.almightysatan.slams.impl.Types;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 

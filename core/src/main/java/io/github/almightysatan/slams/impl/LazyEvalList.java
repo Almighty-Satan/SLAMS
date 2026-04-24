@@ -24,7 +24,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
