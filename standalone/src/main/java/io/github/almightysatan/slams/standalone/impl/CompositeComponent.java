@@ -118,12 +118,12 @@ public abstract class CompositeComponent<T> implements Component<T> {
 
         PlaceholderResolver placeholderResolver = PlaceholderResolver.empty(); // No local placeholders
         T value = component.value(placeholderResolver, new Object[0]);
-        String stringValue = component.stringValue(placeholderResolver, new  Object[0]);
+        String stringValue = component.stringValue(placeholderResolver, new Object[0]);
 
         return this.constant(value, stringValue);
     }
 
-    protected <T> @NotNull Component<T> placeholder(@NotNull Placeholder placeholder,
+    protected <T> @NotNull Component<T> globalPlaceholder(@NotNull Placeholder placeholder,
             @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
         boolean constexpr = placeholder.constexpr() && arguments.stream().allMatch(Component::constexpr);
         return new Component<T>() {
@@ -149,61 +149,8 @@ public abstract class CompositeComponent<T> implements Component<T> {
         };
     }
 
-    protected @NotNull Component<T> placeholder(@NotNull String raw, @NotNull String key,
-            @Unmodifiable @NotNull List<@NotNull String> arguments, @NotNull PlaceholderResolver placeholderResolver,
-            @NotNull StandaloneSlams slams) {
-        if (key.isEmpty())
-            return this.simple(raw);
-
-        Placeholder globalPlaceholder = placeholderResolver.resolve(key);
-        List<Component<T>> list = new LazyEvalList<>(this::simple, arguments);
-        if (globalPlaceholder != null)
-            return this.evalConstExpression(this.placeholder(globalPlaceholder, list, this.factory()), slams);
-
-        // Local placeholders
-        return new Component<T>() {
-            @Override
-            public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
-                Placeholder placeholder0 = placeholderResolver0.resolve(key);
-                if (placeholder0 == null)
-                    return CompositeComponent.this.factory().fromString(raw);
-                return placeholder0.value(placeholderResolver0, contexts, list, CompositeComponent.this.factory()).value(placeholderResolver0, contexts);
-            }
-
-            @Override
-            public @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
-                Placeholder placeholder0 = placeholderResolver0.resolve(key);
-                if (placeholder0 == null)
-                    return raw;
-                return placeholder0.value(placeholderResolver0, contexts, list, CompositeComponent.this.factory()).stringValue(placeholderResolver0, contexts);
-            }
-
-            @Override
-            public @Nullable Object rawValue(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
-                Placeholder placeholder0 = placeholderResolver0.resolve(key);
-                if (placeholder0 == null)
-                    return null;
-                return placeholder0.value(placeholderResolver0, contexts, list, CompositeComponent.this.factory()).rawValue(placeholderResolver0, contexts);
-            }
-
-            @Override
-            public boolean constexpr() {
-                return false; // local placeholders can not be inlined
-            }
-        };
-    }
-
-    protected @NotNull Component<T> nestedPlaceholder(@NotNull String raw, @NotNull String key,
-            @NotNull List<@NotNull Component<T>> arguments, @NotNull PlaceholderResolver placeholderResolver,
-            @NotNull StandaloneSlams slams) {
-        if (key.isEmpty())
-            return this.simple(raw);
-
-        Placeholder globalPlaceholder = placeholderResolver.resolve(key);
-        if (globalPlaceholder != null)
-            return this.evalConstExpression(this.placeholder(globalPlaceholder, arguments, this.factory()), slams);
-
-        // Local placeholders
+    protected @NotNull Component<T> localPlaceholder(@NotNull String raw, @NotNull String key,
+            @Unmodifiable @NotNull List<@NotNull Component<T>> arguments) {
         return new Component<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
@@ -234,6 +181,18 @@ public abstract class CompositeComponent<T> implements Component<T> {
                 return false; // local placeholders can not be inlined
             }
         };
+    }
+
+    protected @NotNull Component<T> placeholder(@NotNull String raw, @NotNull String key,
+            @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, @NotNull PlaceholderResolver placeholderResolver,
+            @NotNull StandaloneSlams slams) {
+        if (key.isEmpty())
+            return this.simple(raw);
+
+        Placeholder globalPlaceholder = placeholderResolver.resolve(key);
+        if (globalPlaceholder != null)
+            return this.evalConstExpression(this.globalPlaceholder(globalPlaceholder, arguments, this.factory()), slams);
+        return this.localPlaceholder(raw, key, arguments);
     }
 
     protected abstract @NotNull CompositeComponent<T> composite(@NotNull StandaloneSlams slams, @NotNull String raw,
@@ -319,11 +278,11 @@ public abstract class CompositeComponent<T> implements Component<T> {
 
                     String key = arguments.remove(0);
                     if (nested)
-                        components.add(this.nestedPlaceholder(raw.toString(), key, Collections.unmodifiableList(arguments.stream()
+                        components.add(this.placeholder(raw.toString(), key, Collections.unmodifiableList(arguments.stream()
                                 .map(arg -> this.composite(slams, arg, placeholderResolver))
                                 .collect(Collectors.toList())), placeholderResolver, slams));
                     else
-                        components.add(this.placeholder(raw.toString(), key, arguments, placeholderResolver, slams));
+                        components.add(this.placeholder(raw.toString(), key, new LazyEvalList<>(this::simple, arguments), placeholderResolver, slams));
 
                     nested = false;
                     raw.setLength(0);
@@ -344,7 +303,7 @@ public abstract class CompositeComponent<T> implements Component<T> {
             components.add(this.simple(raw.toString()));
 
         this.inline(slams, components);
-        
+
         return (Component<T>[]) components.toArray(new Component[0]);
     }
 }
