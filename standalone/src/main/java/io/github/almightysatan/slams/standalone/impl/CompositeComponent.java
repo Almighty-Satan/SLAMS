@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 @ApiStatus.Internal
 public abstract class CompositeComponent<T> implements Component<T> {
 
+    private static final Object[] EMPTY_CONTEXTS = new Object[0];
+
     protected final Component<T>[] components;
     protected final boolean constexpr;
 
@@ -85,61 +87,22 @@ public abstract class CompositeComponent<T> implements Component<T> {
         return this.constexpr;
     }
 
-    protected @NotNull Component<T> constant(@NotNull T value, @NotNull String stringValue) {
-        Objects.requireNonNull(value);
-        Objects.requireNonNull(stringValue);
+    protected @NotNull Component<T> globalPlaceholder(@NotNull Placeholder placeholder,
+            @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, boolean constexpr) {
         return new Component<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return value;
+                return placeholder.value(placeholderResolver, contexts, arguments, CompositeComponent.this.factory()).value(placeholderResolver, contexts);
             }
 
             @Override
             public @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return stringValue;
-            }
-
-            @Override
-            public boolean constexpr() {
-                return true;
-            }
-        };
-    }
-
-    protected @NotNull Component<T> simple(@NotNull String value) {
-        Objects.requireNonNull(value);
-        T element = this.factory().fromString(value);
-        return this.constant(element, value);
-    }
-
-    protected final @NotNull Component<T> evalConstExpression(@NotNull Component<T> component, @NotNull StandaloneSlams slams) {
-        if (!component.constexpr() || !slams.enableConstexprEval())
-            return component;
-
-        PlaceholderResolver placeholderResolver = PlaceholderResolver.empty(); // No local placeholders
-        T value = component.value(placeholderResolver, new Object[0]);
-        String stringValue = component.stringValue(placeholderResolver, new Object[0]);
-
-        return this.constant(value, stringValue);
-    }
-
-    protected <T> @NotNull Component<T> globalPlaceholder(@NotNull Placeholder placeholder,
-            @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
-        boolean constexpr = placeholder.constexpr() && arguments.stream().allMatch(Component::constexpr);
-        return new Component<T>() {
-            @Override
-            public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return placeholder.value(placeholderResolver, contexts, arguments, factory).value(placeholderResolver, contexts);
-            }
-
-            @Override
-            public @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return placeholder.value(placeholderResolver, contexts, arguments, factory).stringValue(placeholderResolver, contexts);
+                return placeholder.value(placeholderResolver, contexts, arguments, CompositeComponent.this.factory()).stringValue(placeholderResolver, contexts);
             }
 
             @Override
             public @Nullable Object rawValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return placeholder.value(placeholderResolver, contexts, arguments, factory).rawValue(placeholderResolver, contexts);
+                return placeholder.value(placeholderResolver, contexts, arguments, CompositeComponent.this.factory()).rawValue(placeholderResolver, contexts);
             }
 
             @Override
@@ -147,6 +110,18 @@ public abstract class CompositeComponent<T> implements Component<T> {
                 return constexpr;
             }
         };
+    }
+
+    protected @NotNull Component<T> constGlobalPlaceholder(@NotNull Placeholder placeholder,
+            @Unmodifiable @NotNull List<@NotNull Component<T>> arguments) {
+        PlaceholderResolver placeholderResolver = PlaceholderResolver.empty(); // No local placeholders
+        Component<T> component = placeholder.value(placeholderResolver, EMPTY_CONTEXTS, arguments, this.factory());
+
+        T value = component.value(placeholderResolver, EMPTY_CONTEXTS);
+        String stringValue = component.stringValue(placeholderResolver, EMPTY_CONTEXTS);
+        Object rawValue = component.rawValue(placeholderResolver, EMPTY_CONTEXTS);
+
+        return Component.of(value, stringValue, rawValue);
     }
 
     protected @NotNull Component<T> localPlaceholder(@NotNull String raw, @NotNull String key,
@@ -187,11 +162,15 @@ public abstract class CompositeComponent<T> implements Component<T> {
             @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, @NotNull PlaceholderResolver placeholderResolver,
             @NotNull StandaloneSlams slams) {
         if (key.isEmpty())
-            return this.simple(raw);
+            return this.factory().componentFromString(raw);
 
         Placeholder globalPlaceholder = placeholderResolver.resolve(key);
-        if (globalPlaceholder != null)
-            return this.evalConstExpression(this.globalPlaceholder(globalPlaceholder, arguments, this.factory()), slams);
+        if (globalPlaceholder != null) {
+            boolean constexpr = globalPlaceholder.constexpr() && arguments.stream().allMatch(Component::constexpr);
+            if (constexpr && slams.enableConstexprEval())
+                return this.constGlobalPlaceholder(globalPlaceholder, arguments);
+            return this.globalPlaceholder(globalPlaceholder, arguments, constexpr);
+        }
         return this.localPlaceholder(raw, key, arguments);
     }
 
@@ -214,19 +193,19 @@ public abstract class CompositeComponent<T> implements Component<T> {
         for (Component<T> component : original) {
             if (!component.constexpr()) {
                 if (!values.isEmpty()) {
-                    components.add(this.constant(this.merge(values), String.join("", stringValues)));
+                    components.add(Component.of(this.merge(values), String.join("", stringValues)));
                     values.clear();
                     stringValues.clear();
                 }
                 components.add(component);
             } else {
-                values.add(component.value(PlaceholderResolver.empty(), new Object[0]));
-                stringValues.add(component.stringValue(PlaceholderResolver.empty(), new Object[0]));
+                values.add(component.value(PlaceholderResolver.empty(), EMPTY_CONTEXTS));
+                stringValues.add(component.stringValue(PlaceholderResolver.empty(), EMPTY_CONTEXTS));
             }
         }
 
         if (!values.isEmpty())
-            components.add(this.constant(this.merge(values), String.join("", stringValues)));
+            components.add(Component.of(this.merge(values), String.join("", stringValues)));
     }
 
     protected @NotNull Component<T> @NotNull [] processString(@NotNull StandaloneSlams slams, @NotNull String input,
@@ -261,7 +240,7 @@ public abstract class CompositeComponent<T> implements Component<T> {
             if (c == headChar && (tailChar != headChar || scope == 0)) {
                 if (++scope == 1) {
                     if (raw.length() > 0) {
-                        components.add(this.simple(raw.toString()));
+                        components.add(this.factory().componentFromString(raw.toString()));
                         raw.setLength(0);
                     }
                     raw.append(c);
@@ -282,7 +261,8 @@ public abstract class CompositeComponent<T> implements Component<T> {
                                 .map(arg -> this.composite(slams, arg, placeholderResolver))
                                 .collect(Collectors.toList())), placeholderResolver, slams));
                     else
-                        components.add(this.placeholder(raw.toString(), key, new LazyEvalList<>(this::simple, arguments), placeholderResolver, slams));
+                        components.add(this.placeholder(raw.toString(), key,
+                                new LazyEvalList<>(this.factory()::componentFromString, arguments), placeholderResolver, slams));
 
                     nested = false;
                     raw.setLength(0);
@@ -300,7 +280,7 @@ public abstract class CompositeComponent<T> implements Component<T> {
         }
 
         if (raw.length() > 0)
-            components.add(this.simple(raw.toString()));
+            components.add(this.factory().componentFromString(raw.toString()));
 
         this.inline(slams, components);
 

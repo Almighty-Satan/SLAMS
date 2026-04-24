@@ -40,6 +40,8 @@ import java.util.List;
 @ApiStatus.Internal
 public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]> implements BukkitTranslation {
 
+    private static ValueFactory<TextComponent[]> FACTORY = BukkitCompositeComponent::parse;
+
     protected BukkitCompositeComponent(@NotNull StandaloneSlams slams, @NotNull String raw, @NotNull PlaceholderResolver placeholderResolver) {
         super(slams, raw, placeholderResolver);
     }
@@ -83,7 +85,7 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
 
     @Override
     protected @NotNull Component.ValueFactory<TextComponent[]> factory() {
-        return BukkitCompositeComponent::parse;
+        return FACTORY;
     }
 
     @Override
