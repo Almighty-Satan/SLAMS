@@ -22,6 +22,7 @@ package io.github.almightysatan.slams.impl;
 
 import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.UnknownLanguageException;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -31,6 +32,7 @@ import java.util.Set;
 /**
  * An extension of the {@link Slams} interface that contains methods that should only be used internally.
  */
+@ApiStatus.Internal
 public interface SlamsInternal extends Slams {
 
     void register(@NotNull MessageImpl<?> entry);

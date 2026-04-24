@@ -27,6 +27,7 @@ import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.TagPattern;
 import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@ApiStatus.Internal
 class ContextTagResolverImpl {
 
     static @NotNull ContextTagResolver ofPlaceholderResolver(@NotNull PlaceholderResolver placeholderResolver, boolean eval) {

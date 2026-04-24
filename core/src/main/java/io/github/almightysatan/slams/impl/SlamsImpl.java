@@ -24,6 +24,7 @@ import io.github.almightysatan.slams.InvalidTypeException;
 import io.github.almightysatan.slams.LanguageParser;
 import io.github.almightysatan.slams.MissingTranslationException;
 import io.github.almightysatan.slams.UnknownLanguageException;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -34,6 +35,7 @@ import java.util.*;
 /**
  * An implementation of the {@link SlamsInternal} interface.
  */
+@ApiStatus.Internal
 public class SlamsImpl implements SlamsInternal {
 
     private final Map<String, MessageImpl<?>> entries;

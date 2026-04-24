@@ -21,6 +21,7 @@
 package io.github.almightysatan.slams.impl;
 
 import io.github.almightysatan.slams.*;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,6 +34,7 @@ import java.util.Objects;
  *
  * @param <T> the type of this message's value
  */
+@ApiStatus.Internal
 public abstract class MessageImpl<T> implements Message<T> {
 
     private final String path;

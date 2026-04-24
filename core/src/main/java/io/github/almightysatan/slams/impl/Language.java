@@ -21,6 +21,7 @@
 package io.github.almightysatan.slams.impl;
 
 import io.github.almightysatan.slams.LanguageParser;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -34,6 +35,7 @@ import java.util.Set;
 /**
  * An internal class that represents a Language.
  */
+@ApiStatus.Internal
 public class Language {
 
     private final SlamsInternal languageManager;
