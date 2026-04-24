@@ -50,9 +50,11 @@ public interface Placeholder extends PlaceholderResolver {
     @NotNull String key();
 
     /**
-     * Returns {@code true} if this placeholder always returns the same value and does not depend on any context.
+     * Returns {@code true} if this placeholder always returns the same value when supplied with the same arguments and
+     * does not depend on any context.
      *
-     * @return {@code true} if this placeholder always returns the same value and does not depend on any context
+     * @return {@code true} if this placeholder always returns the same value when supplied with the same arguments and
+     * does not depend on any context
      */
     boolean constexpr();
 
