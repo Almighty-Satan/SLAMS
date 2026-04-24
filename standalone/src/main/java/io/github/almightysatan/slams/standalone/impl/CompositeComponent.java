@@ -27,10 +27,7 @@ import io.github.almightysatan.slams.impl.InternalComponent;
 import io.github.almightysatan.slams.impl.LazyEvalList;
 import io.github.almightysatan.slams.standalone.PlaceholderStyle;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
-import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -133,13 +130,17 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
         return new InternalComponent<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return placeholder.value(placeholderResolver, contexts, arguments, factory);
+                return placeholder.value(placeholderResolver, contexts, arguments, factory).value(placeholderResolver, contexts);
             }
 
             @Override
             public @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                List<Component<String>> list = new LazyEvalList<Component<T>, Component<String>>(c -> c.stringComponent(placeholderResolver, contexts), arguments);
-                return placeholder.stringValue(contexts, list);
+                return placeholder.value(placeholderResolver, contexts, arguments, factory).stringValue(placeholderResolver, contexts);
+            }
+
+            @Override
+            public @Nullable Object rawValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
+                return placeholder.value(placeholderResolver, contexts, arguments, factory).rawValue(placeholderResolver, contexts);
             }
 
             @Override
@@ -161,14 +162,13 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
             return this.evalConstExpression(this.placeholder(globalPlaceholder, list, this.factory()), slams);
 
         // Local placeholders
-        List<Component<String>> argumentComponents = arguments.stream().map(s -> (Component<String>) Component.ofString(s)).collect(Collectors.toList());
         return new InternalComponent<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
                 if (placeholder0 == null)
                     return CompositeComponent.this.factory().fromString(raw);
-                return placeholder0.value(placeholderResolver0, contexts, list, CompositeComponent.this.factory());
+                return placeholder0.value(placeholderResolver0, contexts, list, CompositeComponent.this.factory()).value(placeholderResolver0, contexts);
             }
 
             @Override
@@ -176,7 +176,15 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
                 if (placeholder0 == null)
                     return raw;
-                return placeholder0.stringValue(contexts, argumentComponents);
+                return placeholder0.value(placeholderResolver0, contexts, list, CompositeComponent.this.factory()).stringValue(placeholderResolver0, contexts);
+            }
+
+            @Override
+            public @Nullable Object rawValue(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
+                Placeholder placeholder0 = placeholderResolver0.resolve(key);
+                if (placeholder0 == null)
+                    return null;
+                return placeholder0.value(placeholderResolver0, contexts, list, CompositeComponent.this.factory()).rawValue(placeholderResolver0, contexts);
             }
 
             @Override
@@ -203,7 +211,7 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
                 if (placeholder0 == null)
                     return CompositeComponent.this.factory().fromString(raw);
-                return placeholder0.value(placeholderResolver0, contexts, arguments, CompositeComponent.this.factory());
+                return placeholder0.value(placeholderResolver0, contexts, arguments, CompositeComponent.this.factory()).value(placeholderResolver0, contexts);
             }
 
             @Override
@@ -211,8 +219,15 @@ public abstract class CompositeComponent<T> implements InternalComponent<T> {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
                 if (placeholder0 == null)
                     return raw;
-                List<Component<String>> list = new LazyEvalList<Component<T>, Component<String>>(c -> c.stringComponent(placeholderResolver, contexts), arguments);
-                return placeholder0.stringValue(contexts, list);
+                return placeholder0.value(placeholderResolver0, contexts, arguments, CompositeComponent.this.factory()).stringValue(placeholderResolver0, contexts);
+            }
+
+            @Override
+            public @Nullable Object rawValue(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
+                Placeholder placeholder0 = placeholderResolver0.resolve(key);
+                if (placeholder0 == null)
+                    return null;
+                return placeholder0.value(placeholderResolver0, contexts, arguments, CompositeComponent.this.factory()).rawValue(placeholderResolver0, contexts);
             }
 
             @Override

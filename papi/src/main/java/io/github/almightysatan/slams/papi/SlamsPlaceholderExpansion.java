@@ -20,6 +20,7 @@
 
 package io.github.almightysatan.slams.papi;
 
+import io.github.almightysatan.slams.Component;
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
 import io.github.almightysatan.slams.bukkit.OfflinePlayerContext;
@@ -81,7 +82,8 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
      * @param version             the version of this expansion
      * @param placeholderResolver the {@link PlaceholderResolver}
      */
-    public SlamsPlaceholderExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version, @NotNull PlaceholderResolver placeholderResolver) {
+    public SlamsPlaceholderExpansion(@NotNull String identifier, @NotNull String author, @NotNull String version,
+            @NotNull PlaceholderResolver placeholderResolver) {
         this(identifier, author, version, placeholderResolver, null);
     }
 
@@ -105,6 +107,8 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
         Placeholder placeholder = this.placeholderResolver.resolve(params);
         if (placeholder == null)
             return null;
-        return placeholder.stringValue(new Object[]{this.contextFunction.apply(player)}, Collections.emptyList());
+        Object[] contexts = new Object[]{this.contextFunction.apply(player)};
+        return placeholder.value(this.placeholderResolver, contexts, Collections.emptyList(), Component.STRING_FACTORY)
+                .stringValue(this.placeholderResolver, contexts);
     }
 }

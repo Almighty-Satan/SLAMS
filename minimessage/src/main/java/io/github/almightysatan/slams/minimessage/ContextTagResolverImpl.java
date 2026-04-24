@@ -42,11 +42,13 @@ class ContextTagResolverImpl {
         return new ContextTagResolver() {
 
             @Override
-            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments, net.kyori.adventure.text.minimessage.@NotNull Context ctx, @NotNull Object @NotNull ... contexts) throws ParsingException {
+            public @Nullable Tag resolve(@TagPattern @NotNull String name, @NotNull ArgumentQueue arguments,
+                    net.kyori.adventure.text.minimessage.@NotNull Context ctx, @NotNull Object @NotNull ... contexts) throws ParsingException {
                 Placeholder placeholder = placeholderResolver.resolve(name);
                 if (placeholder == null)
                     return null;
-                String value = placeholder.stringValue(contexts, this.argumentQueueToList(arguments));
+                String value = placeholder.value(placeholderResolver, contexts, this.argumentQueueToList(arguments),
+                        io.github.almightysatan.slams.Component.STRING_FACTORY).stringValue(placeholderResolver, contexts);
                 return eval ? Tag.preProcessParsed(value) : Tag.selfClosingInserting(Component.text(value));
             }
 

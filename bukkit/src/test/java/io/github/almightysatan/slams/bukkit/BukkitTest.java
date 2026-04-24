@@ -18,7 +18,9 @@
  * USA
  */
 
-package io.github.almightysatan.slams.bukkit;import io.github.almightysatan.slams.*;
+package io.github.almightysatan.slams.bukkit;
+
+import io.github.almightysatan.slams.*;
 import io.github.almightysatan.slams.bukkit.impl.BukkitCompositeComponent;
 import io.github.almightysatan.slams.standalone.PlaceholderStyle;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
@@ -194,12 +196,13 @@ public class BukkitTest {
             }
 
             @Override
-            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
-                return (T) Arrays.stream((BaseComponent[]) arguments.get(0).value(placeholderResolver, contexts)).map(component -> {
+            public @NotNull <T> Component<T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+                T value = (T) Arrays.stream((BaseComponent[]) arguments.get(0).value(placeholderResolver, contexts)).map(component -> {
                     TextComponent copy = new TextComponent(component);
                     copy.setColor(ChatColor.RED);
                     return copy;
                 }).toArray(TextComponent[]::new);
+                return Component.of(value, arguments.get(0).stringValue(placeholderResolver, contexts));
             }
         });
         assertEquals("§fHello §c§cWorld§c!", BaseComponent.toLegacyText(value1_0));
@@ -216,8 +219,8 @@ public class BukkitTest {
             }
 
             @Override
-            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
-                return arguments.get(0).value(placeholderResolver, contexts);
+            public @NotNull <T> Component<T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+                return arguments.get(0);
             }
         });
         assertEquals("§fHello §fWorld§f!", BaseComponent.toLegacyText(value1_1));

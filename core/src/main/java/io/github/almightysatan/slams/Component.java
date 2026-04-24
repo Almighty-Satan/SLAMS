@@ -22,6 +22,7 @@ package io.github.almightysatan.slams;
 
 import io.github.almightysatan.slams.impl.InternalComponent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -31,6 +32,8 @@ import java.util.Objects;
  * @param <T> the type of the result
  */
 public interface Component<T> {
+
+    static final ValueFactory<String> STRING_FACTORY = input -> input;
 
     /**
      * Evaluates the value of this {@link Component}
@@ -64,11 +67,70 @@ public interface Component<T> {
     }
 
     /**
+     * Evaluates the value of this {@link Component} without converting it to another type.
+     * Can be used to pass values between placeholders without converting them.
+     *
+     * @param placeholderResolver the local {@link PlaceholderResolver}
+     * @param contexts            the contexts
+     * @return the value without converting it to another type
+     */
+    default @Nullable Object rawValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
+        return null;
+    }
+
+    /**
      * Returns {@code true} if this {@link Component} always returns the same value and does not depend on any context.
      *
      * @return {@code true} if this {@link Component} always returns the same value and does not depend on any context
      */
     boolean constexpr();
+
+    /**
+     * Creates a new {@link Component} from constant values
+     *
+     * @param value       the value
+     * @param stringValue the value as a string
+     * @param rawValue    the original value before being converted
+     * @param <T>         the component's type
+     * @return a new {@link Component}
+     */
+    static <T> @NotNull Component<T> of(@NotNull T value, @NotNull String stringValue, @Nullable Object rawValue) {
+        Objects.requireNonNull(value);
+        Objects.requireNonNull(stringValue);
+        return new InternalComponent<T>() {
+            @Override
+            public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
+                return value;
+            }
+
+            @Override
+            public @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
+                return stringValue;
+            }
+
+            @Override
+            public @Nullable Object rawValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
+                return rawValue;
+            }
+
+            @Override
+            public boolean constexpr() {
+                return true;
+            }
+        };
+    }
+
+    /**
+     * Creates a new {@link Component} from constant values
+     *
+     * @param value       the value
+     * @param stringValue the value as a string
+     * @param <T>         the component's type
+     * @return a new {@link Component}
+     */
+    static <T> @NotNull Component<T> of(@NotNull T value, @NotNull String stringValue) {
+        return of(value, stringValue, null);
+    }
 
     /**
      * Creates a new {@link Component} from a constant string value
@@ -77,23 +139,7 @@ public interface Component<T> {
      * @return a new {@link Component} of type string
      */
     static @NotNull Component<String> ofString(@NotNull String value) {
-        Objects.requireNonNull(value);
-        return new InternalComponent<String>() {
-            @Override
-            public @NotNull String value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return value;
-            }
-
-            @Override
-            public @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return value;
-            }
-
-            @Override
-            public boolean constexpr() {
-                return true;
-            }
-        };
+        return of(value, value, null);
     }
 
     @FunctionalInterface
@@ -106,5 +152,10 @@ public interface Component<T> {
          * @return a value of type {@link T}
          */
         @NotNull T fromString(@NotNull String input);
+
+        default Component<T> componentFromString(@NotNull String input) {
+            T value = this.fromString(input);
+            return of(value, input);
+        }
     }
 }

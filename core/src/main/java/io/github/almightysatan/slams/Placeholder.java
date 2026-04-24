@@ -66,20 +66,9 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                 the result type (e.g. {@link String})
      * @return the value of this placeholder
      */
-    <T> @NotNull T value(@NotNull PlaceholderResolver placeholderResolver,
+    <T> @NotNull Component<T> value(@NotNull PlaceholderResolver placeholderResolver,
             @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments,
             @NotNull Component.ValueFactory<T> factory);
-
-    /**
-     * Evaluates the value of the placeholder using the given contexts and arguments as a string.
-     *
-     * @param contexts  the contexts provided to the message
-     * @param arguments the placeholder's arguments
-     * @return the value of this placeholder as a string
-     */
-    default String stringValue(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull Component<String>> arguments) {
-        return this.value(PlaceholderResolver.empty(), contexts, arguments, s -> s);
-    }
 
     @Override
     default @Nullable Placeholder resolve(@NotNull String key) {
@@ -109,9 +98,9 @@ public interface Placeholder extends PlaceholderResolver {
             }
 
             @Override
-            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+            public @NotNull <T> Component<T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 List<String> list = new LazyEvalList<Component<T>, String>(c -> c.stringValue(placeholderResolver, contexts), arguments);
-                return factory.fromString(valueFunction.value(contexts, list));
+                return factory.componentFromString(valueFunction.value(contexts, list));
             }
         };
     }
@@ -304,15 +293,15 @@ public interface Placeholder extends PlaceholderResolver {
             }
 
             @Override
-            public @NotNull <U> U value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<U>> arguments, Component.@NotNull ValueFactory<U> factory) {
+            public @NotNull <U> Component<U> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<U>> arguments, Component.@NotNull ValueFactory<U> factory) {
                 for (Object context : contexts)
                     if (type.isAssignableFrom(context.getClass())) {
                         if (predicate.test((T) context))
-                            return !arguments.isEmpty() ? arguments.get(0).value(placeholderResolver, contexts) : factory.fromString("");
-                        return arguments.size() > 1 ? arguments.get(1).value(placeholderResolver, contexts) : factory.fromString("");
+                            return !arguments.isEmpty() ? arguments.get(0) : factory.componentFromString("");
+                        return arguments.size() > 1 ? arguments.get(1) : factory.componentFromString("");
                     }
                 List<String> list = new LazyEvalList<Component<U>, String>(c -> c.stringValue(placeholderResolver, contexts), arguments);
-                return factory.fromString(fallbackValueFunction.value(contexts, list));
+                return factory.componentFromString(fallbackValueFunction.value(contexts, list));
             }
         };
     }
@@ -377,10 +366,10 @@ public interface Placeholder extends PlaceholderResolver {
             }
 
             @Override
-            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+            public @NotNull <T> Component<T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 if (supplier.getAsBoolean())
-                    return !arguments.isEmpty() ? arguments.get(0).value(placeholderResolver, contexts) : factory.fromString("");
-                return arguments.size() > 1 ? arguments.get(1).value(placeholderResolver, contexts) : factory.fromString("");
+                    return !arguments.isEmpty() ? arguments.get(0) : factory.componentFromString("");
+                return arguments.size() > 1 ? arguments.get(1) : factory.componentFromString("");
             }
         };
     }
@@ -411,12 +400,13 @@ public interface Placeholder extends PlaceholderResolver {
             }
 
             @Override
-            public @NotNull <T> T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+            public @NotNull <T> Component<T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts,
+                    @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 if (arguments.size() < 2)
-                    return factory.fromString(INVALID_COMPARISON);
+                    return factory.componentFromString(INVALID_COMPARISON);
                 if (comparisonFunction.value(arguments.get(0).stringValue(placeholderResolver, contexts), arguments.get(1).stringValue(placeholderResolver, contexts)))
-                    return arguments.size() > 2 ? arguments.get(2).value(placeholderResolver, contexts) : factory.fromString("");
-                return arguments.size() > 3 ? arguments.get(3).value(placeholderResolver, contexts) : factory.fromString("");
+                    return arguments.size() > 2 ? arguments.get(2) : factory.componentFromString("");
+                return arguments.size() > 3 ? arguments.get(3) : factory.componentFromString("");
             }
         };
     }

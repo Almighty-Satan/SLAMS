@@ -32,8 +32,6 @@ import java.util.List;
 @ApiStatus.Internal
 public class StandaloneCompositeComponent extends CompositeComponent<String> {
 
-    private static final ValueFactory<String> FACTORY = input -> input;
-
     public StandaloneCompositeComponent(@NotNull StandaloneSlams slams, @NotNull String raw, @NotNull PlaceholderResolver placeholderResolver) {
         super(slams, raw, placeholderResolver);
     }
@@ -52,7 +50,7 @@ public class StandaloneCompositeComponent extends CompositeComponent<String> {
 
     @Override
     protected @NotNull Component.ValueFactory<String> factory() {
-        return FACTORY;
+        return Component.STRING_FACTORY;
     }
 
     @Override

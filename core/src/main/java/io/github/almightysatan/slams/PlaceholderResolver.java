@@ -404,7 +404,7 @@ public interface PlaceholderResolver {
                         }
 
                         @Override
-                        public @NotNull <V> V value(@NotNull PlaceholderResolver placeholderResolver,
+                        public @NotNull <V> Component<V> value(@NotNull PlaceholderResolver placeholderResolver,
                                 @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<V>> arguments,
                                 Component.@NotNull ValueFactory<V> factory) {
                             if (arguments.size() >= numArgs)
