@@ -103,24 +103,8 @@ public class CompositeComponentTest {
         Assertions.assertEquals(")))", new StandaloneCompositeComponent(slams, ")))", PlaceholderResolver.empty()).value());
         Assertions.assertEquals("", new StandaloneCompositeComponent(slams, "", PlaceholderResolver.empty()).value());
     }
-
-    @Test
-    public void testPlaceholders() {
-        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS);
-        PlaceholderResolver placeholderResolver = PlaceholderResolver.builder()
-                .constant("abc", "def")
-                .constant("a<b", "c")
-                .constant("a>b", "d")
-                .withArgs("arg", args -> args.get(0))
-                .conditional("if", () -> true)
-                .conditional("ifn", () -> false)
-                .variable("fail", () -> {
-                    Assertions.fail();
-                    return "fail";
-                })
-                .builtIn().build();
-        Function<String, String> eval = input -> new StandaloneCompositeComponent(slams, input, PlaceholderResolver.empty()).value(placeholderResolver, new Object[0]);
-
+    
+    private void assertPlaceholders(Function<String, String> eval) {
         Assertions.assertEquals("", eval.apply(""));
         Assertions.assertEquals("def", eval.apply("<abc>"));
         Assertions.assertEquals("Hello def", eval.apply("Hello <abc>"));
@@ -168,6 +152,44 @@ public class CompositeComponentTest {
         Assertions.assertEquals("Hello -1", eval.apply("Hello <sub:1:2>"));
         Assertions.assertEquals("Hello 2", eval.apply("Hello <mul:1:2>"));
         Assertions.assertEquals("Hello 0.5", eval.apply("Hello <div:1:2>"));
+    }
+
+    @Test
+    public void testPlaceholdersGlobal() {
+        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS);
+        PlaceholderResolver placeholderResolver = PlaceholderResolver.builder()
+                .constant("abc", "def")
+                .constant("a<b", "c")
+                .constant("a>b", "d")
+                .withArgs("arg", args -> args.get(0))
+                .conditional("if", () -> true)
+                .conditional("ifn", () -> false)
+                .variable("fail", () -> {
+                    Assertions.fail();
+                    return "fail";
+                })
+                .builtIn().build();
+        Function<String, String> eval = input -> new StandaloneCompositeComponent(slams, input, placeholderResolver).value(PlaceholderResolver.empty(), new Object[0]);
+        this.assertPlaceholders(eval);
+    }
+
+    @Test
+    public void testPlaceholdersLocal() {
+        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS);
+        PlaceholderResolver placeholderResolver = PlaceholderResolver.builder()
+                .constant("abc", "def")
+                .constant("a<b", "c")
+                .constant("a>b", "d")
+                .withArgs("arg", args -> args.get(0))
+                .conditional("if", () -> true)
+                .conditional("ifn", () -> false)
+                .variable("fail", () -> {
+                    Assertions.fail();
+                    return "fail";
+                })
+                .builtIn().build();
+        Function<String, String> eval = input -> new StandaloneCompositeComponent(slams, input, PlaceholderResolver.empty()).value(placeholderResolver, new Object[0]);
+        this.assertPlaceholders(eval);
     }
 
     @Test

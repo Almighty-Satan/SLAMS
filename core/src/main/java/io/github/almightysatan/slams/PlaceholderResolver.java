@@ -270,7 +270,7 @@ public interface PlaceholderResolver {
          * @param value the value
          * @return this {@link Builder}
          */
-        default @NotNull Builder constant(@NotNull String key, @NotNull String value) {
+        default @NotNull Builder constant(@NotNull String key, @NotNull Object value) {
             return this.add(Placeholder.constant(key, value));
         }
 
@@ -404,14 +404,20 @@ public interface PlaceholderResolver {
                         }
 
                         @Override
-                        public @NotNull <V> Component<V> value(@NotNull PlaceholderResolver placeholderResolver,
-                                @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<V>> arguments,
-                                Component.@NotNull ValueFactory<V> factory) {
+                        public @NotNull <V> Component<V> value(@NotNull Object @NotNull [] contexts,
+                                @Unmodifiable @NotNull List<@NotNull Argument<V>> arguments, Component.@NotNull ValueFactory<V> factory) {
                             if (arguments.size() >= numArgs)
                                 for (Object context : contexts)
                                     if (type.isAssignableFrom(context.getClass()))
-                                        return placeholder.value(placeholderResolver, new Object[]{conversion.apply((T) context, (List<Component<U>>) (Object) arguments)}, arguments.subList(numArgs, arguments.size()), factory);
-                            return placeholder.value(placeholderResolver, new Object[0], arguments, factory);
+                                        return placeholder.value(new Object[]{conversion.apply((T) context, (List<Component<U>>) (Object) arguments)}, arguments.subList(numArgs, arguments.size()), factory);
+                            return placeholder.value(new Object[0], arguments, factory);
+                        }
+
+                        @Override
+                        public @Nullable <V> Placeholder.ProcessedPlaceholder<V> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<V>> arguments, @NotNull Component.ValueFactory<V> factory) {
+                            ProcessedPlaceholder<V> resolved = placeholder.processArguments(arguments.subList(numArgs, arguments.size()), factory);
+                            return ((contexts, arguments0, factory0) ->
+                                    resolved.value(new Object[]{conversion.apply((T) contexts, (List<Component<U>>) (Object) arguments0)}, arguments0.subList(numArgs, arguments0.size()), factory0));
                         }
                     });
                     return this;

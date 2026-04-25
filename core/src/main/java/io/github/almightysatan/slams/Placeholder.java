@@ -61,16 +61,34 @@ public interface Placeholder extends PlaceholderResolver {
     /**
      * Evaluates the value of the placeholder using the given contexts and arguments.
      *
-     * @param placeholderResolver the {@link PlaceholderResolver} provided to the message
-     * @param contexts            the contexts provided to the message
-     * @param arguments           the placeholder's arguments
-     * @param factory             a factory to create the result type
-     * @param <T>                 the result type (e.g. {@link String})
+     * @param contexts  the contexts provided to the message
+     * @param arguments the placeholder's arguments
+     * @param factory   a factory to create the result type
+     * @param <T>       the result type (e.g. {@link String})
      * @return the value of this placeholder
      */
-    <T> @NotNull Component<T> value(@NotNull PlaceholderResolver placeholderResolver,
-            @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments,
+    <T> @NotNull Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments,
             @NotNull Component.ValueFactory<T> factory);
+
+    /**
+     * A method that can be used to parse constant arguments when a message is loaded initialy to allow for some
+     * optimizations. Arguments may be {@code null} if they can not be resolved to constant values. Returning
+     * {@code null} from this method indicates that {{@link #value(Object[], List, Component.ValueFactory)}} should be
+     * called instead.
+     * 
+     * Placeholders are not required to implement this method, it is optional.
+     * 
+     * Note that depending on the SLAMS implementation being used this method may never be called at all.
+     *
+     * @param arguments the placeholder's arguments, elements can be {@code null} if they are not constant values
+     * @param factory   a factory to create the result type
+     * @param <T>       the result type (e.g. {@link String})
+     * @return a representation of this placeholder where some arguments have been parsed or {@code null}
+     */
+    default <T> @Nullable ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments,
+            @NotNull Component.ValueFactory<T> factory) {
+        return null;
+    }
 
     @Override
     default @Nullable Placeholder resolve(@NotNull String key) {
@@ -100,9 +118,10 @@ public interface Placeholder extends PlaceholderResolver {
             }
 
             @Override
-            public @NotNull <T> Component<T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
-                List<String> list = new LazyEvalList<Component<T>, String>(c -> c.stringValue(placeholderResolver, contexts), arguments);
-                return factory.componentFromString(valueFunction.value(contexts, list));
+            public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+                List<String> list = new LazyEvalList<Argument<T>, String>(Argument::stringValue, arguments);
+                Object raw = valueFunction.value(contexts, list);
+                return factory.componentFromString(String.valueOf(raw), raw);
             }
         };
     }
@@ -160,7 +179,7 @@ public interface Placeholder extends PlaceholderResolver {
      * @param value the value
      * @return a new placeholder
      */
-    static @NotNull Placeholder constant(@NotNull String key, @NotNull String value) {
+    static @NotNull Placeholder constant(@NotNull String key, @NotNull Object value) {
         Objects.requireNonNull(value);
         return of(key, true, (contexts, args) -> value);
     }
@@ -177,7 +196,7 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                   the context type
      * @return a new placeholder
      */
-    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(contextValueFunction);
         Objects.requireNonNull(fallbackValueFunction);
@@ -200,7 +219,7 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                  the context type
      * @return a new placeholder
      */
-    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
         return contextual(key, type, contextValueFunction, (contexts, arguments) -> fallbackValue);
     }
 
@@ -214,7 +233,7 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                  the context type
      * @return a new placeholder
      */
-    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ContextValueFunction<T> contextValueFunction) {
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextValueFunction<T> contextValueFunction) {
         return contextual(key, type, contextValueFunction, INVALID_CONTEXT);
     }
 
@@ -230,7 +249,7 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                   the context type
      * @return a new placeholder
      */
-    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
         return contextual(key, type, (ContextValueFunction<T>) contextValueFunction, fallbackValueFunction);
     }
 
@@ -246,7 +265,7 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                  the context type
      * @return a new placeholder
      */
-    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextValueFunction<T> contextValueFunction, @NotNull String fallbackValue) {
         return contextual(key, type, (ContextValueFunction<T>) contextValueFunction, fallbackValue);
     }
 
@@ -260,7 +279,7 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                  the context type
      * @return a new placeholder
      */
-    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull Placeholder.ArgumentIndependentContextValueFunction<T> contextValueFunction) {
+    static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ArgumentIndependentContextValueFunction<T> contextValueFunction) {
         return contextual(key, type, (ContextValueFunction<T>) contextValueFunction);
     }
 
@@ -295,15 +314,17 @@ public interface Placeholder extends PlaceholderResolver {
             }
 
             @Override
-            public @NotNull <U> Component<U> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<U>> arguments, Component.@NotNull ValueFactory<U> factory) {
+            public @NotNull <U> Component<U> value(@NotNull Object @NotNull [] contexts,
+                    @Unmodifiable @NotNull List<@NotNull Argument<U>> arguments, Component.@NotNull ValueFactory<U> factory) {
                 for (Object context : contexts)
                     if (type.isAssignableFrom(context.getClass())) {
                         if (predicate.test((T) context))
                             return !arguments.isEmpty() ? arguments.get(0) : factory.componentFromString("");
                         return arguments.size() > 1 ? arguments.get(1) : factory.componentFromString("");
                     }
-                List<String> list = new LazyEvalList<Component<U>, String>(c -> c.stringValue(placeholderResolver, contexts), arguments);
-                return factory.componentFromString(fallbackValueFunction.value(contexts, list));
+                List<String> list = new LazyEvalList<Argument<U>, String>(Argument::stringValue, arguments);
+                Object raw = fallbackValueFunction.value(contexts, list);
+                return factory.componentFromString(String.valueOf(raw), raw);
             }
         };
     }
@@ -368,7 +389,8 @@ public interface Placeholder extends PlaceholderResolver {
             }
 
             @Override
-            public @NotNull <T> Component<T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+            public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts,
+                    @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 if (supplier.getAsBoolean())
                     return !arguments.isEmpty() ? arguments.get(0) : factory.componentFromString("");
                 return arguments.size() > 1 ? arguments.get(1) : factory.componentFromString("");
@@ -402,11 +424,11 @@ public interface Placeholder extends PlaceholderResolver {
             }
 
             @Override
-            public @NotNull <T> Component<T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts,
-                    @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+            public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts,
+                    @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 if (arguments.size() < 2)
                     return factory.componentFromString(INVALID_COMPARISON);
-                if (comparisonFunction.value(arguments.get(0).stringValue(placeholderResolver, contexts), arguments.get(1).stringValue(placeholderResolver, contexts)))
+                if (comparisonFunction.value(arguments.get(0).stringValue(), arguments.get(1).stringValue()))
                     return arguments.size() > 2 ? arguments.get(2) : factory.componentFromString("");
                 return arguments.size() > 3 ? arguments.get(3) : factory.componentFromString("");
             }
@@ -414,51 +436,90 @@ public interface Placeholder extends PlaceholderResolver {
     }
 
     @FunctionalInterface
+    interface ProcessedPlaceholder<T> {
+
+        /**
+         * Evaluates the value of the placeholder using the given contexts and arguments.
+         *
+         * @param contexts  the contexts provided to the message
+         * @param arguments the placeholder's arguments
+         * @param factory   a factory to create the result type
+         * @return the value of this placeholder
+         */
+        @NotNull Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments,
+                @NotNull Component.ValueFactory<T> factory);
+    }
+
+    interface Argument<T> extends Component<T> {
+
+        @NotNull T value();
+
+        @Override
+        default @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
+            return this.value();
+        }
+
+        @NotNull String stringValue();
+
+        @Override
+        default @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
+            return this.stringValue();
+        }
+
+        @Nullable Object rawValue();
+
+        @Override
+        default @Nullable Object rawValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
+            return this.rawValue();
+        }
+    }
+
+    @FunctionalInterface
     interface ValueFunction {
-        @NotNull String value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments);
+        @NotNull Object value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments);
     }
 
     @FunctionalInterface
     interface ArgumentIndependentValueFunction extends ValueFunction {
-        @NotNull String value(@Nullable Object @NotNull [] contexts);
+        @NotNull Object value(@Nullable Object @NotNull [] contexts);
 
         @Override
-        default @NotNull String value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments) {
+        default @NotNull Object value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments) {
             return this.value(contexts);
         }
     }
 
     @FunctionalInterface
     interface ContextIndependentValueFunction extends ValueFunction {
-        @NotNull String value(@NotNull List<@NotNull String> arguments);
+        @NotNull Object value(@NotNull List<@NotNull String> arguments);
 
         @Override
-        default @NotNull String value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments) {
+        default @NotNull Object value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments) {
             return this.value(arguments);
         }
     }
 
     @FunctionalInterface
     interface ArgumentAndContextIndependentValueFunction extends ValueFunction {
-        @NotNull String value();
+        @NotNull Object value();
 
         @Override
-        default @NotNull String value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments) {
+        default @NotNull Object value(@NotNull Object @NotNull [] contexts, @NotNull List<@NotNull String> arguments) {
             return this.value();
         }
     }
 
     @FunctionalInterface
     interface ContextValueFunction<T> {
-        @NotNull String value(@NotNull T context, @NotNull List<@NotNull String> arguments);
+        @NotNull Object value(@NotNull T context, @NotNull List<@NotNull String> arguments);
     }
 
     @FunctionalInterface
     interface ArgumentIndependentContextValueFunction<T> extends ContextValueFunction<T> {
-        @NotNull String value(@NotNull T context);
+        @NotNull Object value(@NotNull T context);
 
         @Override
-        default @NotNull String value(@NotNull T context, @NotNull List<@NotNull String> arguments) {
+        default @NotNull Object value(@NotNull T context, @NotNull List<@NotNull String> arguments) {
             return this.value(context);
         }
     }

@@ -75,10 +75,10 @@ public interface BukkitPlaceholders {
             }
 
             @Override
-            public @NotNull <T> Component<T> value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+            public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 if (arguments.size() < 2)
                     return factory.componentFromString(Placeholder.INVALID_ARGUMENTS);
-                T content = arguments.get(1).value(placeholderResolver, contexts);
+                T content = arguments.get(1).value();
                 if (!(content instanceof TextComponent[]))
                     return arguments.get(1);
 
@@ -88,11 +88,11 @@ public interface BukkitPlaceholders {
                 for (int i = 0; i < copy.length; i++)
                     copy[i] = new TextComponent(components[i]);
 
-                this.setEvent(placeholderResolver, contexts, copy, (Component<T>) arguments.get(0));
-                return Component.of((T) copy, arguments.get(1).stringValue(placeholderResolver, contexts));
+                this.setEvent(copy, (Argument<T>) arguments.get(0));
+                return Component.of((T) copy, arguments.get(1).stringValue());
             }
 
-            protected abstract <T> void setEvent(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull TextComponent[] content, @NotNull Component<T> value);
+            protected abstract <T> void setEvent(@NotNull TextComponent[] content, @NotNull Argument<T> value);
         }
 
         class ClickEventPlaceholder extends EventPlaceholder<ClickEvent.Action> {
@@ -101,8 +101,8 @@ public interface BukkitPlaceholders {
             }
 
             @Override
-            protected <T> void setEvent(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull TextComponent[] content, @NotNull Component<T> value) {
-                String argument = value.stringValue(placeholderResolver, contexts);
+            protected <T> void setEvent(@NotNull TextComponent[] content, @NotNull Argument<T> value) {
+                String argument = value.stringValue();
                 if (!argument.isEmpty())
                     for (TextComponent component : content)
                         component.setClickEvent(new ClickEvent(this.action, argument));
@@ -115,8 +115,8 @@ public interface BukkitPlaceholders {
             }
 
             @Override
-            protected <T> void setEvent(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull TextComponent[] content, @NotNull Component<T> value) {
-                T argument = value.value(placeholderResolver, contexts);
+            protected <T> void setEvent(@NotNull TextComponent[] content, @NotNull Argument<T> value) {
+                T argument = value.value();
                 if (argument instanceof TextComponent[] && ((TextComponent[]) argument).length > 0)
                     for (TextComponent component : content)
                         component.setHoverEvent(new HoverEvent(this.action, (TextComponent[]) argument));

@@ -22,6 +22,7 @@ package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.impl.ArgumentList;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.ParsingException;
 import net.kyori.adventure.text.minimessage.tag.Tag;
@@ -49,7 +50,7 @@ class ContextTagResolverImpl {
                 Placeholder placeholder = placeholderResolver.resolve(name);
                 if (placeholder == null)
                     return null;
-                String value = placeholder.value(placeholderResolver, contexts, this.argumentQueueToList(arguments),
+                String value = placeholder.value(contexts, this.argumentQueueToList(arguments, contexts),
                         io.github.almightysatan.slams.Component.STRING_FACTORY).stringValue(placeholderResolver, contexts);
                 return eval ? Tag.preProcessParsed(value) : Tag.selfClosingInserting(Component.text(value));
             }
@@ -59,14 +60,15 @@ class ContextTagResolverImpl {
                 return placeholderResolver.resolve(name) != null;
             }
 
-            private List<io.github.almightysatan.slams.Component<String>> argumentQueueToList(ArgumentQueue argumentQueue) {
+            private @NotNull List<Placeholder.Argument<String>> argumentQueueToList(@NotNull ArgumentQueue argumentQueue,
+                    @NotNull Object @NotNull [] contexts) {
                 if (!argumentQueue.hasNext())
                     return Collections.emptyList();
 
                 List<io.github.almightysatan.slams.Component<String>> argumentList = new ArrayList<>();
                 while (argumentQueue.hasNext())
                     argumentList.add(io.github.almightysatan.slams.Component.ofString(argumentQueue.pop().value()));
-                return Collections.unmodifiableList(argumentList);
+                return new ArgumentList<>(argumentList, placeholderResolver, contexts);
             }
         };
     }

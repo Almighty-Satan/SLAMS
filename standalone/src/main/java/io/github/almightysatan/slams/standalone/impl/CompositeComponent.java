@@ -22,7 +22,10 @@ package io.github.almightysatan.slams.standalone.impl;
 
 import io.github.almightysatan.slams.Component;
 import io.github.almightysatan.slams.Placeholder;
+import io.github.almightysatan.slams.Placeholder.Argument;
+import io.github.almightysatan.slams.Placeholder.ProcessedPlaceholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
+import io.github.almightysatan.slams.impl.ArgumentList;
 import io.github.almightysatan.slams.impl.LazyEvalList;
 import io.github.almightysatan.slams.standalone.PlaceholderStyle;
 import io.github.almightysatan.slams.standalone.StandaloneSlams;
@@ -87,22 +90,25 @@ public abstract class CompositeComponent<T> implements Component<T> {
         return this.constexpr;
     }
 
-    protected @NotNull Component<T> globalPlaceholder(@NotNull Placeholder placeholder,
+    protected @NotNull Component<T> globalPlaceholder(@NotNull Placeholder.ProcessedPlaceholder<T> placeholder,
             @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, boolean constexpr) {
         return new Component<T>() {
             @Override
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return placeholder.value(placeholderResolver, contexts, arguments, CompositeComponent.this.factory()).value(placeholderResolver, contexts);
+                return placeholder.value(contexts, new ArgumentList<>(arguments, placeholderResolver, contexts),
+                        CompositeComponent.this.factory()).value(placeholderResolver, contexts);
             }
 
             @Override
             public @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return placeholder.value(placeholderResolver, contexts, arguments, CompositeComponent.this.factory()).stringValue(placeholderResolver, contexts);
+                return placeholder.value(contexts, new ArgumentList<>(arguments, placeholderResolver, contexts),
+                        CompositeComponent.this.factory()).stringValue(placeholderResolver, contexts);
             }
 
             @Override
             public @Nullable Object rawValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-                return placeholder.value(placeholderResolver, contexts, arguments, CompositeComponent.this.factory()).rawValue(placeholderResolver, contexts);
+                return placeholder.value(contexts, new ArgumentList<>(arguments, placeholderResolver, contexts),
+                        CompositeComponent.this.factory()).rawValue(placeholderResolver, contexts);
             }
 
             @Override
@@ -112,10 +118,26 @@ public abstract class CompositeComponent<T> implements Component<T> {
         };
     }
 
+    protected @NotNull Component<T> globalPlaceholder(@NotNull Placeholder placeholder,
+            @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, boolean constexpr, long constexprArgs) {
+        if (constexprArgs != 0) {
+            List<Argument<T>> args = arguments.stream().map(arg -> {
+                if (!arg.constexpr())
+                    return null;
+                return ArgumentList.toArgument(arg, PlaceholderResolver.empty(), EMPTY_CONTEXTS);
+            }).collect(Collectors.toList());
+            ProcessedPlaceholder<T> intermediate = placeholder.processArguments(args, this.factory());
+            if (intermediate != null)
+                return globalPlaceholder(intermediate, arguments, constexpr);
+        }
+        return this.globalPlaceholder(placeholder::value, arguments, constexpr);
+    }
+
     protected @NotNull Component<T> constGlobalPlaceholder(@NotNull Placeholder placeholder,
             @Unmodifiable @NotNull List<@NotNull Component<T>> arguments) {
         PlaceholderResolver placeholderResolver = PlaceholderResolver.empty(); // No local placeholders
-        Component<T> component = placeholder.value(placeholderResolver, EMPTY_CONTEXTS, arguments, this.factory());
+        Component<T> component = placeholder.value(EMPTY_CONTEXTS,
+                new ArgumentList<>(arguments, placeholderResolver, EMPTY_CONTEXTS), this.factory());
 
         T value = component.value(placeholderResolver, EMPTY_CONTEXTS);
         String stringValue = component.stringValue(placeholderResolver, EMPTY_CONTEXTS);
@@ -132,7 +154,8 @@ public abstract class CompositeComponent<T> implements Component<T> {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
                 if (placeholder0 == null)
                     return CompositeComponent.this.factory().fromString(raw);
-                return placeholder0.value(placeholderResolver0, contexts, arguments, CompositeComponent.this.factory()).value(placeholderResolver0, contexts);
+                return placeholder0.value(contexts, new ArgumentList<>(arguments, placeholderResolver0, contexts),
+                        CompositeComponent.this.factory()).value(placeholderResolver0, contexts);
             }
 
             @Override
@@ -140,7 +163,8 @@ public abstract class CompositeComponent<T> implements Component<T> {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
                 if (placeholder0 == null)
                     return raw;
-                return placeholder0.value(placeholderResolver0, contexts, arguments, CompositeComponent.this.factory()).stringValue(placeholderResolver0, contexts);
+                return placeholder0.value(contexts, new ArgumentList<>(arguments, placeholderResolver0, contexts),
+                        CompositeComponent.this.factory()).stringValue(placeholderResolver0, contexts);
             }
 
             @Override
@@ -148,7 +172,8 @@ public abstract class CompositeComponent<T> implements Component<T> {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
                 if (placeholder0 == null)
                     return null;
-                return placeholder0.value(placeholderResolver0, contexts, arguments, CompositeComponent.this.factory()).rawValue(placeholderResolver0, contexts);
+                return placeholder0.value(contexts, new ArgumentList<>(arguments, placeholderResolver0, contexts),
+                        CompositeComponent.this.factory()).rawValue(placeholderResolver0, contexts);
             }
 
             @Override
@@ -166,10 +191,11 @@ public abstract class CompositeComponent<T> implements Component<T> {
 
         Placeholder globalPlaceholder = placeholderResolver.resolve(key);
         if (globalPlaceholder != null) {
-            boolean constexpr = globalPlaceholder.constexpr() && arguments.stream().allMatch(Component::constexpr);
+            long constexprArgs = arguments.stream().filter(Component::constexpr).count();
+            boolean constexpr = globalPlaceholder.constexpr() && arguments.size() == constexprArgs;
             if (constexpr && slams.enableConstexprEval())
                 return this.constGlobalPlaceholder(globalPlaceholder, arguments);
-            return this.globalPlaceholder(globalPlaceholder, arguments, constexpr);
+            return this.globalPlaceholder(globalPlaceholder, arguments, constexpr, constexprArgs);
         }
         return this.localPlaceholder(raw, key, arguments);
     }

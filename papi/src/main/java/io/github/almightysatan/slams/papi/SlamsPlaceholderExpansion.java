@@ -108,7 +108,7 @@ public class SlamsPlaceholderExpansion extends PlaceholderExpansion {
         if (placeholder == null)
             return null;
         Object[] contexts = new Object[]{this.contextFunction.apply(player)};
-        return placeholder.value(this.placeholderResolver, contexts, Collections.emptyList(), Component.STRING_FACTORY)
+        return placeholder.value(contexts, Collections.emptyList(), Component.STRING_FACTORY)
                 .stringValue(this.placeholderResolver, contexts);
     }
 }

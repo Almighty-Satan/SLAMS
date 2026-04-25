@@ -166,9 +166,13 @@ public interface Component<T> {
          */
         @NotNull T fromString(@NotNull String input);
 
-        default Component<T> componentFromString(@NotNull String input) {
+        default @NotNull Component<T> componentFromString(@NotNull String input, @Nullable Object raw) {
             T value = this.fromString(input);
-            return of(value, input);
+            return of(value, input, raw);
+        }
+
+        default @NotNull Component<T> componentFromString(@NotNull String input) {
+            return this.componentFromString(input, null);
         }
     }
 }
