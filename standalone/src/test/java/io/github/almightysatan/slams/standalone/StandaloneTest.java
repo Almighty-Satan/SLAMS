@@ -21,13 +21,17 @@
 package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StandaloneTest {
 
@@ -196,5 +200,105 @@ public class StandaloneTest {
         assertEquals(1, entry.translate(null).size());
         assertEquals(2, entry.translate(null).get(0).size());
         assertEquals("World", entry.translate(null).get(0).get(1).value());
+    }
+    
+    @Test
+    public void testRawValue() throws IOException {
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", slams, PlaceholderResolver.builder().add(new Placeholder() {
+            @Override
+            public @NotNull String key() {
+                return "inner";
+            }
+
+            @Override
+            public boolean constexpr() {
+                return false;
+            }
+
+            @Override
+            public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
+                return Component.of(factory.fromString("abc"), "def", 5);
+            }
+        }).add(new Placeholder() {
+            @Override
+            public @NotNull String key() {
+                return "outer";
+            }
+
+            @Override
+            public boolean constexpr() {
+                return false;
+            }
+
+            @Override
+            public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
+                assertEquals("abc", arguments.get(0).value());
+                assertEquals("def", arguments.get(0).stringValue());
+                assertEquals(5, arguments.get(0).rawValue());
+                return factory.componentFromString("World");
+            }
+        }).build());
+
+        slams.load("0", values -> values.put("test", "Hello <outer:<inner>>"));
+
+        String value = entry.value();
+        assertEquals("Hello World", value);
+    }
+
+    @Test
+    public void testPlaceholderProcess() throws IOException {
+        StandaloneSlams slams = StandaloneSlams.of("0");
+        StandaloneMessage entry = StandaloneMessage.of("test", slams, PlaceholderResolver.builder().add(new Placeholder() {
+            @Override
+            public @NotNull String key() {
+                return "inner";
+            }
+
+            @Override
+            public boolean constexpr() {
+                return false;
+            }
+
+            @Override
+            public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
+                return Component.of(factory.fromString("abc"), "def", 5);
+            }
+        }).add(new Placeholder() {
+            @Override
+            public @NotNull String key() {
+                return "outer";
+            }
+
+            @Override
+            public boolean constexpr() {
+                return false;
+            }
+
+            @Override
+            public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
+                fail();
+                return factory.componentFromString("fail");
+            }
+
+            @Override
+            public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
+                assertEquals(2, arguments.size());
+                assertNull(arguments.get(0));
+                assertNotNull(arguments.get(1));
+                assertEquals("test", arguments.get(1).value());
+
+                return ((contexts0, arguments0, factory0) -> {
+                    assertEquals("abc", arguments0.get(0).value());
+                    assertEquals("test", arguments0.get(1).value());
+                    return factory0.componentFromString("World");
+                });
+            }
+        }).build());
+
+        slams.load("0", values -> values.put("test", "Hello <outer:<inner>:test>"));
+
+        String value = entry.value();
+        assertEquals("Hello World", value);
     }
 }
