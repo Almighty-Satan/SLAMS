@@ -78,9 +78,10 @@ public interface BukkitPlaceholders {
             public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 if (arguments.size() < 2)
                     return factory.componentFromString(Placeholder.INVALID_ARGUMENTS);
-                T content = arguments.get(1).value();
+                Argument<T> argument = arguments.get(1);
+                T content = argument.value();
                 if (!(content instanceof TextComponent[]))
-                    return arguments.get(1);
+                    return argument;
 
                 // Copy because TextComponents might be immutable
                 TextComponent[] components = ((TextComponent[]) content);
@@ -89,7 +90,7 @@ public interface BukkitPlaceholders {
                     copy[i] = new TextComponent(components[i]);
 
                 this.setEvent(copy, (Argument<T>) arguments.get(0));
-                return Component.of((T) copy, arguments.get(1).stringValue());
+                return Component.of((T) copy, argument.stringValue(), argument.rawValue());
             }
 
             protected abstract <T> void setEvent(@NotNull TextComponent[] content, @NotNull Argument<T> value);
