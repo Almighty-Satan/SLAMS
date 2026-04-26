@@ -35,6 +35,10 @@ public class StandaloneCompositeComponent extends CompositeComponent<String> {
         super(slams, raw, placeholderResolver);
     }
 
+    public StandaloneCompositeComponent(@NotNull Component<String>[] components) {
+        super(components);
+    }
+
     @Override
     public @NotNull String value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -43,8 +47,8 @@ public class StandaloneCompositeComponent extends CompositeComponent<String> {
     }
 
     @Override
-    protected @NotNull CompositeComponent composite(@NotNull StandaloneSlams slams, @NotNull String raw, @NotNull PlaceholderResolver placeholderResolver) {
-        return new StandaloneCompositeComponent(slams, raw, placeholderResolver);
+    protected @NotNull CompositeComponent<String> composite(@NotNull Component<String>[] components) {
+        return new StandaloneCompositeComponent(components);
     }
 
     @Override

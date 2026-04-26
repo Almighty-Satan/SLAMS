@@ -45,6 +45,10 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
     protected BukkitCompositeComponent(@NotNull StandaloneSlams slams, @NotNull String raw, @NotNull PlaceholderResolver placeholderResolver) {
         super(slams, raw, placeholderResolver);
     }
+    
+    protected BukkitCompositeComponent(@NotNull Component<TextComponent[]>[] components) {
+        super(components);
+    }
 
     @Override
     public @NotNull TextComponent[] value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
@@ -79,8 +83,8 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
     }
 
     @Override
-    protected @NotNull BukkitCompositeComponent composite(@NotNull StandaloneSlams slams, @NotNull String raw, @NotNull PlaceholderResolver placeholderResolver) {
-        return new BukkitCompositeComponent(slams, raw, placeholderResolver);
+    protected @NotNull CompositeComponent<TextComponent[]> composite(@NotNull Component<TextComponent[]>[] components) {
+        return new BukkitCompositeComponent(components);
     }
 
     @Override

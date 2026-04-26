@@ -43,6 +43,12 @@ public abstract class CompositeComponent<T> implements Component<T> {
     protected final Component<T>[] components;
     protected final boolean constexpr;
 
+    protected CompositeComponent(@NotNull Component<T>[] components) {
+        Objects.requireNonNull(components);
+        this.components = components;
+        this.constexpr = Arrays.stream(this.components).allMatch(Component::constexpr);
+    }
+
     protected CompositeComponent(@NotNull StandaloneSlams slams, @NotNull String raw, @NotNull PlaceholderResolver placeholderResolver) {
         Objects.requireNonNull(slams);
         Objects.requireNonNull(raw);
@@ -200,8 +206,7 @@ public abstract class CompositeComponent<T> implements Component<T> {
         return this.localPlaceholder(raw, key, arguments);
     }
 
-    protected abstract @NotNull CompositeComponent<T> composite(@NotNull StandaloneSlams slams, @NotNull String raw,
-            @NotNull PlaceholderResolver placeholderResolver);
+    protected abstract @NotNull CompositeComponent<T> composite(@NotNull Component<T>[] components);
 
     protected abstract @NotNull Component.ValueFactory<T> factory();
 
@@ -284,7 +289,12 @@ public abstract class CompositeComponent<T> implements Component<T> {
                     String key = arguments.remove(0);
                     if (nested)
                         components.add(this.placeholder(raw.toString(), key, Collections.unmodifiableList(arguments.stream()
-                                .map(arg -> this.composite(slams, arg, placeholderResolver))
+                                .map(arg -> {
+                                    Component<T>[] children = this.processString(slams, arg, placeholderResolver);
+                                    if (children.length == 1)
+                                        return children[0];
+                                    return this.composite(children);
+                                })
                                 .collect(Collectors.toList())), placeholderResolver, slams));
                     else
                         components.add(this.placeholder(raw.toString(), key,
