@@ -39,7 +39,6 @@ public interface Placeholder extends PlaceholderResolver {
 
     public static final String INVALID_ARGUMENTS = "INVALID_ARGUMENTS";
     public static final String INVALID_CONTEXT = "INVALID_CONTEXT";
-    public static final String INVALID_COMPARISON = "INVALID_COMPARISON";
     public static final String INVALID_FORMAT = "INVALID_FORMAT";
 
     /**
@@ -426,10 +425,10 @@ public interface Placeholder extends PlaceholderResolver {
             @Override
             public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts,
                     @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
-                if (arguments.size() < 2)
-                    return factory.componentFromString(INVALID_COMPARISON);
+                if (arguments.size() != 3 && arguments.size() != 4)
+                    return factory.componentFromString(INVALID_ARGUMENTS);
                 if (comparisonFunction.value(arguments.get(0).stringValue(), arguments.get(1).stringValue()))
-                    return arguments.size() > 2 ? arguments.get(2) : factory.componentFromString("");
+                    return arguments.get(2);
                 return arguments.size() > 3 ? arguments.get(3) : factory.componentFromString("");
             }
         };

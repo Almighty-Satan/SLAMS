@@ -121,7 +121,6 @@ public interface PlaceholderResolver {
      *     <li>if_eq</li>
      *     <li>if_ne</li>
      *     <li>if_num_eq</li>
-     *     <li>if_num_neq</li>
      *     <li>if_num_lt</li>
      *     <li>if_num_gt</li>
      *     <li>if_num_le</li>
@@ -530,32 +529,112 @@ public interface PlaceholderResolver {
          */
         default @NotNull Builder builtIn() {
             BiFunction<String, BiFunction<BigDecimal, BigDecimal, Boolean>, Placeholder> numberComparison = (key, fun) ->
-                    Placeholder.comparison(key, (arg0, arg1) -> {
-                        try {
-                            return fun.apply(new BigDecimal(arg0), new BigDecimal(arg1));
-                        } catch (NumberFormatException e) {
-                            return false;
+                    new Placeholder() {
+                        @Override
+                        public @NotNull String key() {
+                            return key;
                         }
-                    });
+        
+                        @Override
+                        public boolean constexpr() {
+                            return true;
+                        }
+        
+                        @Override
+                        public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts,
+                                @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
+                            if (arguments.size() != 3 && arguments.size() != 4)
+                                return factory.componentFromString(INVALID_ARGUMENTS);
+                            try {
+                                if (fun.apply(new BigDecimal(arguments.get(0).stringValue()), new BigDecimal(arguments.get(1).stringValue())))
+                                    return arguments.get(2);
+                                return arguments.size() > 3 ? arguments.get(3) : factory.componentFromString("");
+                            } catch (NumberFormatException e) {
+                                return factory.componentFromString(INVALID_ARGUMENTS);
+                            }
+                        }
+
+                        @Override
+                        public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments,
+                                @NotNull Component.ValueFactory<T> factory) {
+                            if (arguments.size() != 3 && arguments.size() != 4)
+                                return (contexts0, arguments0, factory0) -> factory0.componentFromString(INVALID_ARGUMENTS);
+                            
+                            try {
+                                BigDecimal arg0 = arguments.get(0) != null ? new BigDecimal(arguments.get(0).stringValue()) : null;
+                                BigDecimal arg1 = arguments.get(1) != null ? new BigDecimal(arguments.get(1).stringValue()) : null;
+
+                                return (contexts0, arguments0, factory0) -> {
+                                    try {
+                                        BigDecimal a0 = arg0 != null ? arg0 : new BigDecimal(arguments0.get(0).stringValue());
+                                        BigDecimal a1 = arg1 != null ? arg1 : new BigDecimal(arguments0.get(1).stringValue());
+                                        if (fun.apply(a0, a1))
+                                            return arguments0.get(2);
+                                        return arguments0.size() > 3 ? arguments0.get(3) : factory0.componentFromString("");
+                                    } catch (NumberFormatException e) {
+                                        return factory0.componentFromString(INVALID_ARGUMENTS);
+                                    }
+                                };
+                            } catch(NumberFormatException e) {
+                                return (contexts0, arguments0, factory0) -> factory0.componentFromString(INVALID_ARGUMENTS);
+                            }
+                        }
+                    };
 
             BiFunction<String, BiFunction<BigDecimal, BigDecimal, BigDecimal>, Placeholder> numberOperation = (key, fun) ->
-                    Placeholder.withArgs(key, arguments -> {
-                        if (arguments.size() != 2)
-                            return Placeholder.INVALID_ARGUMENTS;
-                        try {
-                            return fun.apply(new BigDecimal(arguments.get(0)), new BigDecimal(arguments.get(1))).toPlainString();
-                        } catch (NumberFormatException e) {
-                            return Placeholder.INVALID_ARGUMENTS;
+                    new Placeholder() {
+                        @Override
+                        public @NotNull String key() {
+                            return key;
                         }
-                    });
+
+                        @Override
+                        public boolean constexpr() {
+                            return true;
+                        }
+
+                        @Override
+                        public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, 
+                                @NotNull Component.ValueFactory<T> factory) {
+                            if (arguments.size() != 2)
+                                return factory.componentFromString(INVALID_ARGUMENTS);
+                            try {
+                                return factory.componentFromString(fun.apply(new BigDecimal(arguments.get(0).stringValue()),
+                                        new BigDecimal(arguments.get(1).stringValue())).toPlainString());
+                            } catch (NumberFormatException e) {
+                                return factory.componentFromString(Placeholder.INVALID_ARGUMENTS);
+                            }
+                        }
+
+                        @Override
+                        public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
+                            if (arguments.size() != 2)
+                                return (contexts0, arguments0, factory0) -> factory0.componentFromString(INVALID_ARGUMENTS);
+
+                            try {
+                                BigDecimal arg0 = arguments.get(0) != null ? new BigDecimal(arguments.get(0).stringValue()) : null;
+                                BigDecimal arg1 = arguments.get(1) != null ? new BigDecimal(arguments.get(1).stringValue()) : null;
+
+                                return (contexts0, arguments0, factory0) -> {
+                                    try {
+                                        BigDecimal a0 = arg0 != null ? arg0 : new BigDecimal(arguments0.get(0).stringValue());
+                                        BigDecimal a1 = arg1 != null ? arg1 : new BigDecimal(arguments0.get(1).stringValue());
+                                        return factory.componentFromString(fun.apply(a0, a1).toPlainString());
+                                    } catch (NumberFormatException e) {
+                                        return factory0.componentFromString(INVALID_ARGUMENTS);
+                                    }
+                                };
+                            } catch(NumberFormatException e) {
+                                return (contexts0, arguments0, factory0) -> factory0.componentFromString(INVALID_ARGUMENTS);
+                            }
+                        }
+                    };
 
             this.add(Placeholder.comparison("if_eq", String::equals));
             this.add(Placeholder.comparison("if_ne", (arg0, arg1) -> !arg0.equals(arg1)));
-            this.add(Placeholder.comparison("if_neq", (arg0, arg1) -> !arg0.equals(arg1)));
 
             this.add(numberComparison.apply("if_num_eq", (arg0, arg1) -> arg0.compareTo(arg1) == 0));
             this.add(numberComparison.apply("if_num_ne", (arg0, arg1) -> arg0.compareTo(arg1) != 0));
-            this.add(numberComparison.apply("if_num_neq", (arg0, arg1) -> arg0.compareTo(arg1) != 0));
             this.add(numberComparison.apply("if_num_lt", (arg0, arg1) -> arg0.compareTo(arg1) < 0));
             this.add(numberComparison.apply("if_num_gt", (arg0, arg1) -> arg0.compareTo(arg1) > 0));
             this.add(numberComparison.apply("if_num_le", (arg0, arg1) -> arg0.compareTo(arg1) <= 0));
