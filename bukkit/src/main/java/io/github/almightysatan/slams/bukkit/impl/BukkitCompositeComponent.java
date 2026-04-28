@@ -55,9 +55,8 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
         List<TextComponent> components = new ArrayList<>();
         this.value(placeholderResolver, contexts, value -> {
             for (TextComponent component : value) {
-                ImmutableTextComponent copy = new ImmutableTextComponent(component);
+                TextComponent copy = new TextComponent(component);
                 if (components.isEmpty()) {
-                    copy.setImmutable();
                     components.add(copy);
                     continue;
                 }
@@ -75,7 +74,6 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
                     copy.setStrikethrough(prev.isStrikethroughRaw());
                 if (prev.isObfuscatedRaw() != null && copy.isObfuscatedRaw() == null)
                     copy.setObfuscated(prev.isObfuscatedRaw());
-                copy.setImmutable();
                 components.add(copy);
             }
         });
@@ -132,7 +130,7 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
         List<TextComponent> components = new ArrayList<>();
 
         StringBuilder builder = new StringBuilder();
-        ImmutableTextComponent component = new ImmutableTextComponent();
+        TextComponent component = new TextComponent();
         boolean paragraph = false;
         for (char c : text.toCharArray()) {
             if (c == '§') {
@@ -148,10 +146,9 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
 
                 if (builder.length() > 0) {
                     component.setText(builder.toString());
-                    component.setImmutable();
                     components.add(component);
                     builder.setLength(0);
-                    component = new ImmutableTextComponent();
+                    component = new TextComponent();
                 }
                 setColor(component, color);
                 continue;
@@ -160,110 +157,8 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
         }
 
         component.setText(builder.toString());
-        component.setImmutable();
         components.add(component);
 
         return components.toArray(new TextComponent[0]);
-    }
-
-    /**
-     * TextComponents that can be re-used and are therefore made immutable to avoid accidental modification of stored objects.
-     */
-    private final static class ImmutableTextComponent extends TextComponent {
-        
-        private boolean immutable;
-
-        public ImmutableTextComponent() {}
-
-        public ImmutableTextComponent(TextComponent component) {
-            super(component);
-        }
-        
-        public void setImmutable() {
-            this.immutable = true;
-        }
-        
-        public void checkMutability() {
-            if (this.immutable)
-                throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void setColor(ChatColor color) {
-            this.checkMutability();
-            super.setColor(color);
-        }
-
-        @Override
-        public void setBold(Boolean bold) {
-            this.checkMutability();
-            super.setBold(bold);
-        }
-
-        @Override
-        public void setItalic(Boolean italic) {
-            this.checkMutability();
-            super.setItalic(italic);
-        }
-
-        @Override
-        public void setUnderlined(Boolean underlined) {
-            this.checkMutability();
-            super.setUnderlined(underlined);
-        }
-
-        @Override
-        public void setStrikethrough(Boolean strikethrough) {
-            this.checkMutability();
-            super.setStrikethrough(strikethrough);
-        }
-
-        @Override
-        public void setObfuscated(Boolean obfuscated) {
-            this.checkMutability();
-            super.setObfuscated(obfuscated);
-        }
-
-        @Override
-        public void setInsertion(String insertion) {
-            this.checkMutability();
-            super.setInsertion(insertion);
-        }
-
-        @Override
-        public void setClickEvent(ClickEvent clickEvent) {
-            this.checkMutability();
-            super.setClickEvent(clickEvent);
-        }
-
-        @Override
-        public void setHoverEvent(HoverEvent hoverEvent) {
-            this.checkMutability();
-            super.setHoverEvent(hoverEvent);
-        }
-
-        @Override
-        public void setText(String text) {
-            this.checkMutability();
-            super.setText(text);
-        }
-
-        @Override
-        public void setExtra(List<BaseComponent> components) {
-            this.checkMutability();
-            super.setExtra(components);
-        }
-
-        @Override
-        public void addExtra(String text) {
-            this.checkMutability();
-            super.addExtra(text);
-        }
-
-        @Override
-        public void addExtra(BaseComponent component) {
-            this.checkMutability();
-            super.addExtra(component);
-        }
     }
 }
