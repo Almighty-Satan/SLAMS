@@ -45,11 +45,6 @@ public interface OfflinePlayerContext {
      */
     static @NotNull OfflinePlayerContext of(@NotNull OfflinePlayer offlinePlayer) {
         Objects.requireNonNull(offlinePlayer);
-        return new OfflinePlayerContext() {
-            @Override
-            public @NotNull OfflinePlayer player() {
-                return offlinePlayer;
-            }
-        };
+        return () -> offlinePlayer;
     }
 }

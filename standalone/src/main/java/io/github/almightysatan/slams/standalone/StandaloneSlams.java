@@ -127,7 +127,7 @@ public interface StandaloneSlams extends Slams {
             }
 
             @Override
-            public @Nullable Language language(@NotNull String identifier) {
+            public @NotNull Language language(@Nullable String identifier) {
                 return ((SlamsInternal) slams).language(identifier);
             }
 

@@ -74,6 +74,7 @@ public interface BukkitPlaceholders {
                 return true;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 if (arguments.size() < 2)
@@ -89,7 +90,7 @@ public interface BukkitPlaceholders {
                 for (int i = 0; i < copy.length; i++)
                     copy[i] = new TextComponent(components[i]);
 
-                this.setEvent(copy, (Argument<T>) arguments.get(0));
+                this.setEvent(copy, arguments.get(0));
                 return Component.of((T) copy, argument.stringValue(), argument.rawValue());
             }
 

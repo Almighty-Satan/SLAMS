@@ -27,6 +27,7 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.TagPattern;
 import net.kyori.adventure.text.minimessage.tag.resolver.ArgumentQueue;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,6 +80,7 @@ public interface ContextTagResolver extends TagResolver {
      *
      * @return a {@link ContextTagResolver}
      */
+    @Contract(pure = true)
     static @NotNull ContextTagResolver empty() {
         return EMPTY;
     }
@@ -247,7 +249,7 @@ public interface ContextTagResolver extends TagResolver {
     /**
      * Can be used to build a {@link ContextTagResolver}.
      */
-    static interface Builder {
+    interface Builder {
 
         /**
          * Creates a new {@link ContextTagResolver} from this {@link Builder}.

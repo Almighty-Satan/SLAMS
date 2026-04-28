@@ -37,7 +37,7 @@ import java.util.List;
 @ApiStatus.Internal
 public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]> implements BukkitTranslation {
 
-    private static ValueFactory<TextComponent[]> FACTORY = BukkitCompositeComponent::parse;
+    private static final ValueFactory<TextComponent[]> FACTORY = BukkitCompositeComponent::parse;
 
     protected BukkitCompositeComponent(@NotNull StandaloneSlams slams, @NotNull String raw, @NotNull PlaceholderResolver placeholderResolver) {
         super(slams, raw, placeholderResolver);
@@ -48,7 +48,7 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
     }
 
     @Override
-    public @NotNull TextComponent[] value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
+    public @NotNull TextComponent @NotNull [] value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
         List<TextComponent> components = new ArrayList<>();
         this.value(placeholderResolver, contexts, value -> {
             for (TextComponent component : value) {
@@ -88,7 +88,7 @@ public class BukkitCompositeComponent extends CompositeComponent<TextComponent[]
     }
 
     @Override
-    protected @NotNull TextComponent[] merge(@NotNull List<TextComponent[]> values) {
+    protected @NotNull TextComponent @NotNull [] merge(@NotNull List<TextComponent[]> values) {
         return values.stream().flatMap(Arrays::stream).toArray(TextComponent[]::new);
     }
 

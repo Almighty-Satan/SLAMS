@@ -105,9 +105,8 @@ public class BukkitTest {
         TestContext context = new TestContext("World");
         PlaceholderResolver placeholder = PlaceholderResolver.builder()
                 .contextual("test", TestContext.class, TestContext::getName)
-                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.getName()), builder -> {
-                    builder.contextual("test", TestContext2.class, TestContext2::getName);
-                }).build();
+                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.getName()), builder -> 
+                        builder.contextual("test", TestContext2.class, TestContext2::getName)).build();
         BukkitMessage entry = BukkitMessage.of("test", slams, placeholder);
         BukkitMessage entry2 = BukkitMessage.of("test2", slams, placeholder);
 
@@ -137,9 +136,7 @@ public class BukkitTest {
         StandaloneSlams slams = StandaloneSlams.of("0");
         BukkitMessage entry = BukkitMessage.of("test", slams, PlaceholderResolver.builtInPlaceholders());
 
-        slams.load("0", values -> {
-            values.put("test", input);
-        });
+        slams.load("0", values -> values.put("test", input));
 
         BaseComponent[] value = entry.value();
         assertEquals(expected, BaseComponent.toLegacyText(value));
@@ -163,8 +160,8 @@ public class BukkitTest {
         BaseComponent[] value = BukkitCompositeComponent.parse("§1§lHello World");
         assertEquals(1, value.length);
         assertEquals("Hello World", ((TextComponent) value[0]).getText());
-        assertEquals(ChatColor.DARK_BLUE, ((TextComponent) value[0]).getColor());
-        assertTrue(((TextComponent) value[0]).isBold());
+        assertEquals(ChatColor.DARK_BLUE, value[0].getColor());
+        assertTrue(value[0].isBold());
     }
 
     @Test
@@ -195,6 +192,7 @@ public class BukkitTest {
                 return false;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 T value = (T) Arrays.stream((BaseComponent[]) arguments.get(0).value()).map(component -> {
@@ -236,17 +234,17 @@ public class BukkitTest {
         BaseComponent[] value = entry.value();
         assertEquals("Hello World!", BaseComponent.toPlainText(value));
         assertEquals(4, value.length);
-        assertNull(((TextComponent) value[0]).getClickEvent());
-        assertNull(((TextComponent) value[0]).getHoverEvent());
-        assertNotNull(((TextComponent) value[1]).getClickEvent());
-        assertEquals("test", ((TextComponent) value[1]).getClickEvent().getValue());
-        assertNull(((TextComponent) value[1]).getHoverEvent());
-        assertNotNull(((TextComponent) value[2]).getClickEvent());
-        assertEquals("test", ((TextComponent) value[2]).getClickEvent().getValue());
-        assertNotNull(((TextComponent) value[2]).getHoverEvent());
-        assertEquals("test2", BaseComponent.toPlainText(((TextComponent) value[2]).getHoverEvent().getValue()));
-        assertNull(((TextComponent) value[3]).getClickEvent());
-        assertNull(((TextComponent) value[3]).getHoverEvent());
+        assertNull(value[0].getClickEvent());
+        assertNull(value[0].getHoverEvent());
+        assertNotNull(value[1].getClickEvent());
+        assertEquals("test", value[1].getClickEvent().getValue());
+        assertNull(value[1].getHoverEvent());
+        assertNotNull(value[2].getClickEvent());
+        assertEquals("test", value[2].getClickEvent().getValue());
+        assertNotNull(value[2].getHoverEvent());
+        assertEquals("test2", BaseComponent.toPlainText(value[2].getHoverEvent().getValue()));
+        assertNull(value[3].getClickEvent());
+        assertNull(value[3].getHoverEvent());
     }
 
     @Test
@@ -259,17 +257,17 @@ public class BukkitTest {
         BaseComponent[] value = entry.value();
         assertEquals("Hello World!", BaseComponent.toPlainText(value));
         assertEquals(4, value.length);
-        assertNull(((TextComponent) value[0]).getClickEvent());
-        assertNull(((TextComponent) value[0]).getHoverEvent());
-        assertNotNull(((TextComponent) value[1]).getClickEvent());
-        assertEquals("test", ((TextComponent) value[1]).getClickEvent().getValue());
-        assertNull(((TextComponent) value[1]).getHoverEvent());
-        assertNotNull(((TextComponent) value[2]).getClickEvent());
-        assertEquals("test", ((TextComponent) value[2]).getClickEvent().getValue());
-        assertNotNull(((TextComponent) value[2]).getHoverEvent());
-        assertEquals("test2", BaseComponent.toPlainText(((TextComponent) value[2]).getHoverEvent().getValue()));
-        assertNull(((TextComponent) value[3]).getClickEvent());
-        assertNull(((TextComponent) value[3]).getHoverEvent());
+        assertNull(value[0].getClickEvent());
+        assertNull(value[0].getHoverEvent());
+        assertNotNull(value[1].getClickEvent());
+        assertEquals("test", value[1].getClickEvent().getValue());
+        assertNull(value[1].getHoverEvent());
+        assertNotNull(value[2].getClickEvent());
+        assertEquals("test", value[2].getClickEvent().getValue());
+        assertNotNull(value[2].getHoverEvent());
+        assertEquals("test2", BaseComponent.toPlainText(value[2].getHoverEvent().getValue()));
+        assertNull(value[3].getClickEvent());
+        assertNull(value[3].getHoverEvent());
     }
 
     @Test

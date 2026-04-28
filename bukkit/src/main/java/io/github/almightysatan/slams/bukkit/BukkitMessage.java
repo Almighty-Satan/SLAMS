@@ -74,7 +74,7 @@ public interface BukkitMessage extends Message<BaseComponent[]> {
     }
 
     @Override
-    default @NotNull BaseComponent[] value(@Nullable String language, @NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts) throws MissingTranslationException, UnknownLanguageException {
+    default @NotNull BaseComponent @NotNull [] value(@Nullable String language, @NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts) throws MissingTranslationException, UnknownLanguageException {
         return this.translate(language).value(placeholderResolver, contexts);
     }
 

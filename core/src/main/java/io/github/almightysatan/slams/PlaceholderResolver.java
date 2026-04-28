@@ -20,6 +20,7 @@
 
 package io.github.almightysatan.slams;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -55,6 +56,7 @@ public interface PlaceholderResolver {
      *
      * @return a {@link PlaceholderResolver} that always returns null
      */
+    @Contract(pure = true)
     static @NotNull PlaceholderResolver empty() {
         return EMPTY;
     }
@@ -558,7 +560,7 @@ public interface PlaceholderResolver {
                         }
 
                         @Override
-                        public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments,
+                        public <T> @NotNull ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments,
                                 @NotNull Component.ValueFactory<T> factory) {
                             if (arguments.size() != 3 && arguments.size() != 4)
                                 return factory.processedPlaceholder(INVALID_ARGUMENTS);
@@ -610,7 +612,7 @@ public interface PlaceholderResolver {
                         }
 
                         @Override
-                        public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
+                        public <T> @NotNull ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
                             if (arguments.size() != 2)
                                 return factory.processedPlaceholder(INVALID_ARGUMENTS);
 

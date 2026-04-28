@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  */
 public interface Component<T> {
 
-    static final ValueFactory<String> STRING_FACTORY = input -> input;
+    ValueFactory<String> STRING_FACTORY = input -> input;
 
     /**
      * Evaluates the value of this {@link Component}
@@ -156,7 +156,7 @@ public interface Component<T> {
     }
 
     @FunctionalInterface
-    static interface ValueFactory<T> {
+    interface ValueFactory<T> {
 
         /**
          * Converts a string to a value of type {@link T}

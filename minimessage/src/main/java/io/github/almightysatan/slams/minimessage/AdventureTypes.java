@@ -59,6 +59,7 @@ interface AdventureTypes {
                 return values.length;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public T @NotNull [] value(@NotNull TagResolver tagResolver, @NotNull Object @NotNull ... contexts) {
                 return Arrays.stream(values).map(translation -> ((U) translation).value(tagResolver, contexts)).toArray(arrayFun);

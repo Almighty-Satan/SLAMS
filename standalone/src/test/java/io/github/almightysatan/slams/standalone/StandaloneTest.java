@@ -99,9 +99,8 @@ public class StandaloneTest {
         TestContext context = new TestContext("World");
         PlaceholderResolver placeholder = PlaceholderResolver.builder()
                 .contextual("test", TestContext.class, TestContext::getName)
-                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.getName()), builder -> {
-                    builder.contextual("test", TestContext2.class, TestContext2::getName);
-                }).build();
+                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.getName()), builder -> 
+                        builder.contextual("test", TestContext2.class, TestContext2::getName)).build();
         StandaloneMessage entry = StandaloneMessage.of("test", slams, placeholder);
         StandaloneMessage entry2 = StandaloneMessage.of("test2", slams, placeholder);
 
@@ -282,7 +281,7 @@ public class StandaloneTest {
             }
 
             @Override
-            public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
+            public <T> @NotNull ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
                 assertEquals(2, arguments.size());
                 assertNull(arguments.get(0));
                 assertNotNull(arguments.get(1));

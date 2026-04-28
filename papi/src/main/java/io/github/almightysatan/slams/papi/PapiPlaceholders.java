@@ -51,7 +51,7 @@ public interface PapiPlaceholders {
                 return "UNKNOWN_PAPI_EXPANSION";
 
             Optional<Object> context = Arrays.stream(contexts).filter(c -> c instanceof OfflinePlayerContext).findFirst();
-            String value = expansion.onRequest(context.isPresent() ? ((OfflinePlayerContext) context.get()).player() : null, arguments.get(1));
+            String value = expansion.onRequest(context.map(o -> ((OfflinePlayerContext) o).player()).orElse(null), arguments.get(1));
             if (value == null)
                 return "UNKNOWN_PAPI_PLACEHOLDER";
             return value;
@@ -60,7 +60,7 @@ public interface PapiPlaceholders {
 
     /**
      * Returns a {@link PlaceholderResolver} that resolves a placeholder named "papi" if PlaceholderAPI is available.
-     * Otherwise an empty {@link PlaceholderResolver} is returned.
+     * Otherwise, an empty {@link PlaceholderResolver} is returned.
      *
      * @return a {@link PlaceholderResolver}
      */

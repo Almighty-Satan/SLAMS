@@ -40,6 +40,7 @@ public class LazyEvalList<T, U> extends AbstractList<U> {
         this.values = new Object[raw.size()];
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public U get(int index) {
         if (this.values[index] != null)

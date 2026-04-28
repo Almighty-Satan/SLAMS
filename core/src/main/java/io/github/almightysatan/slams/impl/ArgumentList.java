@@ -47,7 +47,7 @@ public class ArgumentList<T> extends AbstractList<Placeholder.Argument<T>> {
 
     @Override
     public Placeholder.Argument<T> get(int index) {
-        return this.toArgument(this.components.get(index), this.placeholderResolver, this.contexts);
+        return toArgument(this.components.get(index), this.placeholderResolver, this.contexts);
     }
 
     @Override

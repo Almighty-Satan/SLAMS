@@ -96,9 +96,8 @@ public class AdventureTest {
         TestContext context = new TestContext("World");
         PlaceholderResolver placeholder = PlaceholderResolver.builder()
                 .contextual("test", TestContext.class, TestContext::getName)
-                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.getName()), builder -> {
-                    builder.contextual("test", TestContext2.class, TestContext2::getName);
-                }).build();
+                .namespace("abc-", TestContext.class, ctx -> new TestContext2(ctx.getName()), builder -> 
+                        builder.contextual("test", TestContext2.class, TestContext2::getName)).build();
         AdventureMessage entry = AdventureMessage.of("test", langManager, ContextTagResolver.of(placeholder));
         AdventureMessage entry2 = AdventureMessage.of("test2", langManager, ContextTagResolver.of(placeholder));
 

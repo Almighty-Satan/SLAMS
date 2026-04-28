@@ -60,12 +60,8 @@ public abstract class CompositeComponent<T> implements Component<T> {
     @Override
     public void value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull Consumer<T> consumer) {
         for (Component<T> component : this.components) {
-            component.value(placeholderResolver, contexts, value -> consumer.accept(value));
+            component.value(placeholderResolver, contexts, consumer);
         }
-    }
-
-    public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
-        return this.value(placeholderResolver, contexts);
     }
 
     @TestOnly
@@ -79,16 +75,16 @@ public abstract class CompositeComponent<T> implements Component<T> {
     }
 
     @Override
+    public void stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull Consumer<String> consumer) {
+        for (Component<T> component : this.components)
+            component.stringValue(placeholderResolver, contexts, consumer);
+    }
+
+    @Override
     public @NotNull String stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts) {
         StringBuilder stringBuilder = new StringBuilder();
         this.stringValue(placeholderResolver, contexts, stringBuilder::append);
         return stringBuilder.toString();
-    }
-
-    @Override
-    public void stringValue(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull [] contexts, @NotNull Consumer<String> consumer) {
-        for (Component<T> component : this.components)
-            component.stringValue(placeholderResolver, contexts, consumer);
     }
 
     @Override
@@ -216,9 +212,9 @@ public abstract class CompositeComponent<T> implements Component<T> {
         if (!slams.enableInline() || !slams.enableConstexprEval() || components.size() <= 1)
             return;
 
-        List<Component<T>> original = new ArrayList(components);
-        List<T> values = new ArrayList();
-        List<String> stringValues = new ArrayList();
+        List<Component<T>> original = new ArrayList<>(components);
+        List<T> values = new ArrayList<>();
+        List<String> stringValues = new ArrayList<>();
 
         components.clear();
         for (Component<T> component : original) {
@@ -320,6 +316,8 @@ public abstract class CompositeComponent<T> implements Component<T> {
 
         this.inline(slams, components);
 
-        return (Component<T>[]) components.toArray(new Component[0]);
+        @SuppressWarnings("unchecked")
+        Component<T>[] result = components.toArray(new Component[0]);
+        return result;
     }
 }

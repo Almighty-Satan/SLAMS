@@ -67,6 +67,7 @@ public class Types {
         return values;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T, U extends Translation<T>> TranslationArray<T, U> messageArrayValue(@Nullable Object input, @NotNull IntFunction<T[]> arrayFun, @NotNull Function<Object, U> callback) throws InvalidTypeException {
         Translation<T>[] values = (Translation<T>[]) Types.checkArray(input, callback);
         return new TranslationArray<T, U>() {
@@ -82,7 +83,7 @@ public class Types {
             }
 
             @Override
-            public @NotNull T[] value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts) {
+            public @NotNull T @NotNull [] value(@NotNull PlaceholderResolver placeholderResolver, @NotNull Object @NotNull ... contexts) {
                 return Arrays.stream(values).map(translation -> translation.value(placeholderResolver, contexts)).toArray(arrayFun);
             }
         };

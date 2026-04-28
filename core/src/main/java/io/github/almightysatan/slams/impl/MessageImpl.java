@@ -85,7 +85,7 @@ public abstract class MessageImpl<T> implements Message<T> {
         Language lang = this.languageManager.language(language);
         Translation<T> value = this.cache.get(lang);
         if (value == null)
-            throw new MissingTranslationException(language, this.path);
+            throw new MissingTranslationException(lang.identifier(), this.path);
         return value;
     }
 

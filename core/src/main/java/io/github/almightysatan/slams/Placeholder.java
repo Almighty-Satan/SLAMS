@@ -33,13 +33,13 @@ import java.util.function.Predicate;
 /**
  * Represents a placeholder. Extends {@link PlaceholderResolver} as a placeholder can resolve itself.
  *
- * @see Placeholder#constant(String, String)
+ * @see Placeholder#constant(String, Object)
  */
 public interface Placeholder extends PlaceholderResolver {
 
-    public static final String INVALID_ARGUMENTS = "INVALID_ARGUMENTS";
-    public static final String INVALID_CONTEXT = "INVALID_CONTEXT";
-    public static final String INVALID_FORMAT = "INVALID_FORMAT";
+    String INVALID_ARGUMENTS = "INVALID_ARGUMENTS";
+    String INVALID_CONTEXT = "INVALID_CONTEXT";
+    String INVALID_FORMAT = "INVALID_FORMAT";
 
     /**
      * The key of this placeholder. This should always return the same value. A key should not be null or empty.
@@ -74,9 +74,9 @@ public interface Placeholder extends PlaceholderResolver {
      * optimizations. Arguments may be {@code null} if they can not be resolved to constant values. Returning
      * {@code null} from this method indicates that {{@link #value(Object[], List, Component.ValueFactory)}} should be
      * called instead.
-     * 
+     * <p> 
      * Placeholders are not required to implement this method, it is optional.
-     * 
+     * <p> 
      * Note that depending on the SLAMS implementation being used this method may never be called at all.
      *
      * @param arguments the placeholder's arguments, elements can be {@code null} if they are not constant values
@@ -118,7 +118,7 @@ public interface Placeholder extends PlaceholderResolver {
 
             @Override
             public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
-                List<String> list = new LazyEvalList<Argument<T>, String>(Argument::stringValue, arguments);
+                List<String> list = new LazyEvalList<>(Argument::stringValue, arguments);
                 Object raw = valueFunction.value(contexts, list);
                 return factory.component(String.valueOf(raw), raw);
             }
@@ -195,6 +195,7 @@ public interface Placeholder extends PlaceholderResolver {
      * @param <T>                   the context type
      * @return a new placeholder
      */
+    @SuppressWarnings("unchecked")
     static <T> @NotNull Placeholder contextual(@NotNull String key, @NotNull Class<T> type, @NotNull ContextValueFunction<T> contextValueFunction, @NotNull ValueFunction fallbackValueFunction) {
         Objects.requireNonNull(type);
         Objects.requireNonNull(contextValueFunction);
@@ -312,6 +313,7 @@ public interface Placeholder extends PlaceholderResolver {
                 return false;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public @NotNull <U> Component<U> value(@NotNull Object @NotNull [] contexts,
                     @Unmodifiable @NotNull List<@NotNull Argument<U>> arguments, Component.@NotNull ValueFactory<U> factory) {
@@ -321,7 +323,7 @@ public interface Placeholder extends PlaceholderResolver {
                             return !arguments.isEmpty() ? arguments.get(0) : factory.component("");
                         return arguments.size() > 1 ? arguments.get(1) : factory.component("");
                     }
-                List<String> list = new LazyEvalList<Argument<U>, String>(Argument::stringValue, arguments);
+                List<String> list = new LazyEvalList<>(Argument::stringValue, arguments);
                 Object raw = fallbackValueFunction.value(contexts, list);
                 return factory.component(String.valueOf(raw), raw);
             }
