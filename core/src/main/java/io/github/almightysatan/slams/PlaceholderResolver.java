@@ -415,6 +415,8 @@ public interface PlaceholderResolver {
                         @Override
                         public @Nullable <V> Placeholder.ProcessedPlaceholder<V> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<V>> arguments, @NotNull Component.ValueFactory<V> factory) {
                             ProcessedPlaceholder<V> resolved = placeholder.processArguments(arguments.subList(numArgs, arguments.size()), factory);
+                            if (resolved == null)
+                                return null;
                             return ((contexts, arguments0, factory0) ->
                                     resolved.value(new Object[]{conversion.apply((T) contexts, (List<Component<U>>) (Object) arguments0)}, arguments0.subList(numArgs, arguments0.size()), factory0));
                         }
