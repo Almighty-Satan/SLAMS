@@ -388,6 +388,7 @@ public interface PlaceholderResolver {
                     throw new UnsupportedOperationException();
                 }
 
+                @SuppressWarnings("unchecked")
                 @Override
                 public @NotNull Builder add(@NotNull Placeholder placeholder) {
                     String key = prefix != null ? prefix + placeholder.key() : placeholder.key();
