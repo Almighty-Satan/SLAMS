@@ -174,5 +174,14 @@ public interface Component<T> {
         default @NotNull Component<T> component(@NotNull String input) {
             return this.component(input, null);
         }
+        
+        default @NotNull Placeholder.ProcessedPlaceholder<T> processedPlaceholder(@NotNull String input, @Nullable Object raw) {
+            Component<T> component = this.component(input, raw);
+            return (contexts, arguments, factory) -> component;
+        }
+
+        default @NotNull Placeholder.ProcessedPlaceholder<T> processedPlaceholder(@NotNull String input) {
+            return processedPlaceholder(input, null);
+        }
     }
 }

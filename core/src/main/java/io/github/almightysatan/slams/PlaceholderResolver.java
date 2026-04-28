@@ -558,7 +558,7 @@ public interface PlaceholderResolver {
                         public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments,
                                 @NotNull Component.ValueFactory<T> factory) {
                             if (arguments.size() != 3 && arguments.size() != 4)
-                                return (contexts0, arguments0, factory0) -> factory0.component(INVALID_ARGUMENTS);
+                                return factory.processedPlaceholder(INVALID_ARGUMENTS);
                             
                             try {
                                 BigDecimal arg0 = arguments.get(0) != null ? new BigDecimal(arguments.get(0).stringValue()) : null;
@@ -576,7 +576,7 @@ public interface PlaceholderResolver {
                                     }
                                 };
                             } catch(NumberFormatException e) {
-                                return (contexts0, arguments0, factory0) -> factory0.component(INVALID_ARGUMENTS);
+                                return factory.processedPlaceholder(INVALID_ARGUMENTS);
                             }
                         }
                     };
@@ -609,7 +609,7 @@ public interface PlaceholderResolver {
                         @Override
                         public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
                             if (arguments.size() != 2)
-                                return (contexts0, arguments0, factory0) -> factory0.component(INVALID_ARGUMENTS);
+                                return factory.processedPlaceholder(INVALID_ARGUMENTS);
 
                             try {
                                 BigDecimal arg0 = arguments.get(0) != null ? new BigDecimal(arguments.get(0).stringValue()) : null;
@@ -625,7 +625,7 @@ public interface PlaceholderResolver {
                                     }
                                 };
                             } catch(NumberFormatException e) {
-                                return (contexts0, arguments0, factory0) -> factory0.component(INVALID_ARGUMENTS);
+                                return factory.processedPlaceholder(INVALID_ARGUMENTS);
                             }
                         }
                     };
