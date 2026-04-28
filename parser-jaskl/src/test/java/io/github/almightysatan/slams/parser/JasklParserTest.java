@@ -24,7 +24,6 @@ import io.github.almightysatan.jaskl.hocon.HoconConfig;
 import io.github.almightysatan.jaskl.json.JsonConfig;
 import io.github.almightysatan.jaskl.yaml.YamlConfig;
 import io.github.almightysatan.slams.LanguageParser;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

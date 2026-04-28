@@ -22,7 +22,6 @@ package io.github.almightysatan.slams.minimessage;
 
 import io.github.almightysatan.slams.MissingTranslationException;
 import io.github.almightysatan.slams.Slams;
-import io.github.almightysatan.slams.Translation;
 import io.github.almightysatan.slams.UnknownLanguageException;
 import io.github.almightysatan.slams.impl.MessageImpl;
 import net.kyori.adventure.text.Component;

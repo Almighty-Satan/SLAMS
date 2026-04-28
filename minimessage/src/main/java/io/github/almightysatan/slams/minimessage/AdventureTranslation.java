@@ -24,7 +24,6 @@ import io.github.almightysatan.slams.PlaceholderResolver;
 import io.github.almightysatan.slams.Translation;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a translation of a message in a specific language in MiniMessage format.
