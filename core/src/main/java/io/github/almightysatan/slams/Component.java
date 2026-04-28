@@ -164,15 +164,15 @@ public interface Component<T> {
          * @param input the string
          * @return a value of type {@link T}
          */
-        @NotNull T fromString(@NotNull String input);
+        @NotNull T value(@NotNull String input);
 
-        default @NotNull Component<T> componentFromString(@NotNull String input, @Nullable Object raw) {
-            T value = this.fromString(input);
+        default @NotNull Component<T> component(@NotNull String input, @Nullable Object raw) {
+            T value = this.value(input);
             return of(value, input, raw);
         }
 
-        default @NotNull Component<T> componentFromString(@NotNull String input) {
-            return this.componentFromString(input, null);
+        default @NotNull Component<T> component(@NotNull String input) {
+            return this.component(input, null);
         }
     }
 }

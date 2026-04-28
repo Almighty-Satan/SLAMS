@@ -159,7 +159,7 @@ public abstract class CompositeComponent<T> implements Component<T> {
             public @NotNull T value(@NotNull PlaceholderResolver placeholderResolver0, @NotNull Object @NotNull [] contexts) {
                 Placeholder placeholder0 = placeholderResolver0.resolve(key);
                 if (placeholder0 == null)
-                    return CompositeComponent.this.factory().fromString(raw);
+                    return CompositeComponent.this.factory().value(raw);
                 return placeholder0.value(contexts, new ArgumentList<>(arguments, placeholderResolver0, contexts),
                         CompositeComponent.this.factory()).value(placeholderResolver0, contexts);
             }
@@ -193,7 +193,7 @@ public abstract class CompositeComponent<T> implements Component<T> {
             @Unmodifiable @NotNull List<@NotNull Component<T>> arguments, @NotNull PlaceholderResolver placeholderResolver,
             @NotNull StandaloneSlams slams) {
         if (key.isEmpty())
-            return this.factory().componentFromString(raw);
+            return this.factory().component(raw);
 
         Placeholder globalPlaceholder = placeholderResolver.resolve(key);
         if (globalPlaceholder != null) {
@@ -271,7 +271,7 @@ public abstract class CompositeComponent<T> implements Component<T> {
             if (c == headChar && (tailChar != headChar || scope == 0)) {
                 if (++scope == 1) {
                     if (raw.length() > 0) {
-                        components.add(this.factory().componentFromString(raw.toString()));
+                        components.add(this.factory().component(raw.toString()));
                         raw.setLength(0);
                     }
                     raw.append(c);
@@ -298,7 +298,7 @@ public abstract class CompositeComponent<T> implements Component<T> {
                                 .collect(Collectors.toList())), placeholderResolver, slams));
                     else
                         components.add(this.placeholder(raw.toString(), key,
-                                new LazyEvalList<>(this.factory()::componentFromString, arguments), placeholderResolver, slams));
+                                new LazyEvalList<>(this.factory()::component, arguments), placeholderResolver, slams));
 
                     nested = false;
                     raw.setLength(0);
@@ -316,7 +316,7 @@ public abstract class CompositeComponent<T> implements Component<T> {
         }
 
         if (raw.length() > 0)
-            components.add(this.factory().componentFromString(raw.toString()));
+            components.add(this.factory().component(raw.toString()));
 
         this.inline(slams, components);
 

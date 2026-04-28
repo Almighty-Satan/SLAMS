@@ -77,7 +77,7 @@ public interface BukkitPlaceholders {
             @Override
             public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                 if (arguments.size() < 2)
-                    return factory.componentFromString(Placeholder.INVALID_ARGUMENTS);
+                    return factory.component(Placeholder.INVALID_ARGUMENTS);
                 Argument<T> argument = arguments.get(1);
                 T content = argument.value();
                 if (!(content instanceof TextComponent[]))

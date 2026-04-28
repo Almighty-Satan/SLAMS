@@ -544,13 +544,13 @@ public interface PlaceholderResolver {
                         public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts,
                                 @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, Component.@NotNull ValueFactory<T> factory) {
                             if (arguments.size() != 3 && arguments.size() != 4)
-                                return factory.componentFromString(INVALID_ARGUMENTS);
+                                return factory.component(INVALID_ARGUMENTS);
                             try {
                                 if (fun.apply(new BigDecimal(arguments.get(0).stringValue()), new BigDecimal(arguments.get(1).stringValue())))
                                     return arguments.get(2);
-                                return arguments.size() > 3 ? arguments.get(3) : factory.componentFromString("");
+                                return arguments.size() > 3 ? arguments.get(3) : factory.component("");
                             } catch (NumberFormatException e) {
-                                return factory.componentFromString(INVALID_ARGUMENTS);
+                                return factory.component(INVALID_ARGUMENTS);
                             }
                         }
 
@@ -558,7 +558,7 @@ public interface PlaceholderResolver {
                         public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments,
                                 @NotNull Component.ValueFactory<T> factory) {
                             if (arguments.size() != 3 && arguments.size() != 4)
-                                return (contexts0, arguments0, factory0) -> factory0.componentFromString(INVALID_ARGUMENTS);
+                                return (contexts0, arguments0, factory0) -> factory0.component(INVALID_ARGUMENTS);
                             
                             try {
                                 BigDecimal arg0 = arguments.get(0) != null ? new BigDecimal(arguments.get(0).stringValue()) : null;
@@ -570,13 +570,13 @@ public interface PlaceholderResolver {
                                         BigDecimal a1 = arg1 != null ? arg1 : new BigDecimal(arguments0.get(1).stringValue());
                                         if (fun.apply(a0, a1))
                                             return arguments0.get(2);
-                                        return arguments0.size() > 3 ? arguments0.get(3) : factory0.componentFromString("");
+                                        return arguments0.size() > 3 ? arguments0.get(3) : factory0.component("");
                                     } catch (NumberFormatException e) {
-                                        return factory0.componentFromString(INVALID_ARGUMENTS);
+                                        return factory0.component(INVALID_ARGUMENTS);
                                     }
                                 };
                             } catch(NumberFormatException e) {
-                                return (contexts0, arguments0, factory0) -> factory0.componentFromString(INVALID_ARGUMENTS);
+                                return (contexts0, arguments0, factory0) -> factory0.component(INVALID_ARGUMENTS);
                             }
                         }
                     };
@@ -597,19 +597,19 @@ public interface PlaceholderResolver {
                         public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, 
                                 @NotNull Component.ValueFactory<T> factory) {
                             if (arguments.size() != 2)
-                                return factory.componentFromString(INVALID_ARGUMENTS);
+                                return factory.component(INVALID_ARGUMENTS);
                             try {
-                                return factory.componentFromString(fun.apply(new BigDecimal(arguments.get(0).stringValue()),
+                                return factory.component(fun.apply(new BigDecimal(arguments.get(0).stringValue()),
                                         new BigDecimal(arguments.get(1).stringValue())).toPlainString());
                             } catch (NumberFormatException e) {
-                                return factory.componentFromString(Placeholder.INVALID_ARGUMENTS);
+                                return factory.component(Placeholder.INVALID_ARGUMENTS);
                             }
                         }
 
                         @Override
                         public @Nullable <T> ProcessedPlaceholder<T> processArguments(@Unmodifiable @NotNull List<@Nullable Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
                             if (arguments.size() != 2)
-                                return (contexts0, arguments0, factory0) -> factory0.componentFromString(INVALID_ARGUMENTS);
+                                return (contexts0, arguments0, factory0) -> factory0.component(INVALID_ARGUMENTS);
 
                             try {
                                 BigDecimal arg0 = arguments.get(0) != null ? new BigDecimal(arguments.get(0).stringValue()) : null;
@@ -619,13 +619,13 @@ public interface PlaceholderResolver {
                                     try {
                                         BigDecimal a0 = arg0 != null ? arg0 : new BigDecimal(arguments0.get(0).stringValue());
                                         BigDecimal a1 = arg1 != null ? arg1 : new BigDecimal(arguments0.get(1).stringValue());
-                                        return factory.componentFromString(fun.apply(a0, a1).toPlainString());
+                                        return factory.component(fun.apply(a0, a1).toPlainString());
                                     } catch (NumberFormatException e) {
-                                        return factory0.componentFromString(INVALID_ARGUMENTS);
+                                        return factory0.component(INVALID_ARGUMENTS);
                                     }
                                 };
                             } catch(NumberFormatException e) {
-                                return (contexts0, arguments0, factory0) -> factory0.componentFromString(INVALID_ARGUMENTS);
+                                return (contexts0, arguments0, factory0) -> factory0.component(INVALID_ARGUMENTS);
                             }
                         }
                     };

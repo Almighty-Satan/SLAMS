@@ -218,7 +218,7 @@ public class StandaloneTest {
 
             @Override
             public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
-                return Component.of(factory.fromString("abc"), "def", 5);
+                return Component.of(factory.value("abc"), "def", 5);
             }
         }).add(new Placeholder() {
             @Override
@@ -236,7 +236,7 @@ public class StandaloneTest {
                 assertEquals("abc", arguments.get(0).value());
                 assertEquals("def", arguments.get(0).stringValue());
                 assertEquals(5, arguments.get(0).rawValue());
-                return factory.componentFromString("World");
+                return factory.component("World");
             }
         }).build());
 
@@ -262,7 +262,7 @@ public class StandaloneTest {
 
             @Override
             public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
-                return Component.of(factory.fromString("abc"), "def", 5);
+                return Component.of(factory.value("abc"), "def", 5);
             }
         }).add(new Placeholder() {
             @Override
@@ -278,7 +278,7 @@ public class StandaloneTest {
             @Override
             public @NotNull <T> Component<T> value(@NotNull Object @NotNull [] contexts, @Unmodifiable @NotNull List<@NotNull Argument<T>> arguments, @NotNull Component.ValueFactory<T> factory) {
                 fail();
-                return factory.componentFromString("fail");
+                return factory.component("fail");
             }
 
             @Override
@@ -291,7 +291,7 @@ public class StandaloneTest {
                 return ((contexts0, arguments0, factory0) -> {
                     assertEquals("abc", arguments0.get(0).value());
                     assertEquals("test", arguments0.get(1).value());
-                    return factory0.componentFromString("World");
+                    return factory0.component("World");
                 });
             }
         }).build());
