@@ -22,19 +22,27 @@ package io.github.almightysatan.slams.standalone;
 
 import io.github.almightysatan.slams.Placeholder;
 import io.github.almightysatan.slams.PlaceholderResolver;
-import io.github.almightysatan.slams.Slams;
 import io.github.almightysatan.slams.standalone.impl.StandaloneCompositeComponent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class CompositeComponentTest {
 
-    @SuppressWarnings("deprecation")
-    @Test
-    public void testBasicPercent() {
-        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.PERCENT);
+    private static Stream<Arguments> optimizationArguments() {
+        return Stream.of(Arguments.of(false, false), Arguments.of(true, false),
+                Arguments.of(false, true), Arguments.of(true, true));
+    }
+
+    @ParameterizedTest
+    @MethodSource("optimizationArguments")
+    public void testBasicPercent(boolean enableConstexprEval, boolean enableInline) {
+        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.PERCENT, enableConstexprEval, enableInline);
         
         Assertions.assertEquals("Hello World", new StandaloneCompositeComponent(slams, "Hello World", PlaceholderResolver.empty()).value());
         Assertions.assertEquals("Hello %test:abc% World", new StandaloneCompositeComponent(slams, "Hello %test:abc% World", PlaceholderResolver.empty()).value());
@@ -47,9 +55,10 @@ public class CompositeComponentTest {
         Assertions.assertEquals("", new StandaloneCompositeComponent(slams, "", PlaceholderResolver.empty()).value());
     }
 
-    @Test
-    public void testBasicAngleBrackets() {
-        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS);
+    @ParameterizedTest
+    @MethodSource("optimizationArguments")
+    public void testBasicAngleBrackets(boolean enableConstexprEval, boolean enableInline) {
+        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS, enableConstexprEval, enableInline);
         
         Assertions.assertEquals("Hello World", new StandaloneCompositeComponent(slams, "Hello World", PlaceholderResolver.empty()).value());
         Assertions.assertEquals("Hello <test:abc> World", new StandaloneCompositeComponent(slams, "Hello <test:abc> World", PlaceholderResolver.empty()).value());
@@ -66,9 +75,10 @@ public class CompositeComponentTest {
         Assertions.assertEquals("", new StandaloneCompositeComponent(slams, "", PlaceholderResolver.empty()).value());
     }
 
-    @Test
-    public void testBasicCurlyBrackets() {
-        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.CURLY_BRACKETS);
+    @ParameterizedTest
+    @MethodSource("optimizationArguments")
+    public void testBasicCurlyBrackets(boolean enableConstexprEval, boolean enableInline) {
+        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.CURLY_BRACKETS, enableConstexprEval, enableInline);
         
         Assertions.assertEquals("Hello World", new StandaloneCompositeComponent(slams, "Hello World", PlaceholderResolver.empty()).value());
         Assertions.assertEquals("Hello {test:abc} World", new StandaloneCompositeComponent(slams, "Hello {test:abc} World", PlaceholderResolver.empty()).value());
@@ -85,9 +95,10 @@ public class CompositeComponentTest {
         Assertions.assertEquals("", new StandaloneCompositeComponent(slams, "", PlaceholderResolver.empty()).value());
     }
 
-    @Test
-    public void testBasicCurlyParentheses() {
-        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.PARENTHESES);
+    @ParameterizedTest
+    @MethodSource("optimizationArguments")
+    public void testBasicCurlyParentheses(boolean enableConstexprEval, boolean enableInline) {
+        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.PARENTHESES, enableConstexprEval, enableInline);
         
         Assertions.assertEquals("Hello World", new StandaloneCompositeComponent(slams, "Hello World", PlaceholderResolver.empty()).value());
         Assertions.assertEquals("Hello (test:abc) World", new StandaloneCompositeComponent(slams, "Hello (test:abc) World", PlaceholderResolver.empty()).value());
@@ -154,9 +165,10 @@ public class CompositeComponentTest {
         Assertions.assertEquals("Hello 0.5", eval.apply("Hello <div:1:2>"));
     }
 
-    @Test
-    public void testPlaceholdersGlobal() {
-        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS);
+    @ParameterizedTest
+    @MethodSource("optimizationArguments")
+    public void testPlaceholdersGlobal(boolean enableConstexprEval, boolean enableInline) {
+        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS, enableConstexprEval, enableInline);
         PlaceholderResolver placeholderResolver = PlaceholderResolver.builder()
                 .constant("abc", "def")
                 .constant("a<b", "c")
@@ -173,9 +185,10 @@ public class CompositeComponentTest {
         this.assertPlaceholders(eval);
     }
 
-    @Test
-    public void testPlaceholdersLocal() {
-        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS);
+    @ParameterizedTest
+    @MethodSource("optimizationArguments")
+    public void testPlaceholdersLocal(boolean enableConstexprEval, boolean enableInline) {
+        StandaloneSlams slams = StandaloneSlams.of("en", PlaceholderStyle.ANGLE_BRACKETS, enableConstexprEval, enableInline);
         PlaceholderResolver placeholderResolver = PlaceholderResolver.builder()
                 .constant("abc", "def")
                 .constant("a<b", "c")
