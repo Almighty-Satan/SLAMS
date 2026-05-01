@@ -1,7 +1,7 @@
 [versions]
 annotations = "26.1.0"
 junit = "5.14.3"
-jreleaser = "1.23.0"
+jreleaser = "1.24.0"
 
 minimessage = "5.0.1"
 spigot = "1.8.8-R0.1-SNAPSHOT"
