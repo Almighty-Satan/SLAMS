@@ -7,7 +7,7 @@ minimessage = "5.2.0"
 spigot = "1.8.8-R0.1-SNAPSHOT"
 placeholderapi = "2.11.7"
 jackson = "2.22.0"
-jaskl = "1.10.0"
+jaskl = "1.10.1"
 
 [libraries]
 annotations = { module="org.jetbrains:annotations", version.ref="annotations" }
